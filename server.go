@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -20,6 +23,26 @@ var (
 	users = map[int]*user{}
 	seq   = 1
 )
+
+var db *gorm.DB
+
+func initDB() {
+	dsn := "host=localhost user=aprian1337 password= dbname=thukul port=9920 sslmode=disable TimeZone=Asia/Jakarta"
+	var err error
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return
+	}
+	initMigrate()
+}
+
+func initMigrate() {
+	err := db.AutoMigrate(&user{})
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+}
 
 //----------
 // Handlers
@@ -63,6 +86,7 @@ func getAllUsers(c echo.Context) error {
 }
 
 func main() {
+	initDB()
 	e := echo.New()
 
 	// Middleware
