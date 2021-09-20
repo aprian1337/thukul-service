@@ -1,4 +1,4 @@
-module thukul
+module aprian1337/thukul-service
 
 go 1.16
 

@@ -1,0 +1,1368 @@
+---
+openapi: 3.0.0
+info:
+  title: Thukul Service
+  description: |
+    Thukul Service API is app to manage financial & buy cryptocurrency assets
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: dwikyapriyan@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://virtserver.swaggerhub.com/aprian1337/ThukulService-API/1.0.0
+    description: SwaggerHub API Auto Mocking
+  - url: localhost/api/v1
+tags:
+  - name: salaries
+    description: Everything about Salaries
+  - name: auth
+    description: Everything about Auth
+  - name: users
+    description: Everything about Users
+  - name: pockets
+    description: Everything about Pockets
+  - name: activities
+    description: Everything about Financial Activities
+  - name: wishlists
+    description: Everything about Wishlists
+  - name: favorites
+    description: Everything about Favorites
+  - name: assets
+    description: Everything about Assets
+  - name: transactions
+    description: Everything about Transactions (Buy/Sell)
+  - name: cryptos
+    description: Everything about Cryptos (From Third-Party)
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      requestBody:
+        $ref: '#/components/requestBodies/AuthLogin'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Login success
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: Logout
+      requestBody:
+        $ref: '#/components/requestBodies/AuthLogin'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Logout success
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: Refresh Token
+      requestBody:
+        $ref: '#/components/requestBodies/RefreshToken'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Token refresh success
+      security:
+        - api_key: []
+  /salaries:
+    get:
+      tags:
+        - salaries
+      summary: List all salaries
+      parameters:
+        - name: sort
+          in: query
+          description: Sort salaries asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: limit
+          in: query
+          description: Limit salary result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          description: Offset salary result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    post:
+      tags:
+        - salaries
+      summary: Create new salary
+      requestBody:
+        $ref: '#/components/requestBodies/Salaries'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /salaries/{id}:
+    get:
+      tags:
+        - salaries
+      summary: Detail salary
+      parameters:
+        - name: id
+          in: path
+          description: ID of salary to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    put:
+      tags:
+        - salaries
+      summary: Update salary data
+      parameters:
+        - name: id
+          in: path
+          description: ID of salary to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/Salaries'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - salaries
+      summary: Destroy salary by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of salary to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /users:
+    get:
+      tags:
+        - users
+      summary: List all users
+      parameters:
+        - name: sort
+          in: query
+          description: Sort salaries asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: limit
+          in: query
+          description: Limit users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          description: Offset users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    post:
+      tags:
+        - users
+      summary: Create new user
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /users/{id}:
+    get:
+      tags:
+        - users
+      summary: Detail user
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    put:
+      tags:
+        - users
+      summary: Update user data
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - users
+      summary: Destroy user by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /pockets:
+    get:
+      tags:
+        - pockets
+      summary: List all pockets
+      parameters:
+        - name: sort
+          in: query
+          description: Sort salaries asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: sortBy
+          in: query
+          description: Sort by salaries asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - name
+              - total_nominal
+        - name: limit
+          in: query
+          description: Limit users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          description: Offset users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    post:
+      tags:
+        - pockets
+      summary: Create new pockets
+      requestBody:
+        $ref: '#/components/requestBodies/Pockets'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /pockets/{id}:
+    get:
+      tags:
+        - pockets
+      summary: Detail pocket
+      parameters:
+        - name: id
+          in: path
+          description: ID of pocket to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    put:
+      tags:
+        - pockets
+      summary: Update pocket data
+      parameters:
+        - name: id
+          in: path
+          description: ID of pocket to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - pockets
+      summary: Destroy pocket by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of pocket to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /pockets/{id}/activities:
+    get:
+      tags:
+        - activities
+      summary: List all activities
+      parameters:
+        - name: id
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+        - name: type
+          in: query
+          description: Get specific type activity
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - expense
+              - income
+        - name: sort
+          in: query
+          description: Sort activities asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: sortBy
+          in: query
+          description: Sort by asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - name
+              - nominal
+              - date
+        - name: limit
+          in: query
+          description: Limit users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          description: Offset users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    post:
+      tags:
+        - activities
+      summary: Create new pockets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/Pockets'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /pockets/{id}/activities/{idAct}:
+    get:
+      tags:
+        - activities
+      summary: Detail pocket
+      parameters:
+        - name: id
+          in: path
+          description: ID of pocket to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+        - name: idAct
+          in: path
+          description: ID of activity to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    put:
+      tags:
+        - activities
+      summary: Update pocket data
+      parameters:
+        - name: id
+          in: path
+          description: ID of pocket to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+        - name: idAct
+          in: path
+          description: ID of activity to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - activities
+      summary: Destroy pocket by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of pocket to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+        - name: idAct
+          in: path
+          description: ID of activity to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /wishlists:
+    get:
+      tags:
+        - wishlists
+      summary: List all wishlists
+      parameters:
+        - name: sort
+          in: query
+          description: Sort wishlists asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: sortBy
+          in: query
+          description: Sort by wishlists
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - name
+              - nominal
+              - target_date
+              - priority
+              - is_done
+        - name: limit
+          in: query
+          description: Limit users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          description: Offset users result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    post:
+      tags:
+        - wishlists
+      summary: Create new wishlists
+      requestBody:
+        $ref: '#/components/requestBodies/Pockets'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /wishlists/{id}:
+    get:
+      tags:
+        - wishlists
+      summary: Detail wishlist
+      parameters:
+        - name: id
+          in: path
+          description: ID of wishlist to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    put:
+      tags:
+        - wishlists
+      summary: Update wishlist data
+      parameters:
+        - name: id
+          in: path
+          description: ID of wishlist to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - wishlists
+      summary: Destroy wishlist by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of wishlist to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /favorites:
+    get:
+      tags:
+        - favorites
+      summary: List all favorites
+      parameters:
+        - name: sort
+          in: query
+          description: Sort favorites asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: sortBy
+          in: query
+          description: Sort by favorites
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - coin_code
+        - name: limit
+          in: query
+          description: Limit favorites result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          description: Offset favorites result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    post:
+      tags:
+        - favorites
+      summary: Create new favorites
+      requestBody:
+        $ref: '#/components/requestBodies/Pockets'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /favorites/{id}:
+    get:
+      tags:
+        - favorites
+      summary: Detail favorite
+      parameters:
+        - name: id
+          in: path
+          description: ID of favorite to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    put:
+      tags:
+        - favorites
+      summary: Update favorite data
+      parameters:
+        - name: id
+          in: path
+          description: ID of favorite to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - favorites
+      summary: Destroy favorite by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of favorite to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /transactions:
+    get:
+      tags:
+        - transactions
+      summary: List all transactions
+      parameters:
+        - name: sort
+          in: query
+          description: Sort transactions asc/desc
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: sortBy
+          in: query
+          description: Sort by transactions
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - request
+              - verify
+              - success
+              - fail
+        - name: limit
+          in: query
+          description: Limit transactions result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          description: Offset transactions result
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    post:
+      tags:
+        - transactions
+      summary: Create new transactions
+      requestBody:
+        $ref: '#/components/requestBodies/Pockets'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /transactions/{id}:
+    get:
+      tags:
+        - transactions
+      summary: Detail transaction
+      parameters:
+        - name: id
+          in: path
+          description: ID of transaction to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    put:
+      tags:
+        - transactions
+      summary: Update transaction data
+      parameters:
+        - name: id
+          in: path
+          description: ID of transaction to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - transactions
+      summary: Destroy transaction by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of transaction to return
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /cryptos:
+    get:
+      tags:
+        - cryptos
+      summary: Get list cryptos and coin code
+      parameters:
+        - name: q
+          in: query
+          description: Search list crypto by coin code
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+  /cryptos/filled:
+    get:
+      tags:
+        - cryptos
+      summary: Get last filled order tracking in world
+      parameters:
+        - name: q
+          in: query
+          description: Search by specific coin code
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+  /cryptos/{id}:
+    get:
+      tags:
+        - cryptos
+      summary: Get detail cryptos and coin code
+      parameters:
+        - name: id
+          in: path
+          description: ID crypto by coin code
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+  /assets:
+    get:
+      tags:
+        - assets
+      summary: Get assets finance and crypto
+      parameters:
+        - name: filter
+          in: query
+          description: Filter by assets
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - crypto
+              - finance
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /assets/report:
+    get:
+      tags:
+        - assets
+      summary: Get report finance and crypto
+      parameters:
+        - name: filter
+          in: query
+          description: Filter by assets
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum:
+              - crypto
+              - finance
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+  /assets/recommendation:
+    get:
+      tags:
+        - assets
+      summary: Get recommendation for saving
+      responses:
+        "405":
+          description: Invalid input
+        "200":
+          description: Success
+      security:
+        - api_key: []
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        salary_id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        password:
+          type: string
+        is_admin:
+          type: integer
+          description: 0 = user / 1 = admin
+          default: 0
+        email:
+          type: string
+        phone:
+          type: string
+        gender:
+          type: string
+        birhday:
+          type: string
+          format: date
+        address:
+          type: string
+        company:
+          type: string
+        is_valid:
+          type: integer
+      xml:
+        name: Order
+    AuthLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      xml:
+        name: AuthLogin
+    RefreshToken:
+      type: object
+      properties:
+        api_key:
+          type: string
+      xml:
+        name: RefeshToken
+    Salaries:
+      type: object
+      properties:
+        minimal:
+          type: integer
+          format: int64
+        maximal:
+          type: integer
+          format: int64
+      xml:
+        name: Salaries
+    Pockets:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        total_nominal:
+          type: number
+          format: double
+      xml:
+        name: Pockets
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Category
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Tag
+    Pet:
+      required:
+        - name
+        - photoUrls
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        category:
+          $ref: '#/components/schemas/Category'
+        name:
+          type: string
+          example: doggie
+        photoUrls:
+          type: array
+          xml:
+            name: photoUrl
+            wrapped: true
+          items:
+            type: string
+        tags:
+          type: array
+          xml:
+            name: tag
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Tag'
+        status:
+          type: string
+          description: pet status in the store
+          enum:
+            - available
+            - pending
+            - sold
+      xml:
+        name: Pet
+  requestBodies:
+    User:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Pet'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Pet'
+      required: true
+    Pet:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Pet'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Pet'
+      required: true
+    AuthLogin:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthLogin'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/AuthLogin'
+      required: true
+    RefreshToken:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RefreshToken'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/RefreshToken'
+      required: true
+    Salaries:
+      description: Salaries object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Salaries'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Salaries'
+      required: true
+    Pockets:
+      description: Pockets object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Pockets'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Pockets'
+      required: true
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+      required: true
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
