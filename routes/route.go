@@ -12,5 +12,6 @@ func V1() *echo.Echo {
 	api := e.Group("api/v1")
 	api.GET("/salaries", controllers.GetSalariesController)
 	api.POST("/salaries", controllers.CreateSalariesController)
+	//api.POST("/users", UsersController.)
 	return e
 }

@@ -16,12 +16,12 @@ func InitDB() {
 	if err != nil {
 		panic(err.Error())
 	}
-	migration()
+	Migration()
 }
 
-func migration() {
+func Migration() {
 	fmt.Println("Migration..")
-	err := Db.AutoMigrate(&models.Salaries{})
+	err := Db.AutoMigrate(&models.Salaries{}, &models.Users{})
 	if err != nil {
 		return
 	}
