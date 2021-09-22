@@ -1,7 +1,8 @@
 package config
 
 import (
-	"aprian1337/thukul-service/models"
+	"aprian1337/thukul-service/models/salaries"
+	"aprian1337/thukul-service/models/users"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,7 +22,7 @@ func InitDB() {
 
 func Migration() {
 	fmt.Println("Migration..")
-	err := Db.AutoMigrate(&models.Salaries{}, &models.Users{})
+	err := Db.AutoMigrate(&salaries.Db{}, &users.Db{})
 	if err != nil {
 		return
 	}

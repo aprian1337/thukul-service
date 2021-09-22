@@ -2,15 +2,15 @@ package controllers
 
 import (
 	"aprian1337/thukul-service/config"
-	"aprian1337/thukul-service/models"
+	"aprian1337/thukul-service/models/salaries"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 func GetSalariesController(c echo.Context) error {
-	var salaries []models.Salaries
+	var getSalaries []salaries.Db
 
-	err := config.Db.Find(&salaries).Error
+	err := config.Db.Find(&getSalaries).Error
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": err.Error(),
@@ -18,18 +18,18 @@ func GetSalariesController(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "success",
-		"data":    salaries,
+		"data":    getSalaries,
 	})
 }
 
 func CreateSalariesController(context echo.Context) error {
-	salaries := models.Salaries{}
-	err := context.Bind(&salaries)
+	salary := salaries.Db{}
+	err := context.Bind(&salary)
 	if err != nil {
 		panic(err.Error())
 		return err
 	}
-	errDb := config.Db.Save(&salaries).Error
+	errDb := config.Db.Create(&salary).Error
 	if errDb != nil {
 		return context.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": err.Error(),
@@ -37,6 +37,6 @@ func CreateSalariesController(context echo.Context) error {
 	}
 	return context.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Success",
-		"data":    salaries,
+		"data":    salary,
 	})
 }
