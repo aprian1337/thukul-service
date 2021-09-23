@@ -3,9 +3,11 @@ package controllers
 import (
 	"aprian1337/thukul-service/config"
 	"aprian1337/thukul-service/helpers"
+	"aprian1337/thukul-service/middlewares"
 	"aprian1337/thukul-service/models/responses"
 	"aprian1337/thukul-service/models/users"
 	"errors"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"net/http"
@@ -21,9 +23,11 @@ func GetUsersController(ctx echo.Context) error {
 			"message": err.Error(),
 		})
 	}
+	userLogin, _ := middlewares.GetClaimsUserId(ctx)
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success",
-		"data":    listUsers,
+		"message":    "success",
+		"data":       listUsers,
+		"user_login": userLogin,
 	})
 }
 
@@ -31,6 +35,7 @@ func CreateUsersController(ctx echo.Context) error {
 	newUser := users.Request{}
 	err := ctx.Bind(&newUser)
 	if err != nil {
+		fmt.Println("CREATE")
 		panic(err.Error())
 		return err
 	}
@@ -38,7 +43,11 @@ func CreateUsersController(ctx echo.Context) error {
 	var userDb users.Db
 	birthday, errTime := time.Parse("2006-01-02", newUser.Birthday)
 	if errTime != nil {
-		return err
+		return ctx.JSON(http.StatusBadRequest, responses.BaseResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Wrong formed of birthday (must: yyyy-mm-dd)",
+			Data:    nil,
+		})
 	}
 	userDb = users.Db{
 		Name:     newUser.Name,
@@ -106,6 +115,14 @@ func LoginUsersController(ctx echo.Context) error {
 			Data:    nil,
 		})
 	}
+	token, errToken := middlewares.GenerateTokenJWT(userDb.ID)
+	if errToken != nil {
+		return ctx.JSON(http.StatusInternalServerError, responses.BaseResponse{
+			Code:    http.StatusInternalServerError,
+			Message: errToken.Error(),
+			Data:    nil,
+		})
+	}
 	userResponse := users.Response{
 		Id:       userDb.ID,
 		SalaryId: userDb.SalaryId,
@@ -114,6 +131,7 @@ func LoginUsersController(ctx echo.Context) error {
 		Email:    userDb.Email,
 		Phone:    userDb.Phone,
 		Gender:   userDb.Gender,
+		Token:    token,
 		Birthday: userDb.Birthday.Format("2006-01-02"),
 		Address:  userDb.Address,
 		Company:  userDb.Company,

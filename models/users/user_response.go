@@ -10,6 +10,7 @@ type Response struct {
 	Gender   string `json:"gender"`
 	Birthday string `json:"birthday"`
 	Address  string `json:"address"`
+	Token    string `json:"token"`
 	Company  string `json:"company"`
 	IsValid  int    `json:"is_valid"`
 }
