@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"aprian1337/thukul-service/config"
-	"aprian1337/thukul-service/models/salaries"
+	"aprian1337/thukul-service/zmvc/config"
+	"aprian1337/thukul-service/zmvc/models/salaries"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )

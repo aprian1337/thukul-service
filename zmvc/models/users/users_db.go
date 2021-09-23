@@ -1,7 +1,7 @@
 package users
 
 import (
-	"aprian1337/thukul-service/models/salaries"
+	"aprian1337/thukul-service/zmvc/models/salaries"
 	"time"
 )
 

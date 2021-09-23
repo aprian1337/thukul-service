@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"aprian1337/thukul-service/config"
-	"aprian1337/thukul-service/helpers"
-	"aprian1337/thukul-service/middlewares"
-	"aprian1337/thukul-service/models/responses"
-	"aprian1337/thukul-service/models/users"
+	"aprian1337/thukul-service/zmvc/config"
+	"aprian1337/thukul-service/zmvc/helpers"
+	"aprian1337/thukul-service/zmvc/middlewares"
+	"aprian1337/thukul-service/zmvc/models/responses"
+	users2 "aprian1337/thukul-service/zmvc/models/users"
 	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
@@ -15,7 +15,7 @@ import (
 )
 
 func GetUsersController(ctx echo.Context) error {
-	var listUsers []users.Db
+	var listUsers []users2.Db
 
 	err := config.Db.Find(&listUsers).Error
 	if err != nil {
@@ -32,7 +32,7 @@ func GetUsersController(ctx echo.Context) error {
 }
 
 func CreateUsersController(ctx echo.Context) error {
-	newUser := users.Request{}
+	newUser := users2.Request{}
 	err := ctx.Bind(&newUser)
 	if err != nil {
 		fmt.Println("CREATE")
@@ -40,7 +40,7 @@ func CreateUsersController(ctx echo.Context) error {
 		return err
 	}
 	newUser.Password = helpers.HashWithBcrypt(newUser.Password)
-	var userDb users.Db
+	var userDb users2.Db
 	birthday, errTime := time.Parse("2006-01-02", newUser.Birthday)
 	if errTime != nil {
 		return ctx.JSON(http.StatusBadRequest, responses.BaseResponse{
@@ -49,7 +49,7 @@ func CreateUsersController(ctx echo.Context) error {
 			Data:    nil,
 		})
 	}
-	userDb = users.Db{
+	userDb = users2.Db{
 		Name:     newUser.Name,
 		SalaryId: newUser.SalaryId,
 		Birthday: birthday,
@@ -75,7 +75,7 @@ func CreateUsersController(ctx echo.Context) error {
 }
 
 func LoginUsersController(ctx echo.Context) error {
-	var userLogin users.UserLogin
+	var userLogin users2.UserLogin
 	err := ctx.Bind(&userLogin)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, responses.BaseResponse{
@@ -91,7 +91,7 @@ func LoginUsersController(ctx echo.Context) error {
 			Data:    nil,
 		})
 	}
-	var userDb users.Db
+	var userDb users2.Db
 	result := config.Db.First(&userDb, "email = ? ", userLogin.Email)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -123,7 +123,7 @@ func LoginUsersController(ctx echo.Context) error {
 			Data:    nil,
 		})
 	}
-	userResponse := users.Response{
+	userResponse := users2.Response{
 		Id:       userDb.ID,
 		SalaryId: userDb.SalaryId,
 		Name:     userDb.Name,
