@@ -20,11 +20,11 @@ servers:
   - url: localhost/api/v1
 tags:
   - name: salaries
-    description: Everything about Salaries
+    description: Everything about salaries
   - name: auth
     description: Everything about Auth
   - name: users
-    description: Everything about Users
+    description: Everything about users
   - name: pockets
     description: Everything about Pockets
   - name: activities
@@ -1220,7 +1220,7 @@ components:
           type: integer
           format: int64
       xml:
-        name: Salaries
+        name: salaries
     Pockets:
       type: object
       properties:
@@ -1333,7 +1333,7 @@ components:
             $ref: '#/components/schemas/RefreshToken'
       required: true
     Salaries:
-      description: Salaries object that needs to be added to the store
+      description: salaries object that needs to be added to the store
       content:
         application/json:
           schema:
