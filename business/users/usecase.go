@@ -2,6 +2,7 @@ package users
 
 import (
 	"aprian1337/thukul-service/deliveries/users/requests"
+	"aprian1337/thukul-service/utilities"
 	"context"
 	"errors"
 	"time"
@@ -42,6 +43,7 @@ func (uc *UserUsecase) Create(ctx context.Context, register requests.UserRegiste
 	if register.Password == "" {
 		return Domain{}, errors.New("password is required")
 	}
+	register.Password, _ = utilities.HashPassword(register.Password)
 
 	user, err := uc.Repo.Create(ctx, register)
 

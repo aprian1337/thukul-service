@@ -13,4 +13,5 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1 := e.Group("api/v1/")
 	v1.GET("users", cl.UserController.GetUsersController)
 	v1.POST("users", cl.UserController.CreateUserController)
+	v1.POST("auth/login", cl.UserController.LoginUserController)
 }

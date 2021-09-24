@@ -51,7 +51,7 @@ func main() {
 		DbPort: viper.GetString(`databases.mongodbb.port`),
 	}
 
-	connPostgres := postgresConfig.InitialDb()
+	connPostgres := postgresConfig.InitialDb(viper.GetBool(`debug`))
 	mongoConfig.InitDb()
 	DbMigrate(connPostgres)
 	e := echo.New()

@@ -6,8 +6,16 @@ import (
 	"time"
 )
 
-type UsersRequest struct {
-	SalaryId int `json:"salary_id" validate:"numeric"`
+//DELETE
+type LoginResponse struct {
+	Message string `json:"message"`
+	Login   int    `json:"login"`
+	Data    interface{}
+}
+
+type UsersResponse struct {
+	Id       uint `json:"id"`
+	SalaryId int  `json:"salary_id" validate:"numeric"`
 	SalaryFk salaries.Salaries
 	Name     string    `json:"name"`
 	IsAdmin  int       `json:"is_admin" validate:"numeric"`
@@ -20,8 +28,9 @@ type UsersRequest struct {
 	IsValid  int       `json:"is_valid"`
 }
 
-func FromUsersDomain(domain users.Domain) UsersRequest {
-	return UsersRequest{
+func FromUsersDomain(domain users.Domain) UsersResponse {
+	return UsersResponse{
+		Id:       domain.ID,
 		SalaryId: domain.SalaryId,
 		Name:     domain.Name,
 		IsAdmin:  domain.IsAdmin,
@@ -35,10 +44,36 @@ func FromUsersDomain(domain users.Domain) UsersRequest {
 	}
 }
 
-func FromUsersListDomain(domain []users.Domain) []UsersRequest {
-	list := []UsersRequest{}
+func FromUsersListDomain(domain []users.Domain) []UsersResponse {
+	list := []UsersResponse{}
 	for _, v := range domain {
 		list = append(list, FromUsersDomain(v))
 	}
 	return list
+}
+
+func ToLoginResponse(domain users.Domain) LoginResponse {
+	login := LoginResponse{}
+	if domain.ID > 0 {
+		login.Login = 1
+		login.Message = "Login Successfuly"
+		login.Data = UsersResponse{
+			Id:       domain.ID,
+			SalaryId: domain.SalaryId,
+			Name:     domain.Name,
+			IsAdmin:  domain.IsAdmin,
+			Email:    domain.Email,
+			Phone:    domain.Phone,
+			Gender:   domain.Gender,
+			Birthday: domain.Birthday,
+			Address:  domain.Address,
+			Company:  domain.Company,
+			IsValid:  domain.IsValid,
+		}
+	} else {
+		login.Login = 0
+		login.Message = "Login Failed"
+		login.Data = nil
+	}
+	return login
 }

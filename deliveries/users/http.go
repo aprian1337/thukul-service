@@ -39,19 +39,32 @@ func (ctrl *UserController) GetDetailUserController(c echo.Context, id uint) err
 
 func (ctrl *UserController) CreateUserController(c echo.Context) error {
 	request := requests.UserRegister{}
-	err := c.Bind(&request)
+	var err error
+	err = c.Bind(&request)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	ctxNative := c.Request().Context()
-	data, err := ctrl.userUsecase.Create(ctxNative, request)
+	var data users.Domain
+	data, err = ctrl.userUsecase.Create(ctxNative, request)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, data)
+	return deliveries.NewSuccessResponse(c, responses.FromUsersDomain(data))
 }
 
-//
-//func (ctrl *UserController) LoginUserController(c echo.Context) error{
-//
-//}
+func (ctrl *UserController) LoginUserController(c echo.Context) error {
+	var err error
+	request := requests.UserLogin{}
+	err = c.Bind(&request)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	var login users.Domain
+	ctxNative := c.Request().Context()
+	login, err = ctrl.userUsecase.Login(ctxNative, request)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, responses.ToLoginResponse(login))
+}

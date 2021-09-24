@@ -3,6 +3,7 @@ package users
 import (
 	"aprian1337/thukul-service/business/users"
 	"aprian1337/thukul-service/deliveries/users/requests"
+	"aprian1337/thukul-service/utilities"
 	"context"
 	"errors"
 	"gorm.io/gorm"
@@ -20,12 +21,12 @@ func NewPostgresUserRepository(conn *gorm.DB) users.Repository {
 }
 
 func (repo *PostgresUserRepository) GetAll(ctx context.Context) ([]users.Domain, error) {
-	var user []Users
-	err := repo.ConnPostgres.Find(&Users{})
+	var data []Users
+	err := repo.ConnPostgres.Find(&data)
 	if err.Error != nil {
 		return []users.Domain{}, err.Error
 	}
-	return ToListDomain(user), nil
+	return ToListDomain(data), nil
 }
 
 func (repo *PostgresUserRepository) GetById(id uint, ctx context.Context) (users.Domain, error) {
@@ -62,9 +63,13 @@ func (repo *PostgresUserRepository) Create(ctx context.Context, register request
 
 func (repo *PostgresUserRepository) Login(ctx context.Context, login requests.UserLogin) (users.Domain, error) {
 	var user Users
-	err := repo.ConnPostgres.Find(&user, "email = ? AND password = ?", login.Email, login.Password)
+	err := repo.ConnPostgres.Find(&user, "email = ? ", login.Email)
 	if err.Error != nil {
 		return users.Domain{}, err.Error
 	}
-	return user.ToDomain(), nil
+	check := utilities.CheckPassword(login.Password, user.Password)
+	if check {
+		return user.ToDomain(), nil
+	}
+	return users.Domain{}, nil
 }

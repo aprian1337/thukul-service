@@ -10,7 +10,7 @@ import (
 type Users struct {
 	ID        uint `gorm:"primaryKey"`
 	SalaryId  int
-	SalaryFk  salaries.Salaries `gorm:"foreignKey:SalaryId"`
+	Salary    salaries.Salaries `gorm:"foreignKey:SalaryId"`
 	Name      string
 	Password  string
 	IsAdmin   int `gorm:"type:smallint; default:0"`
