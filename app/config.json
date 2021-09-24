@@ -1,6 +1,7 @@
 {
   "jwt": {
-    "signed_string": "ABC3213#!*"
+    "secret" : "dev!@##!211",
+    "expired" : 1
   },
   "debug": false,
   "databases": {

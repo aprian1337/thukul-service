@@ -30,7 +30,7 @@ func (ctrl *UserController) GetUsersController(c echo.Context) error {
 
 func (ctrl *UserController) GetDetailUserController(c echo.Context, id uint) error {
 	ctxNative := c.Request().Context()
-	data, err := ctrl.userUsecase.GetById(id, ctxNative)
+	data, err := ctrl.userUsecase.GetById(ctxNative, id)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -46,7 +46,7 @@ func (ctrl *UserController) CreateUserController(c echo.Context) error {
 	}
 	ctxNative := c.Request().Context()
 	var data users.Domain
-	data, err = ctrl.userUsecase.Create(ctxNative, request)
+	data, err = ctrl.userUsecase.Create(ctxNative, request.ToDomain())
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
@@ -54,17 +54,19 @@ func (ctrl *UserController) CreateUserController(c echo.Context) error {
 }
 
 func (ctrl *UserController) LoginUserController(c echo.Context) error {
+	var login users.Domain
 	var err error
+	var token string
+	ctxNative := c.Request().Context()
+
 	request := requests.UserLogin{}
 	err = c.Bind(&request)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	var login users.Domain
-	ctxNative := c.Request().Context()
-	login, err = ctrl.userUsecase.Login(ctxNative, request)
+	login, token, err = ctrl.userUsecase.Login(ctxNative, request.Email, request.Password)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, responses.ToLoginResponse(login))
+	return deliveries.NewSuccessResponse(c, responses.FromUsersDomainToLogin(login, token))
 }

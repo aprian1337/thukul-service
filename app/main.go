@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
 	_usersUsecase "aprian1337/thukul-service/business/users"
 	_usersDelivery "aprian1337/thukul-service/deliveries/users"
@@ -51,6 +52,11 @@ func main() {
 		DbPort: viper.GetString(`databases.mongodbb.port`),
 	}
 
+	configJWT := middlewares.ConfigJWT{
+		SecretJWT:       viper.GetString(`jwt.secret`),
+		ExpiresDuration: viper.GetInt(`jwt.expired`),
+	}
+
 	connPostgres := postgresConfig.InitialDb(viper.GetBool(`debug`))
 	mongoConfig.InitDb()
 	DbMigrate(connPostgres)
@@ -58,11 +64,12 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
 	userRepository := _usersDb.NewPostgresUserRepository(connPostgres)
-	userUsecase := _usersUsecase.NewUserUsecase(userRepository, timeoutContext)
+	userUsecase := _usersUsecase.NewUserUsecase(userRepository, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
 
 	routesInit := routes.ControllerList{
 		UserController: *userDelivery,
+		JWTMiddleware:  configJWT.Init(),
 	}
 
 	routesInit.RouteUsers(e)

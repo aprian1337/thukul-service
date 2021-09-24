@@ -1,7 +1,6 @@
 package users
 
 import (
-	"aprian1337/thukul-service/deliveries/users/requests"
 	"context"
 	"time"
 )
@@ -25,14 +24,14 @@ type Domain struct {
 
 type Usecase interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	GetById(id uint, ctx context.Context) (Domain, error)
-	Create(ctx context.Context, register requests.UserRegister) (Domain, error)
-	Login(ctx context.Context, login requests.UserLogin) (Domain, error)
+	GetById(ctx context.Context, id uint) (Domain, error)
+	Create(ctx context.Context, register *Domain) (Domain, error)
+	Login(ctx context.Context, email string, password string) (Domain, string, error)
 }
 
 type Repository interface {
 	GetAll(ctx context.Context) ([]Domain, error)
-	GetById(id uint, ctx context.Context) (Domain, error)
-	Create(ctx context.Context, register requests.UserRegister) (Domain, error)
-	Login(ctx context.Context, login requests.UserLogin) (Domain, error)
+	GetById(ctx context.Context, id uint) (Domain, error)
+	GetByEmail(ctx context.Context, email string) (Domain, error)
+	Create(ctx context.Context, register *Domain) (Domain, error)
 }

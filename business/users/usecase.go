@@ -1,22 +1,26 @@
 package users
 
 import (
-	"aprian1337/thukul-service/deliveries/users/requests"
+	"aprian1337/thukul-service/app/middlewares"
+	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/utilities"
 	"context"
 	"errors"
+	"log"
 	"time"
 )
 
 type UserUsecase struct {
 	Repo    Repository
 	Timeout time.Duration
+	jwtAuth *middlewares.ConfigJWT
 }
 
-func NewUserUsecase(repo Repository, timeout time.Duration) *UserUsecase {
+func NewUserUsecase(repo Repository, timeout time.Duration, jwtAuth *middlewares.ConfigJWT) *UserUsecase {
 	return &UserUsecase{
 		Repo:    repo,
 		Timeout: timeout,
+		jwtAuth: jwtAuth,
 	}
 }
 
@@ -28,24 +32,25 @@ func (uc *UserUsecase) GetAll(ctx context.Context) ([]Domain, error) {
 	return user, nil
 }
 
-func (uc *UserUsecase) GetById(id uint, ctx context.Context) (Domain, error) {
-	user, err := uc.Repo.GetById(id, ctx)
+func (uc *UserUsecase) GetById(ctx context.Context, id uint) (Domain, error) {
+	user, err := uc.Repo.GetById(ctx, id)
 	if err != nil {
 		return Domain{}, err
 	}
 	return user, nil
 }
-func (uc *UserUsecase) Create(ctx context.Context, register requests.UserRegister) (Domain, error) {
-	if register.Email == "" {
+func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, error) {
+	if domain.Email == "" {
 		return Domain{}, errors.New("email is required")
 	}
 
-	if register.Password == "" {
+	if domain.Password == "" {
 		return Domain{}, errors.New("password is required")
 	}
-	register.Password, _ = utilities.HashPassword(register.Password)
 
-	user, err := uc.Repo.Create(ctx, register)
+	domain.Password, _ = utilities.HashPassword(domain.Password)
+
+	user, err := uc.Repo.Create(ctx, domain)
 
 	if err != nil {
 		return Domain{}, err
@@ -53,20 +58,29 @@ func (uc *UserUsecase) Create(ctx context.Context, register requests.UserRegiste
 
 	return user, nil
 }
-func (uc *UserUsecase) Login(ctx context.Context, login requests.UserLogin) (Domain, error) {
-	if login.Email == "" {
-		return Domain{}, errors.New("email is required")
+func (uc *UserUsecase) Login(ctx context.Context, email string, password string) (Domain, string, error) {
+	if email == "" || password == "" {
+		return Domain{}, "", businesses.ErrUsernamePasswordNotFound
 	}
 
-	if login.Password == "" {
-		return Domain{}, errors.New("password is required")
-	}
-
-	user, err := uc.Repo.Login(ctx, login)
+	user, err := uc.Repo.GetByEmail(ctx, email)
 
 	if err != nil {
-		return Domain{}, err
+		return Domain{}, "", err
 	}
 
-	return user, nil
+	if !utilities.CheckPassword(password, user.Password) {
+		return Domain{}, "", businesses.ErrInvalidAuthentication
+	}
+
+	//JWT
+	token, errToken := uc.jwtAuth.GenerateTokenJWT(user.ID)
+	if errToken != nil {
+		log.Println(errToken)
+	}
+	if token == "" {
+		return Domain{}, "", businesses.ErrInvalidAuthentication
+	}
+
+	return user, token, nil
 }

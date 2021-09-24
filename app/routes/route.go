@@ -3,9 +3,11 @@ package routes
 import (
 	"aprian1337/thukul-service/deliveries/users"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type ControllerList struct {
+	JWTMiddleware  middleware.JWTConfig
 	UserController users.UserController
 }
 
