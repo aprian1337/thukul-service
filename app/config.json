@@ -1,0 +1,32 @@
+{
+  "jwt": {
+    "signed_string": "ABC3213#!*"
+  },
+  "debug": false,
+  "databases": {
+    "postgres": {
+      "host": "localhost",
+      "user": "aprian1337",
+      "password": "root123",
+      "dbname": "thukul",
+      "port": "5432",
+      "sslmode": "disable",
+      "timezone": "Asia/Jakarta"
+    },
+    "mongodb": {
+      "host": "localhost",
+      "port": "27017",
+      "username": "",
+      "password": ""
+    }
+  },
+  "context": {
+    "timeout": 2
+  },
+  "server": {
+    "address": {
+      "host": "localhost",
+      "port": "1231"
+    }
+  }
+}
