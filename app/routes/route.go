@@ -15,10 +15,17 @@ type ControllerList struct {
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1 := e.Group("api/v1/")
-	v1.GET("users", cl.UserController.GetUsersController)
-	v1.POST("users", cl.UserController.CreateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
+	//AUTH
 	v1.POST("auth/login", cl.UserController.LoginUserController)
 
+	//USERS
+	v1.GET("users", cl.UserController.GetUsersController)
+	v1.GET("users/:id", cl.UserController.GetDetailUserController)
+	v1.POST("users", cl.UserController.CreateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.DELETE("users/:id", cl.UserController.DeleteUserController)
+	v1.PUT("users/:id", cl.UserController.UpdateUserController)
+
+	//SALARIES
 	v1.GET("salaries", cl.SalaryController.GetSalariesController)
 	v1.GET("salaries/:id", cl.SalaryController.GetSalaryByIdController)
 	v1.POST("salaries", cl.SalaryController.CreateSalaryController)

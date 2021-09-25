@@ -16,12 +16,6 @@ func NewPostgresSalariesRepository(conn *gorm.DB) *PostgresSalariesRepository {
 	}
 }
 
-//GetList(ctx context.Context, search string) ([]Domain, error)
-//GetById(ctx context.Context, id uint) (Domain, error)
-//Create(ctx context.Context, domain Domain) (Domain, error)
-//Update(ctx context.Context, domain Domain) (Domain, error)
-//Delete(ctx context.Context, id uint) error
-
 func (repo *PostgresSalariesRepository) GetList(ctx context.Context, search string) ([]salaries.Domain, error) {
 	var data []Salaries
 	err := repo.ConnPostgres.Find(&data)

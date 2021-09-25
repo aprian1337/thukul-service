@@ -7,6 +7,7 @@ import (
 )
 
 type Salaries struct {
+	gorm.Model
 	ID        uint `gorm:"primaryKey"`
 	Minimal   float64
 	Maximal   float64

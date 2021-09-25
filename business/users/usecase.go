@@ -3,6 +3,7 @@ package users
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	businesses "aprian1337/thukul-service/business"
+	"aprian1337/thukul-service/helpers"
 	"aprian1337/thukul-service/utilities"
 	"aprian1337/thukul-service/utilities/constants"
 	"context"
@@ -38,11 +39,19 @@ func (uc *UserUsecase) GetById(ctx context.Context, id uint) (Domain, error) {
 	if err != nil {
 		return Domain{}, err
 	}
+	if user.ID == 0 {
+		return Domain{}, businesses.ErrIDNotFound
+	}
 	return user, nil
 }
+
 func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, error) {
 	if domain.Email == "" {
 		return Domain{}, errors.New("email is required")
+	}
+
+	if !helpers.IsEmailValid(domain.Email) {
+		return Domain{}, errors.New("email is not valid")
 	}
 
 	if domain.Password == "" {
@@ -89,4 +98,36 @@ func (uc *UserUsecase) Login(ctx context.Context, email string, password string)
 	}
 
 	return user, token, nil
+}
+
+func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Domain, error) {
+	if domain.Birthday != "" {
+		_, err := time.Parse(constants.BirthdayFormat, domain.Birthday)
+		if err != nil {
+			return Domain{}, businesses.ErrInvalidDate
+		}
+	}
+	if domain.Email == "" {
+		return Domain{}, errors.New("email is required")
+	}
+	if !helpers.IsEmailValid(domain.Email) {
+		return Domain{}, errors.New("email is not valid")
+	}
+	domain.Password, _ = utilities.HashPassword(domain.Password)
+	domain.ID = id
+	user, err := uc.Repo.Update(ctx, domain)
+
+	if err != nil {
+		return Domain{}, err
+	}
+
+	return user, nil
+}
+
+func (uc *UserUsecase) Delete(ctx context.Context, id uint) error {
+	err := uc.Repo.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

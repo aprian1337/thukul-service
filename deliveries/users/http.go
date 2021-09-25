@@ -5,6 +5,7 @@ import (
 	"aprian1337/thukul-service/deliveries"
 	"aprian1337/thukul-service/deliveries/users/requests"
 	"aprian1337/thukul-service/deliveries/users/responses"
+	"aprian1337/thukul-service/helpers"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -75,4 +76,37 @@ func (ctrl *Controller) LoginUserController(c echo.Context) error {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	return deliveries.NewSuccessResponse(c, responses.FromUsersDomainToLogin(login, token))
+}
+
+func (cl *Controller) UpdateUserController(c echo.Context) error {
+	id := c.Param("id")
+	convId, err := helpers.StringToUint(id)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	req := requests.UserRegister{}
+	err = c.Bind(&req)
+	if err != nil {
+		return err
+	}
+	ctx := c.Request().Context()
+	data, err := cl.userUsecase.Update(ctx, req.ToDomain(), convId)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, responses.FromUsersDomain(data))
+}
+
+func (cl *Controller) DeleteUserController(c echo.Context) error {
+	id := c.Param("id")
+	convId, err := helpers.StringToUint(id)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	ctx := c.Request().Context()
+	err = cl.userUsecase.Delete(ctx, convId)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, nil)
 }

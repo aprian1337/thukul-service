@@ -8,6 +8,7 @@ import (
 )
 
 type Users struct {
+	gorm.Model
 	ID        uint `gorm:"primaryKey"`
 	SalaryId  int
 	Salary    salaries.Salaries `gorm:"foreignKey:SalaryId"`
@@ -45,7 +46,7 @@ func (user *Users) ToDomain() users.Domain {
 	}
 }
 
-func FromDomain(domain users.Domain) Users {
+func FromDomain(domain *users.Domain) Users {
 	return Users{
 		ID:        domain.ID,
 		SalaryId:  domain.SalaryId,

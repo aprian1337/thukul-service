@@ -27,6 +27,8 @@ type Usecase interface {
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, register *Domain) (Domain, error)
 	Login(ctx context.Context, email string, password string) (Domain, string, error)
+	Update(ctx context.Context, domain *Domain, id uint) (Domain, error)
+	Delete(ctx context.Context, id uint) error
 }
 
 type Repository interface {
@@ -34,4 +36,6 @@ type Repository interface {
 	GetById(ctx context.Context, id uint) (Domain, error)
 	GetByEmail(ctx context.Context, email string) (Domain, error)
 	Create(ctx context.Context, register *Domain) (Domain, error)
+	Update(ctx context.Context, domain *Domain) (Domain, error)
+	Delete(ctx context.Context, id uint) error
 }

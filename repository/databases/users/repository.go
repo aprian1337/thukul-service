@@ -2,9 +2,8 @@ package users
 
 import (
 	"aprian1337/thukul-service/business/users"
-	"aprian1337/thukul-service/deliveries/users/requests"
-	"aprian1337/thukul-service/utilities"
 	"context"
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -64,15 +63,22 @@ func (repo *PostgresUserRepository) GetAll(ctx context.Context) ([]users.Domain,
 	return ToListDomain(data), nil
 }
 
-func (repo *PostgresUserRepository) Login(ctx context.Context, login requests.UserLogin) (users.Domain, error) {
-	var user Users
-	err := repo.ConnPostgres.Find(&user, "email = ? ", login.Email)
+func (repo *PostgresUserRepository) Update(ctx context.Context, domain *users.Domain) (users.Domain, error) {
+	data := FromDomain(domain)
+	if repo.ConnPostgres.Save(&data).Error != nil {
+		return users.Domain{}, errors.New("bad request")
+	}
+	return data.ToDomain(), nil
+}
+
+func (repo *PostgresUserRepository) Delete(ctx context.Context, id uint) error {
+	user := Users{}
+	err := repo.ConnPostgres.Delete(&user, id)
 	if err.Error != nil {
-		return users.Domain{}, err.Error
+		return err.Error
 	}
-	check := utilities.CheckPassword(login.Password, user.Password)
-	if check {
-		return user.ToDomain(), nil
+	if err.RowsAffected == 0 {
+		return errors.New("id not found")
 	}
-	return users.Domain{}, nil
+	return nil
 }
