@@ -3,8 +3,10 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 type ConfigDb struct {
@@ -26,5 +28,14 @@ func (config *ConfigDb) InitDb() *mongo.Client {
 	if err != nil {
 		panic(err)
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Connected to MongoDB!")
+
 	return client
 }

@@ -1,7 +1,7 @@
 {
   "jwt": {
-    "secret" : "dev!@##!211",
-    "expired" : 1
+    "secret": "dev!@##!211",
+    "expired": 1
   },
   "debug": false,
   "databases": {
@@ -18,7 +18,11 @@
       "host": "localhost",
       "port": "27017",
       "username": "",
-      "password": ""
+      "password": "",
+      "dbname": "thukul",
+      "collection": {
+        "logger": "logs"
+      }
     }
   },
   "context": {

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
 	"github.com/labstack/echo/v4"
@@ -8,6 +9,7 @@ import (
 )
 
 type ControllerList struct {
+	MiddlewareConfig middlewares.MiddlewareConfig
 	JWTMiddleware    middleware.JWTConfig
 	UserController   users.Controller
 	SalaryController salaries.Controller
@@ -15,6 +17,7 @@ type ControllerList struct {
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1 := e.Group("api/v1/")
+	cl.MiddlewareConfig.Start(e)
 	//AUTH
 	v1.POST("auth/login", cl.UserController.LoginUserController)
 

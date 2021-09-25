@@ -54,8 +54,8 @@ func main() {
 	}
 
 	mongoConfig := mongodb.ConfigDb{
-		DbHost: viper.GetString(`databases.mongodbb.host`),
-		DbPort: viper.GetString(`databases.mongodbb.port`),
+		DbHost: viper.GetString(`databases.mongodb.host`),
+		DbPort: viper.GetString(`databases.mongodb.port`),
 	}
 
 	configJWT := middlewares.ConfigJWT{
@@ -64,7 +64,17 @@ func main() {
 	}
 
 	connPostgres := postgresConfig.InitialDb(viper.GetBool(`debug`))
-	mongoConfig.InitDb()
+
+	//MONGO
+	logCol := middlewares.InitCollection(struct {
+		DbName     string
+		Collection string
+	}{
+		DbName:     viper.GetString(`databases.mongodb.dbname`),
+		Collection: viper.GetString(`databases.mongodb.collection.logger`),
+	})
+	initMongo := mongoConfig.InitDb()
+	middlewareConf := middlewares.InitConfig(initMongo, logCol)
 
 	DbMigrate(connPostgres)
 	e := echo.New()
@@ -79,6 +89,7 @@ func main() {
 	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
 
 	routesInit := routes.ControllerList{
+		MiddlewareConfig: *middlewareConf,
 		UserController:   *userDelivery,
 		SalaryController: *salaryDelivery,
 		JWTMiddleware:    configJWT.Init(),

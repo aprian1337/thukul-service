@@ -27,14 +27,13 @@ func (config *ConfigDb) InitialDb(debug bool) *gorm.DB {
 		config.DbSslMode,
 		config.DbTimezone,
 	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if debug {
 		db.Logger = logger.Default.LogMode(logger.Info)
 	}
 	if err != nil {
 		panic(err.Error())
 	}
+	fmt.Println("Connected to Postgres!")
 	return db
 }
