@@ -1,3 +1,3 @@
 package constants
 
-const BirthdayFormat = "2006-01-01"
+const BirthdayFormat = "2006-1-1"

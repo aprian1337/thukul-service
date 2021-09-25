@@ -2,7 +2,6 @@ package requests
 
 import (
 	"aprian1337/thukul-service/business/users"
-	"time"
 )
 
 type UserRegister struct {
@@ -18,10 +17,6 @@ type UserRegister struct {
 }
 
 func (ur *UserRegister) ToDomain() *users.Domain {
-	birthday, errTime := time.Parse("2006-01-02", ur.Birthday)
-	if errTime != nil {
-		panic(errTime)
-	}
 	return &users.Domain{
 		SalaryId: ur.SalaryId,
 		Name:     ur.Name,
@@ -29,7 +24,7 @@ func (ur *UserRegister) ToDomain() *users.Domain {
 		Email:    ur.Email,
 		Phone:    ur.Phone,
 		Gender:   ur.Gender,
-		Birthday: birthday,
+		Birthday: ur.Birthday,
 		Address:  ur.Address,
 		Company:  ur.Company,
 	}

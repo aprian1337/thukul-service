@@ -7,19 +7,20 @@ import (
 	"aprian1337/thukul-service/deliveries/users/responses"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
-type UserController struct {
+type Controller struct {
 	userUsecase users.Usecase
 }
 
-func NewUserController(uc users.Usecase) *UserController {
-	return &UserController{
+func NewUserController(uc users.Usecase) *Controller {
+	return &Controller{
 		userUsecase: uc,
 	}
 }
 
-func (ctrl *UserController) GetUsersController(c echo.Context) error {
+func (ctrl *Controller) GetUsersController(c echo.Context) error {
 	ctxNative := c.Request().Context()
 	data, err := ctrl.userUsecase.GetAll(ctxNative)
 	if err != nil {
@@ -28,16 +29,21 @@ func (ctrl *UserController) GetUsersController(c echo.Context) error {
 	return deliveries.NewSuccessResponse(c, responses.FromUsersListDomain(data))
 }
 
-func (ctrl *UserController) GetDetailUserController(c echo.Context, id uint) error {
+func (ctrl *Controller) GetDetailUserController(c echo.Context) error {
 	ctxNative := c.Request().Context()
-	data, err := ctrl.userUsecase.GetById(ctxNative, id)
+	id := c.Param("id")
+	convInt, errConvInt := strconv.Atoi(id)
+	if errConvInt != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, errConvInt)
+	}
+	data, err := ctrl.userUsecase.GetById(ctxNative, uint(convInt))
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	return deliveries.NewSuccessResponse(c, responses.FromUsersDomain(data))
 }
 
-func (ctrl *UserController) CreateUserController(c echo.Context) error {
+func (ctrl *Controller) CreateUserController(c echo.Context) error {
 	request := requests.UserRegister{}
 	var err error
 	err = c.Bind(&request)
@@ -53,7 +59,7 @@ func (ctrl *UserController) CreateUserController(c echo.Context) error {
 	return deliveries.NewSuccessResponse(c, responses.FromUsersDomain(data))
 }
 
-func (ctrl *UserController) LoginUserController(c echo.Context) error {
+func (ctrl *Controller) LoginUserController(c echo.Context) error {
 	var login users.Domain
 	var err error
 	var token string

@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/deliveries"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -24,7 +25,7 @@ func (jwtConf *ConfigJWT) Init() middleware.JWTConfig {
 		Claims:     &JWTCustomClaims{},
 		SigningKey: []byte(jwtConf.SecretJWT),
 		ErrorHandlerWithContext: func(e error, c echo.Context) error {
-			return deliveries.NewErrorResponse(c, http.StatusForbidden, e)
+			return deliveries.NewErrorResponse(c, http.StatusBadRequest, businesses.ErrInvalidTokenCredential)
 		},
 	}
 }
@@ -43,17 +44,7 @@ func (jwtConf *ConfigJWT) GenerateTokenJWT(id uint) (string, error) {
 	return token, nil
 }
 
-//
-//func GetClaimsUserId(c echo.Context) (int, error) {
-//	log.Printf("CONTEXT %+v", c)
-//	user := c.Get("user")
-//	if user != nil {
-//		userJwt := user.(*jwt.Token)
-//		if userJwt.Valid {
-//			claims := userJwt.Claims.(jwt.MapClaims)
-//			userId := claims["user_id"].(float64)
-//			return int(userId), nil
-//		}
-//	}
-//	return 0, errors.New("Failed Create JWT")
-//}
+func GetClaimUser(c echo.Context) *JWTCustomClaims {
+	user := c.Get("user").(*jwt.Token)
+	return user.Claims.(*JWTCustomClaims)
+}

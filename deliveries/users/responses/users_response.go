@@ -2,7 +2,6 @@ package responses
 
 import (
 	"aprian1337/thukul-service/business/users"
-	"aprian1337/thukul-service/helpers"
 	"aprian1337/thukul-service/repository/databases/salaries"
 )
 
@@ -35,7 +34,7 @@ func FromUsersDomain(domain users.Domain) UsersResponse {
 		Email:    domain.Email,
 		Phone:    domain.Phone,
 		Gender:   domain.Gender,
-		Birthday: helpers.DateTimeToString(domain.Birthday),
+		Birthday: domain.Birthday,
 		Address:  domain.Address,
 		Company:  domain.Company,
 		IsValid:  domain.IsValid,
@@ -59,7 +58,7 @@ func FromUsersDomainToLogin(domain users.Domain, token string) LoginResponse {
 		Email:    domain.Email,
 		Phone:    domain.Phone,
 		Gender:   domain.Gender,
-		Birthday: helpers.DateTimeToString(domain.Birthday),
+		Birthday: domain.Birthday,
 		Address:  domain.Address,
 		Company:  domain.Company,
 		IsValid:  domain.IsValid,

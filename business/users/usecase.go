@@ -4,6 +4,7 @@ import (
 	"aprian1337/thukul-service/app/middlewares"
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/utilities"
+	"aprian1337/thukul-service/utilities/constants"
 	"context"
 	"errors"
 	"log"
@@ -46,6 +47,11 @@ func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, erro
 
 	if domain.Password == "" {
 		return Domain{}, errors.New("password is required")
+	}
+
+	_, err := time.Parse(constants.BirthdayFormat, domain.Birthday)
+	if err != nil {
+		return Domain{}, businesses.ErrInvalidDate
 	}
 
 	domain.Password, _ = utilities.HashPassword(domain.Password)

@@ -15,10 +15,10 @@ type Users struct {
 	Password  string
 	IsAdmin   int `gorm:"type:smallint; default:0"`
 	Email     string
-	Phone     string    `gorm:"size:18"`
-	Gender    string    `gorm:"size:8"`
-	Birthday  time.Time `gorm:"type:date"`
-	Address   string    `gorm:"type:text"`
+	Phone     string `gorm:"size:18"`
+	Gender    string `gorm:"size:8"`
+	Birthday  string `gorm:"type:date"`
+	Address   string `gorm:"type:text"`
 	Company   string
 	IsValid   int            `gorm:"type:smallint; default:0"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"`

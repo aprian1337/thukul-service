@@ -14,7 +14,7 @@ type Domain struct {
 	Email     string
 	Phone     string
 	Gender    string
-	Birthday  time.Time
+	Birthday  string
 	Address   string
 	Company   string
 	IsValid   int
