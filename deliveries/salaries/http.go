@@ -39,8 +39,8 @@ func (ctrl *Controller) GetSalaryByIdController(c echo.Context) error {
 	}
 	ctx := c.Request().Context()
 
-	data, err2 := ctrl.SalaryUsecase.GetById(ctx, uint(convInt))
-	if err2 != nil {
+	data, err := ctrl.SalaryUsecase.GetById(ctx, uint(convInt))
+	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	return deliveries.NewSuccessResponse(c, responses.FromDomain(data))

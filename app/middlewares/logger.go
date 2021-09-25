@@ -60,7 +60,7 @@ func (mc *MiddlewareConfig) Start(e *echo.Echo) {
 			defer cancel()
 			_, err := collection.InsertOne(ctx, logs)
 			if err != nil {
-				panic(err)
+				panic("Mongo Error " + err.Error())
 			}
 		},
 	}))
