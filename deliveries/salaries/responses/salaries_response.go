@@ -16,8 +16,8 @@ type SalariesResponse struct {
 func FromDomain(domain salaries.Domain) SalariesResponse {
 	return SalariesResponse{
 		ID:        domain.ID,
-		Maximal:   domain.Maximal,
 		Minimal:   domain.Minimal,
+		Maximal:   domain.Maximal,
 		CreatedAt: domain.CreatedAt,
 		UpdatedAt: domain.UpdatedAt,
 	}

@@ -5,6 +5,7 @@ import (
 	"aprian1337/thukul-service/deliveries"
 	"aprian1337/thukul-service/deliveries/salaries/requests"
 	"aprian1337/thukul-service/deliveries/salaries/responses"
+	"aprian1337/thukul-service/helpers"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -46,13 +47,43 @@ func (ctrl *Controller) GetSalaryByIdController(c echo.Context) error {
 }
 
 func (ctrl *Controller) UpdateSalaryController(c echo.Context) error {
-	var request requests.SalariesRequest
+	request := requests.SalariesRequest{}
 	err := c.Bind(&request)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	ctx := c.Request().Context()
 	data, err := ctrl.SalaryUsecase.Update(ctx, request.ToDomain())
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, responses.FromDomain(data))
+}
+
+func (ctrl *Controller) DestroySalaryController(c echo.Context) error {
+	id := c.Param("id")
+	idUint, err := helpers.StringToUint(id)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	ctx := c.Request().Context()
+	err = ctrl.SalaryUsecase.Delete(ctx, idUint)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, responses.SalariesResponse{
+		ID: idUint,
+	})
+}
+
+func (ctrl *Controller) CreateSalaryController(c echo.Context) error {
+	request := requests.SalariesRequest{}
+	err := c.Bind(&request)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	ctx := c.Request().Context()
+	data, err := ctrl.SalaryUsecase.Create(ctx, request.ToDomain())
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}

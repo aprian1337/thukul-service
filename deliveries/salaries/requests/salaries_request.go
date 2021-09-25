@@ -5,14 +5,12 @@ import (
 )
 
 type SalariesRequest struct {
-	ID      uint    `json:"id"`
 	Minimal float64 `json:"minimal"`
 	Maximal float64 `json:"maximal"`
 }
 
 func (s *SalariesRequest) ToDomain() salaries.Domain {
 	return salaries.Domain{
-		ID:      s.ID,
 		Minimal: s.Minimal,
 		Maximal: s.Maximal,
 	}

@@ -21,5 +21,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 
 	v1.GET("salaries", cl.SalaryController.GetSalariesController)
 	v1.GET("salaries/:id", cl.SalaryController.GetSalaryByIdController)
+	v1.POST("salaries", cl.SalaryController.CreateSalaryController)
 	v1.PUT("salaries/:id", cl.SalaryController.UpdateSalaryController)
+	v1.DELETE("salaries/:id", cl.SalaryController.DestroySalaryController)
 }

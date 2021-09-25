@@ -41,10 +41,10 @@ func (su *SalaryUsecase) Create(ctx context.Context, domain Domain) (Domain, err
 	return salaries, nil
 }
 func (su *SalaryUsecase) Update(ctx context.Context, domain Domain) (Domain, error) {
-	salaries, err := su.Repo.Update(ctx, domain)
 	if helpers.IsZero(domain.Minimal) || helpers.IsZero(domain.Maximal) {
 		return Domain{}, businesses.ErrBadRequest
 	}
+	salaries, err := su.Repo.Update(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}
