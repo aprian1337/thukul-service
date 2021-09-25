@@ -18,22 +18,6 @@ type LogCollection struct {
 	Collection string
 }
 
-type Response struct {
-	Time         time.Time `json:"time"`
-	ID           string    `json:"id"`
-	RemoteIP     string    `json:"remote_ip"`
-	Host         string    `json:"host"`
-	Method       string    `json:"method"`
-	URI          string    `json:"uri"`
-	UserAgent    string    `json:"user_agent"`
-	Status       int       `json:"status"`
-	Error        string    `json:"error"`
-	Latency      int       `json:"latency"`
-	LatencyHuman string    `json:"latency_human"`
-	BytesIn      int       `json:"bytes_in"`
-	BytesOut     int       `json:"bytes_out"`
-}
-
 type Logger struct {
 	Uri      string
 	Method   string
