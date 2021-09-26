@@ -17,5 +17,6 @@ var (
 	ErrInvalidAuthentication    = errors.New("authentication failed: invalid user credentials")
 	ErrInvalidTokenCredential   = errors.New("token not found or expired")
 	ErrBadRequest               = errors.New("bad requests")
+	ErrNothingDestroy           = errors.New("no data found to delete")
 	ErrInsufficientPermission   = errors.New("Insufficient Permission")
 )

@@ -4,7 +4,6 @@ import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/helpers"
 	"context"
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -47,7 +46,6 @@ func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, err
 	if domain.UserId == 0 || domain.Name == "" {
 		return Domain{}, businesses.ErrBadRequest
 	}
-	domain.TotalNominal = 0
 	pockets, err := pu.Repo.Create(ctx, domain)
 	if err != nil {
 		return Domain{}, err
@@ -64,9 +62,12 @@ func (pu *PocketUsecase) Update(ctx context.Context, id int, domain Domain) (Dom
 }
 
 func (pu *PocketUsecase) Delete(ctx context.Context, id int) error {
-	err := pu.Repo.Delete(ctx, id)
+	rowsAffected, err := pu.Repo.Delete(ctx, id)
 	if err != nil {
 		return err
+	}
+	if rowsAffected == 0 {
+		return businesses.ErrNothingDestroy
 	}
 	return nil
 }

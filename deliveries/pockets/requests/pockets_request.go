@@ -5,15 +5,13 @@ import (
 )
 
 type PocketsRequest struct {
-	UserId       int     `json:"user_id"`
-	Name         string  `json:"name"`
-	TotalNominal float64 `json:"total_nominal"`
+	UserId int    `json:"user_id"`
+	Name   string `json:"name"`
 }
 
 func (s *PocketsRequest) ToDomain() pockets.Domain {
 	return pockets.Domain{
-		UserId:       s.UserId,
-		Name:         s.Name,
-		TotalNominal: s.TotalNominal,
+		UserId: s.UserId,
+		Name:   s.Name,
 	}
 }

@@ -16,7 +16,7 @@ func NewPostgresSalariesRepository(conn *gorm.DB) *PostgresSalariesRepository {
 	}
 }
 
-func (repo *PostgresSalariesRepository) GetList(ctx context.Context, search string) ([]salaries.Domain, error) {
+func (repo *PostgresSalariesRepository) GetList(_ context.Context, search string) ([]salaries.Domain, error) {
 	var data []Salaries
 	err := repo.ConnPostgres.Find(&data)
 	if err.Error != nil {
@@ -25,7 +25,7 @@ func (repo *PostgresSalariesRepository) GetList(ctx context.Context, search stri
 	return ToListDomain(data), nil
 }
 
-func (repo *PostgresSalariesRepository) GetById(ctx context.Context, id uint) (salaries.Domain, error) {
+func (repo *PostgresSalariesRepository) GetById(_ context.Context, id uint) (salaries.Domain, error) {
 	var data Salaries
 	err := repo.ConnPostgres.First(&data, "id=?", id)
 	if err.Error != nil {
@@ -34,7 +34,7 @@ func (repo *PostgresSalariesRepository) GetById(ctx context.Context, id uint) (s
 	return data.ToDomain(), nil
 }
 
-func (repo *PostgresSalariesRepository) Create(ctx context.Context, domain salaries.Domain) (salaries.Domain, error) {
+func (repo *PostgresSalariesRepository) Create(_ context.Context, domain salaries.Domain) (salaries.Domain, error) {
 	salary := FromDomain(domain)
 	err := repo.ConnPostgres.Create(&salary)
 	if err.Error != nil {
@@ -42,7 +42,7 @@ func (repo *PostgresSalariesRepository) Create(ctx context.Context, domain salar
 	}
 	return salary.ToDomain(), nil
 }
-func (repo *PostgresSalariesRepository) Update(ctx context.Context, domain salaries.Domain) (salaries.Domain, error) {
+func (repo *PostgresSalariesRepository) Update(_ context.Context, domain salaries.Domain) (salaries.Domain, error) {
 	salary := FromDomain(domain)
 	err := repo.ConnPostgres.First(&salary)
 	if err.Error != nil {
@@ -54,11 +54,11 @@ func (repo *PostgresSalariesRepository) Update(ctx context.Context, domain salar
 	return salary.ToDomain(), nil
 }
 
-func (repo *PostgresSalariesRepository) Delete(ctx context.Context, id uint) error {
+func (repo *PostgresSalariesRepository) Delete(_ context.Context, id uint) (int64, error) {
 	salary := Salaries{}
 	err := repo.ConnPostgres.Delete(&salary, id)
 	if err.Error != nil {
-		return err.Error
+		return 0, err.Error
 	}
-	return nil
+	return err.RowsAffected, nil
 }

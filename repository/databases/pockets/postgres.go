@@ -63,15 +63,14 @@ func (repo *PostgresPocketsRepository) Update(_ context.Context, domain pockets.
 		return pockets.Domain{}, err.Error
 	}
 	data.Name = dataTemp.Name
-	data.TotalNominal = dataTemp.TotalNominal
 	repo.ConnPostgres.Save(&data)
 	return data.ToDomain(), nil
 }
-func (repo *PostgresPocketsRepository) Delete(_ context.Context, id int) error {
+func (repo *PostgresPocketsRepository) Delete(_ context.Context, id int) (int64, error) {
 	data := Pockets{}
 	err := repo.ConnPostgres.Delete(&data, id)
 	if err.Error != nil {
-		return err.Error
+		return 0, err.Error
 	}
-	return nil
+	return err.RowsAffected, nil
 }
