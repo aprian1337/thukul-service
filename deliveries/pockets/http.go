@@ -1,94 +1,93 @@
-package salaries
+package pockets
 
 import (
-	"aprian1337/thukul-service/business/salaries"
+	"aprian1337/thukul-service/business/pockets"
 	"aprian1337/thukul-service/deliveries"
-	"aprian1337/thukul-service/deliveries/salaries/requests"
-	"aprian1337/thukul-service/deliveries/salaries/responses"
-	"aprian1337/thukul-service/helpers"
+	"aprian1337/thukul-service/deliveries/pockets/requests"
+	"aprian1337/thukul-service/deliveries/pockets/responses"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 )
 
 type Controller struct {
-	SalaryUsecase salaries.Usecase
+	PocketsUsecase pockets.Usecase
 }
 
-func NewSalariesController(uc salaries.Usecase) *Controller {
+func NewSalariesController(uc pockets.Usecase) *Controller {
 	return &Controller{
-		SalaryUsecase: uc,
+		PocketsUsecase: uc,
 	}
 }
 
-func (ctrl *Controller) GetSalariesController(c echo.Context) error {
+func (ctrl *Controller) Get(c echo.Context) error {
 	ctx := c.Request().Context()
-	search := c.QueryParam("q")
-	data, err := ctrl.SalaryUsecase.GetList(ctx, search)
+	id := c.QueryParam("id")
+	data, err := ctrl.PocketsUsecase.GetList(ctx, id)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	return deliveries.NewSuccessResponse(c, responses.FromListDomain(data))
 }
 
-func (ctrl *Controller) GetSalaryByIdController(c echo.Context) error {
+func (ctrl *Controller) GetById(c echo.Context) error {
 	id := c.Param("id")
-	convInt, err := strconv.Atoi(id)
+	convId, err := strconv.Atoi(id)
 	if err != nil {
-		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	ctx := c.Request().Context()
 
-	data, err := ctrl.SalaryUsecase.GetById(ctx, uint(convInt))
+	data, err := ctrl.PocketsUsecase.GetById(ctx, convId)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	return deliveries.NewSuccessResponse(c, responses.FromDomain(data))
 }
 
-func (ctrl *Controller) UpdateSalaryController(c echo.Context) error {
+func (ctrl *Controller) Update(c echo.Context) error {
 	id := c.Param("id")
-	request := requests.SalariesRequest{}
+	request := requests.PocketsRequest{}
 	err := c.Bind(&request)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	ctx := c.Request().Context()
-	convId, err := helpers.StringToUint(id)
+	convId, err := strconv.Atoi(id)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
-	data, err := ctrl.SalaryUsecase.Update(ctx, convId, request.ToDomain())
+	data, err := ctrl.PocketsUsecase.Update(ctx, convId, request.ToDomain())
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
 	return deliveries.NewSuccessResponse(c, responses.FromDomain(data))
 }
 
-func (ctrl *Controller) DestroySalaryController(c echo.Context) error {
+func (ctrl *Controller) Destroy(c echo.Context) error {
 	id := c.Param("id")
-	idUint, err := helpers.StringToUint(id)
+	convId, err := strconv.Atoi(id)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	ctx := c.Request().Context()
-	err = ctrl.SalaryUsecase.Delete(ctx, idUint)
+	err = ctrl.PocketsUsecase.Delete(ctx, convId)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, responses.SalariesResponse{
-		ID: idUint,
+	return deliveries.NewSuccessResponse(c, responses.PocketsResponse{
+		ID: convId,
 	})
 }
 
-func (ctrl *Controller) CreateSalaryController(c echo.Context) error {
-	request := requests.SalariesRequest{}
+func (ctrl *Controller) Create(c echo.Context) error {
+	request := requests.PocketsRequest{}
 	err := c.Bind(&request)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	ctx := c.Request().Context()
-	data, err := ctrl.SalaryUsecase.Create(ctx, request.ToDomain())
+	data, err := ctrl.PocketsUsecase.Create(ctx, request.ToDomain())
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}

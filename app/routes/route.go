@@ -2,6 +2,7 @@ package routes
 
 import (
 	"aprian1337/thukul-service/app/middlewares"
+	"aprian1337/thukul-service/deliveries/pockets"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
 	"github.com/labstack/echo/v4"
@@ -13,6 +14,7 @@ type ControllerList struct {
 	JWTMiddleware    middleware.JWTConfig
 	UserController   users.Controller
 	SalaryController salaries.Controller
+	PocketController pockets.Controller
 }
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
@@ -34,4 +36,11 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.POST("salaries", cl.SalaryController.CreateSalaryController)
 	v1.PUT("salaries/:id", cl.SalaryController.UpdateSalaryController)
 	v1.DELETE("salaries/:id", cl.SalaryController.DestroySalaryController)
+
+	//POCKETS
+	v1.GET("pockets", cl.PocketController.Get)
+	v1.GET("pockets/:id", cl.PocketController.GetById)
+	v1.POST("pockets", cl.PocketController.Create)
+	v1.PUT("pockets/:id", cl.PocketController.Update)
+	v1.DELETE("pockets/:id", cl.PocketController.Destroy)
 }

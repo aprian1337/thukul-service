@@ -66,7 +66,7 @@ func (repo *PostgresUserRepository) GetAll(ctx context.Context) ([]users.Domain,
 func (repo *PostgresUserRepository) Update(ctx context.Context, domain *users.Domain) (users.Domain, error) {
 	data := FromDomain(domain)
 	if repo.ConnPostgres.Save(&data).Error != nil {
-		return users.Domain{}, errors.New("bad request")
+		return users.Domain{}, errors.New("bad requests")
 	}
 	return data.ToDomain(), nil
 }

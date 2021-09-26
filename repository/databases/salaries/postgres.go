@@ -35,7 +35,7 @@ func (repo *PostgresSalariesRepository) GetById(ctx context.Context, id uint) (s
 }
 
 func (repo *PostgresSalariesRepository) Create(ctx context.Context, domain salaries.Domain) (salaries.Domain, error) {
-	salary := DomainToSalaries(domain)
+	salary := FromDomain(domain)
 	err := repo.ConnPostgres.Create(&salary)
 	if err.Error != nil {
 		return salaries.Domain{}, err.Error
@@ -43,7 +43,7 @@ func (repo *PostgresSalariesRepository) Create(ctx context.Context, domain salar
 	return salary.ToDomain(), nil
 }
 func (repo *PostgresSalariesRepository) Update(ctx context.Context, domain salaries.Domain) (salaries.Domain, error) {
-	salary := DomainToSalaries(domain)
+	salary := FromDomain(domain)
 	err := repo.ConnPostgres.First(&salary)
 	if err.Error != nil {
 		return salaries.Domain{}, err.Error

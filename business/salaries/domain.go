@@ -17,7 +17,7 @@ type Usecase interface {
 	GetList(ctx context.Context, search string) ([]Domain, error)
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
-	Update(ctx context.Context, domain Domain) (Domain, error)
+	Update(ctx context.Context, id uint, domain Domain) (Domain, error)
 	Delete(ctx context.Context, id uint) error
 }
 

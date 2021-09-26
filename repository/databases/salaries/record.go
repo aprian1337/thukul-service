@@ -16,7 +16,7 @@ type Salaries struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-func DomainToSalaries(domain salaries.Domain) Salaries {
+func FromDomain(domain salaries.Domain) Salaries {
 	return Salaries{
 		ID:      domain.ID,
 		Minimal: domain.Minimal,
