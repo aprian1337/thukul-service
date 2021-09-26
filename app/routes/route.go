@@ -1,0 +1,46 @@
+package routes
+
+import (
+	"aprian1337/thukul-service/app/middlewares"
+	"aprian1337/thukul-service/deliveries/pockets"
+	"aprian1337/thukul-service/deliveries/salaries"
+	"aprian1337/thukul-service/deliveries/users"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+)
+
+type ControllerList struct {
+	MiddlewareConfig middlewares.MiddlewareConfig
+	JWTMiddleware    middleware.JWTConfig
+	UserController   users.Controller
+	SalaryController salaries.Controller
+	PocketController pockets.Controller
+}
+
+func (cl *ControllerList) RouteUsers(e *echo.Echo) {
+	v1 := e.Group("api/v1/")
+	cl.MiddlewareConfig.Start(e)
+	//AUTH
+	v1.POST("auth/login", cl.UserController.LoginUserController)
+
+	//USERS
+	v1.GET("users", cl.UserController.GetUsersController)
+	v1.GET("users/:id", cl.UserController.GetDetailUserController)
+	v1.POST("users", cl.UserController.CreateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.DELETE("users/:id", cl.UserController.DeleteUserController)
+	v1.PUT("users/:id", cl.UserController.UpdateUserController)
+
+	//SALARIES
+	v1.GET("salaries", cl.SalaryController.GetSalariesController)
+	v1.GET("salaries/:id", cl.SalaryController.GetSalaryByIdController)
+	v1.POST("salaries", cl.SalaryController.CreateSalaryController)
+	v1.PUT("salaries/:id", cl.SalaryController.UpdateSalaryController)
+	v1.DELETE("salaries/:id", cl.SalaryController.DestroySalaryController)
+
+	//POCKETS
+	v1.GET("pockets", cl.PocketController.Get)
+	v1.GET("pockets/:id", cl.PocketController.GetById)
+	v1.POST("pockets", cl.PocketController.Create)
+	v1.PUT("pockets/:id", cl.PocketController.Update)
+	v1.DELETE("pockets/:id", cl.PocketController.Destroy)
+}

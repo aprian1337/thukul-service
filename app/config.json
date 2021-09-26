@@ -1,0 +1,37 @@
+{
+  "jwt": {
+    "secret": "dev!@##!211",
+    "expired": 1
+  },
+  "debug": true,
+  "databases": {
+    "postgres": {
+      "host": "localhost",
+      "user": "aprian1337",
+      "password": "root123",
+      "dbname": "thukul",
+      "port": "5432",
+      "sslmode": "disable",
+      "timezone": "Asia/Jakarta"
+    },
+    "mongodb": {
+      "host": "localhost",
+      "port": "27017",
+      "username": "",
+      "password": "",
+      "dbname": "thukul",
+      "collection": {
+        "logger": "logs"
+      }
+    }
+  },
+  "context": {
+    "timeout": 2
+  },
+  "server": {
+    "address": {
+      "host": "0.0.0.0",
+      "port": "1231"
+    }
+  }
+}
