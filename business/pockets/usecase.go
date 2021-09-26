@@ -43,6 +43,10 @@ func (pu *PocketUsecase) GetById(ctx context.Context, id int) (Domain, error) {
 	return pockets, nil
 }
 func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, error) {
+	if domain.UserId == 0 || domain.Name == "" {
+		return Domain{}, businesses.ErrBadRequest
+	}
+	domain.TotalNominal = 0
 	pockets, err := pu.Repo.Create(ctx, domain)
 	if err != nil {
 		return Domain{}, err

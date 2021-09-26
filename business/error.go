@@ -11,6 +11,7 @@ var (
 	ErrCategoryNotFound         = errors.New("category not found")
 	ErrDuplicateData            = errors.New("duplicate data")
 	ErrInvalidId                = errors.New("invalid id, id not numeric")
+	ErrUserIdNotFound           = errors.New("user id not found")
 	ErrInvalidDate              = errors.New("invalid date, date must be formed : yyyy-mm-dd")
 	ErrUsernamePasswordNotFound = errors.New("username or password empty")
 	ErrInvalidAuthentication    = errors.New("authentication failed: invalid user credentials")

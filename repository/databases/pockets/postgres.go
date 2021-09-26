@@ -1,7 +1,9 @@
 package pockets
 
 import (
+	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/pockets"
+	"aprian1337/thukul-service/repository/databases/users"
 	"context"
 	"gorm.io/gorm"
 )
@@ -16,7 +18,7 @@ func NewPostgresPocketsRepository(conn *gorm.DB) *PostgresPocketsRepository {
 	}
 }
 
-func (repo *PostgresPocketsRepository) GetList(ctx context.Context, id int) ([]pockets.Domain, error) {
+func (repo *PostgresPocketsRepository) GetList(_ context.Context, id int) ([]pockets.Domain, error) {
 	var data []Pockets
 	if id > 0 {
 		err := repo.ConnPostgres.Find(&data, "user_id=?", id)
@@ -32,7 +34,7 @@ func (repo *PostgresPocketsRepository) GetList(ctx context.Context, id int) ([]p
 
 	return ToListDomain(data), nil
 }
-func (repo *PostgresPocketsRepository) GetById(ctx context.Context, id int) (pockets.Domain, error) {
+func (repo *PostgresPocketsRepository) GetById(_ context.Context, id int) (pockets.Domain, error) {
 	var data Pockets
 	err := repo.ConnPostgres.First(&data, "id=?", id)
 	if err.Error != nil {
@@ -40,15 +42,20 @@ func (repo *PostgresPocketsRepository) GetById(ctx context.Context, id int) (poc
 	}
 	return data.ToDomain(), nil
 }
-func (repo *PostgresPocketsRepository) Create(ctx context.Context, domain pockets.Domain) (pockets.Domain, error) {
+func (repo *PostgresPocketsRepository) Create(_ context.Context, domain pockets.Domain) (pockets.Domain, error) {
 	pocket := FromDomain(domain)
-	err := repo.ConnPostgres.Create(&pocket)
+	var user users.Users
+	err := repo.ConnPostgres.First(&user, "id=?", pocket.UserId)
+	if err.Error != nil {
+		return pockets.Domain{}, businesses.ErrUserIdNotFound
+	}
+	err = repo.ConnPostgres.Create(&pocket)
 	if err.Error != nil {
 		return pockets.Domain{}, err.Error
 	}
 	return pocket.ToDomain(), nil
 }
-func (repo *PostgresPocketsRepository) Update(ctx context.Context, id int, domain pockets.Domain) (pockets.Domain, error) {
+func (repo *PostgresPocketsRepository) Update(_ context.Context, id int, domain pockets.Domain) (pockets.Domain, error) {
 	data := FromDomain(domain)
 	data.ID = id
 	err := repo.ConnPostgres.First(&data)
@@ -58,7 +65,7 @@ func (repo *PostgresPocketsRepository) Update(ctx context.Context, id int, domai
 	repo.ConnPostgres.Save(&data)
 	return data.ToDomain(), nil
 }
-func (repo *PostgresPocketsRepository) Delete(ctx context.Context, id int) error {
+func (repo *PostgresPocketsRepository) Delete(_ context.Context, id int) error {
 	data := Pockets{}
 	err := repo.ConnPostgres.Delete(&data, id)
 	if err.Error != nil {
