@@ -55,13 +55,15 @@ func (repo *PostgresPocketsRepository) Create(_ context.Context, domain pockets.
 	}
 	return pocket.ToDomain(), nil
 }
-func (repo *PostgresPocketsRepository) Update(_ context.Context, id int, domain pockets.Domain) (pockets.Domain, error) {
+func (repo *PostgresPocketsRepository) Update(_ context.Context, domain pockets.Domain) (pockets.Domain, error) {
 	data := FromDomain(domain)
-	data.ID = id
+	dataTemp := FromDomain(domain)
 	err := repo.ConnPostgres.First(&data)
 	if err.Error != nil {
 		return pockets.Domain{}, err.Error
 	}
+	data.Name = dataTemp.Name
+	data.TotalNominal = dataTemp.TotalNominal
 	repo.ConnPostgres.Save(&data)
 	return data.ToDomain(), nil
 }

@@ -4,6 +4,7 @@ import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/helpers"
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -54,7 +55,8 @@ func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, err
 	return pockets, nil
 }
 func (pu *PocketUsecase) Update(ctx context.Context, id int, domain Domain) (Domain, error) {
-	pockets, err := pu.Repo.Update(ctx, id, domain)
+	domain.ID = id
+	pockets, err := pu.Repo.Update(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}

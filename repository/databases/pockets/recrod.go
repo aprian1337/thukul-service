@@ -8,7 +8,6 @@ import (
 )
 
 type Pockets struct {
-	gorm.Model
 	ID           int `gorm:"primaryKey"`
 	UserId       int
 	User         users.Users `gorm:"foreignKey:user_id"`
@@ -16,6 +15,7 @@ type Pockets struct {
 	TotalNominal float64
 	CreatedAt    time.Time `gorm:"autoCreateTime"`
 	UpdatedAt    time.Time `gorm:"autoUpdateTime"`
+	DeletedAt    gorm.DeletedAt
 }
 
 func (data *Pockets) ToDomain() pockets.Domain {
