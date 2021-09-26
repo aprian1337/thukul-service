@@ -16,6 +16,10 @@ import (
 	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
 	_pocketDb "aprian1337/thukul-service/repository/databases/pockets"
 
+	_activityUsecase "aprian1337/thukul-service/business/activities"
+	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
+	_activityDb "aprian1337/thukul-service/repository/databases/activities"
+
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
 	"fmt"
@@ -42,6 +46,7 @@ func DbMigrate(db *gorm.DB) {
 		&_salaryDb.Salaries{},
 		&_usersDb.Users{},
 		&_pocketDb.Pockets{},
+		&_activityDb.Activities{},
 	)
 	if err != nil {
 		panic(err)
@@ -98,12 +103,17 @@ func main() {
 	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, timeoutContext)
 	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
 
+	activityRepository := _activityDb.NewPostgresPocketsRepository(connPostgres)
+	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
+	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
+
 	routesInit := routes.ControllerList{
-		MiddlewareConfig: *middlewareConf,
-		UserController:   *userDelivery,
-		SalaryController: *salaryDelivery,
-		PocketController: *pocketDelivery,
-		JWTMiddleware:    configJWT.Init(),
+		MiddlewareConfig:   *middlewareConf,
+		UserController:     *userDelivery,
+		SalaryController:   *salaryDelivery,
+		PocketController:   *pocketDelivery,
+		ActivityController: *activityDelivery,
+		JWTMiddleware:      configJWT.Init(),
 	}
 
 	routesInit.RouteUsers(e)

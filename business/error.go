@@ -18,5 +18,6 @@ var (
 	ErrInvalidTokenCredential   = errors.New("token not found or expired")
 	ErrBadRequest               = errors.New("bad requests")
 	ErrNothingDestroy           = errors.New("no data found to delete")
+	ErrTypeActivity             = errors.New("type must be only 'income' and 'expense'")
 	ErrInsufficientPermission   = errors.New("Insufficient Permission")
 )

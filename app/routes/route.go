@@ -2,6 +2,7 @@ package routes
 
 import (
 	"aprian1337/thukul-service/app/middlewares"
+	"aprian1337/thukul-service/deliveries/activities"
 	"aprian1337/thukul-service/deliveries/pockets"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
@@ -10,11 +11,12 @@ import (
 )
 
 type ControllerList struct {
-	MiddlewareConfig middlewares.MiddlewareConfig
-	JWTMiddleware    middleware.JWTConfig
-	UserController   users.Controller
-	SalaryController salaries.Controller
-	PocketController pockets.Controller
+	MiddlewareConfig   middlewares.MiddlewareConfig
+	JWTMiddleware      middleware.JWTConfig
+	UserController     users.Controller
+	SalaryController   salaries.Controller
+	PocketController   pockets.Controller
+	ActivityController activities.Controller
 }
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
@@ -43,4 +45,11 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.POST("pockets", cl.PocketController.Create)
 	v1.PUT("pockets/:id", cl.PocketController.Update)
 	v1.DELETE("pockets/:id", cl.PocketController.Destroy)
+
+	//POCKETS
+	v1.GET("pockets/:idPocket/activities", cl.ActivityController.Get)
+	v1.GET("pockets/:idPocket/activities/:id", cl.ActivityController.GetById)
+	v1.POST("pockets/:idPocket/activities", cl.ActivityController.Create)
+	v1.PUT("pockets/:idPocket/activities/:id", cl.ActivityController.Update)
+	v1.DELETE("pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
 }
