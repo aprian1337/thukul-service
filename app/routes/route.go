@@ -58,7 +58,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.PUT("pockets/:idPocket/activities/:id", cl.ActivityController.Update)
 	v1.DELETE("pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
 
-	//POCKETS
+	//WISHLISTS
 
 	v1.GET("users/:userId/wishlists", cl.WishlistController.Get)
 	v1.GET("users/:userId/wishlists/:wishlistId", cl.WishlistController.GetById)
