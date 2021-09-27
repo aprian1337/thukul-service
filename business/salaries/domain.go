@@ -26,5 +26,5 @@ type Repository interface {
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	Update(ctx context.Context, domain Domain) (Domain, error)
-	Delete(ctx context.Context, id uint) error
+	Delete(ctx context.Context, id uint) (int64, error)
 }

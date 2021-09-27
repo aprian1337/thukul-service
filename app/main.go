@@ -3,10 +3,11 @@ package main
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
-
 	_usersUsecase "aprian1337/thukul-service/business/users"
 	_usersDelivery "aprian1337/thukul-service/deliveries/users"
 	_usersDb "aprian1337/thukul-service/repository/databases/users"
+
+	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
 
 	_salaryUsecase "aprian1337/thukul-service/business/salaries"
 	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
@@ -15,6 +16,14 @@ import (
 	_pocketUsecase "aprian1337/thukul-service/business/pockets"
 	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
 	_pocketDb "aprian1337/thukul-service/repository/databases/pockets"
+
+	_activityUsecase "aprian1337/thukul-service/business/activities"
+	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
+	_activityDb "aprian1337/thukul-service/repository/databases/activities"
+
+	_coinUsecase "aprian1337/thukul-service/business/coins"
+	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
+	_coinDb "aprian1337/thukul-service/repository/databases/coins"
 
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
@@ -42,6 +51,8 @@ func DbMigrate(db *gorm.DB) {
 		&_salaryDb.Salaries{},
 		&_usersDb.Users{},
 		&_pocketDb.Pockets{},
+		&_activityDb.Activities{},
+		&_coinDb.Coins{},
 	)
 	if err != nil {
 		panic(err)
@@ -86,6 +97,13 @@ func main() {
 	e := echo.New()
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
+	configMarketRepo := _coinmarketRepo.MarketCapAPI{
+		BaseUrl:        viper.GetString("thirdparties.coinmarketcap.base_url"),
+		ApiKey:         viper.GetString("thirdparties.coinmarketcap.api_key"),
+		EndpointSymbol: viper.GetString("thirdparties.coinmarketcap.endpoint_symbol"),
+	}
+	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
+
 	userRepository := _usersDb.NewPostgresUserRepository(connPostgres)
 	userUsecase := _usersUsecase.NewUserUsecase(userRepository, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
@@ -98,12 +116,22 @@ func main() {
 	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, timeoutContext)
 	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
 
+	activityRepository := _activityDb.NewPostgresPocketsRepository(connPostgres)
+	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
+	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
+
+	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
+	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
+	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
+
 	routesInit := routes.ControllerList{
-		MiddlewareConfig: *middlewareConf,
-		UserController:   *userDelivery,
-		SalaryController: *salaryDelivery,
-		PocketController: *pocketDelivery,
-		JWTMiddleware:    configJWT.Init(),
+		MiddlewareConfig:   *middlewareConf,
+		UserController:     *userDelivery,
+		SalaryController:   *salaryDelivery,
+		PocketController:   *pocketDelivery,
+		ActivityController: *activityDelivery,
+		CoinController:     *coinDelivery,
+		JWTMiddleware:      configJWT.Init(),
 	}
 
 	routesInit.RouteUsers(e)

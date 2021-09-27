@@ -53,9 +53,12 @@ func (su *SalaryUsecase) Update(ctx context.Context, id uint, domain Domain) (Do
 }
 
 func (su *SalaryUsecase) Delete(ctx context.Context, id uint) error {
-	err := su.Repo.Delete(ctx, id)
+	rowAffected, err := su.Repo.Delete(ctx, id)
 	if err != nil {
 		return err
+	}
+	if rowAffected == 0 {
+		return businesses.ErrNothingDestroy
 	}
 	return nil
 }

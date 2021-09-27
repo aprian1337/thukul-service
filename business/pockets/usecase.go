@@ -43,6 +43,9 @@ func (pu *PocketUsecase) GetById(ctx context.Context, id int) (Domain, error) {
 	return pockets, nil
 }
 func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, error) {
+	if domain.UserId == 0 || domain.Name == "" {
+		return Domain{}, businesses.ErrBadRequest
+	}
 	pockets, err := pu.Repo.Create(ctx, domain)
 	if err != nil {
 		return Domain{}, err
@@ -50,7 +53,8 @@ func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, err
 	return pockets, nil
 }
 func (pu *PocketUsecase) Update(ctx context.Context, id int, domain Domain) (Domain, error) {
-	pockets, err := pu.Repo.Update(ctx, id, domain)
+	domain.ID = id
+	pockets, err := pu.Repo.Update(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -58,9 +62,12 @@ func (pu *PocketUsecase) Update(ctx context.Context, id int, domain Domain) (Dom
 }
 
 func (pu *PocketUsecase) Delete(ctx context.Context, id int) error {
-	err := pu.Repo.Delete(ctx, id)
+	rowsAffected, err := pu.Repo.Delete(ctx, id)
 	if err != nil {
 		return err
+	}
+	if rowsAffected == 0 {
+		return businesses.ErrNothingDestroy
 	}
 	return nil
 }
