@@ -3,6 +3,7 @@ package routes
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/deliveries/activities"
+	"aprian1337/thukul-service/deliveries/coins"
 	"aprian1337/thukul-service/deliveries/pockets"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
@@ -17,6 +18,7 @@ type ControllerList struct {
 	SalaryController   salaries.Controller
 	PocketController   pockets.Controller
 	ActivityController activities.Controller
+	CoinController     coins.Controller
 }
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
@@ -52,4 +54,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.POST("pockets/:idPocket/activities", cl.ActivityController.Create)
 	v1.PUT("pockets/:idPocket/activities/:id", cl.ActivityController.Update)
 	v1.DELETE("pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
+
+	//COINS
+	v1.GET("coins", cl.CoinController.GetBySymbol)
 }

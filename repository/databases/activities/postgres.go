@@ -3,7 +3,7 @@ package activities
 import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/activities"
-	"aprian1337/thukul-service/repository/databases"
+	"aprian1337/thukul-service/repository"
 	"aprian1337/thukul-service/repository/databases/pockets"
 	"context"
 	"gorm.io/gorm"
@@ -76,7 +76,7 @@ func (repo *PostgresPocketsRepository) Delete(ctx context.Context, pocketId int,
 		return 0, err.Error
 	}
 	if err.RowsAffected == 0 {
-		return 0, databases.ErrDataNotFound
+		return 0, repository.ErrDataNotFound
 	}
 
 	err = repo.ConnPostgres.Delete(&data, id)

@@ -25,6 +25,13 @@
       }
     }
   },
+  "thirdparties": {
+    "coinmarketcap": {
+      "base_url": "https://pro-api.coinmarketcap.com/v1",
+      "endpoint_symbol": "/cryptocurrency/map?symbol=",
+      "api_key": "00054b12-d501-46bf-b334-d3806d169fbd"
+    }
+  },
   "context": {
     "timeout": 2
   },
