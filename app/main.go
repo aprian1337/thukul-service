@@ -25,6 +25,10 @@ import (
 	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
 	_coinDb "aprian1337/thukul-service/repository/databases/coins"
 
+	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
+	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
+	_wishlistDb "aprian1337/thukul-service/repository/databases/wishlists"
+
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
 	"fmt"
@@ -124,6 +128,10 @@ func main() {
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
 
+	wishlistRepository := _wishlistDb.NewPostgresWishlistRepository(connPostgres)
+	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, timeoutContext)
+	wishlistDelivery := _wishlistDelivery.NewSalariesController(wishlistUsecase)
+
 	routesInit := routes.ControllerList{
 		MiddlewareConfig:   *middlewareConf,
 		UserController:     *userDelivery,
@@ -131,6 +139,7 @@ func main() {
 		PocketController:   *pocketDelivery,
 		ActivityController: *activityDelivery,
 		CoinController:     *coinDelivery,
+		WishlistController: *wishlistDelivery,
 		JWTMiddleware:      configJWT.Init(),
 	}
 
