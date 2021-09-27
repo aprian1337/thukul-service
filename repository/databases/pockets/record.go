@@ -17,6 +17,11 @@ type Pockets struct {
 	DeletedAt gorm.DeletedAt
 }
 
+type Total struct {
+	ID    int
+	Total int64
+}
+
 func (data *Pockets) ToDomain() pockets.Domain {
 	return pockets.Domain{
 		ID:        data.ID,

@@ -93,3 +93,18 @@ func (ctrl *Controller) Create(c echo.Context) error {
 	}
 	return deliveries.NewSuccessResponse(c, responses.FromDomain(data))
 }
+
+func (ctrl *Controller) Total(c echo.Context) error {
+	kind := c.QueryParam("type")
+	id := c.Param("id")
+	convId, err := strconv.Atoi(id)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
+	}
+	ctx := c.Request().Context()
+	data, err := ctrl.PocketsUsecase.GetTotal(ctx, convId, kind)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, data)
+}

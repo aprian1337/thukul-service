@@ -58,8 +58,7 @@ func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, erro
 		return Domain{}, errors.New("password is required")
 	}
 
-	_, err := time.Parse(constants.BirthdayFormat, domain.Birthday)
-	if err != nil {
+	if !helpers.IsDate(domain.Birthday) {
 		return Domain{}, businesses.ErrInvalidDate
 	}
 

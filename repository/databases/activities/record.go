@@ -19,6 +19,11 @@ type Activities struct {
 	DeletedAt gorm.DeletedAt
 }
 
+type Total struct {
+	ID    int
+	Total int64
+}
+
 func (data *Activities) ToDomain() activities.Domain {
 	return activities.Domain{
 		ID:        data.ID,

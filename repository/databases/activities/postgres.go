@@ -37,7 +37,7 @@ func (repo *PostgresPocketsRepository) GetList(ctx context.Context, pocketId int
 
 func (repo *PostgresPocketsRepository) GetById(ctx context.Context, pocketId int, id int) (activities.Domain, error) {
 	var data Activities
-	err := repo.ConnPostgres.First(&data, "id=? AND pocket_id=?", id)
+	err := repo.ConnPostgres.First(&data, "id=? AND pocket_id=?", id, pocketId)
 	if err.Error != nil {
 		return activities.Domain{}, err.Error
 	}
@@ -84,4 +84,14 @@ func (repo *PostgresPocketsRepository) Delete(ctx context.Context, pocketId int,
 		return 0, err.Error
 	}
 	return err.RowsAffected, nil
+}
+
+func (repo *PostgresPocketsRepository) GetTotal(ctx context.Context, id int, kind string) (int64, error) {
+	total := Total{}
+	activity := Activities{}
+	err := repo.ConnPostgres.Model(activity).Select("id, sum(nominal) as total").Where("pocket_id = ?", id).Group("id").Having("type=?", kind).First(&total)
+	if err.Error != nil {
+		return 0, err.Error
+	}
+	return total.Total, nil
 }

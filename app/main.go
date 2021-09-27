@@ -112,13 +112,13 @@ func main() {
 	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
 	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
 
-	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
-	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, timeoutContext)
-	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
-
 	activityRepository := _activityDb.NewPostgresPocketsRepository(connPostgres)
 	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
 	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
+
+	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
+	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityRepository, timeoutContext)
+	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
 
 	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
