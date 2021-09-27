@@ -2,6 +2,7 @@ package pockets
 
 import (
 	businesses "aprian1337/thukul-service/business"
+	"aprian1337/thukul-service/business/activities"
 	"aprian1337/thukul-service/helpers"
 	"context"
 	"strconv"
@@ -10,12 +11,14 @@ import (
 
 type PocketUsecase struct {
 	Repo    Repository
+	RepoAct activities.Repository
 	Timeout time.Duration
 }
 
-func NewPocketUsecase(repo Repository, timeout time.Duration) *PocketUsecase {
+func NewPocketUsecase(repo Repository, repoActivity activities.Repository, timeout time.Duration) *PocketUsecase {
 	return &PocketUsecase{
 		Repo:    repo,
+		RepoAct: repoActivity,
 		Timeout: timeout,
 	}
 }
@@ -70,4 +73,15 @@ func (pu *PocketUsecase) Delete(ctx context.Context, id int) error {
 		return businesses.ErrNothingDestroy
 	}
 	return nil
+}
+
+func (pu *PocketUsecase) GetTotal(ctx context.Context, id int, kind string) (int64, error) {
+	if kind != "income" && kind != "expense" && kind != "profit" {
+		return 0, businesses.ErrBadRequest
+	}
+	total, err := pu.RepoAct.GetTotal(ctx, id, kind)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
 }

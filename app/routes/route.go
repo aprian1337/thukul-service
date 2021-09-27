@@ -44,6 +44,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	//POCKETS
 	v1.GET("pockets", cl.PocketController.Get)
 	v1.GET("pockets/:id", cl.PocketController.GetById)
+	v1.GET("pockets/:id/total", cl.PocketController.Total)
 	v1.POST("pockets", cl.PocketController.Create)
 	v1.PUT("pockets/:id", cl.PocketController.Update)
 	v1.DELETE("pockets/:id", cl.PocketController.Destroy)

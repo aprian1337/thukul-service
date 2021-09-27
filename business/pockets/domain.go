@@ -16,6 +16,7 @@ type Domain struct {
 type Usecase interface {
 	GetList(ctx context.Context, id string) ([]Domain, error)
 	GetById(ctx context.Context, id int) (Domain, error)
+	GetTotal(ctx context.Context, id int, kind string) (int64, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	Update(ctx context.Context, id int, domain Domain) (Domain, error)
 	Delete(ctx context.Context, id int) error

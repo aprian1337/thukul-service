@@ -9,6 +9,10 @@ type PocketsRequest struct {
 	Name   string `json:"name"`
 }
 
+type TotalRequest struct {
+	Type string `json:"type"`
+}
+
 func (s *PocketsRequest) ToDomain() pockets.Domain {
 	return pockets.Domain{
 		UserId: s.UserId,

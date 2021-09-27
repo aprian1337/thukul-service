@@ -28,6 +28,7 @@ type Usecase interface {
 type Repository interface {
 	GetList(ctx context.Context, pocketId int) ([]Domain, error)
 	GetById(ctx context.Context, pocketId int, id int) (Domain, error)
+	GetTotal(ctx context.Context, id int, kind string) (int64, error)
 	Create(ctx context.Context, domain Domain, pocketId int) (Domain, error)
 	Update(ctx context.Context, domain Domain, pocketId int, id int) (Domain, error)
 	Delete(ctx context.Context, id int, pocketId int) (int64, error)
