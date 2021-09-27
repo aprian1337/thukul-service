@@ -58,6 +58,14 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.PUT("pockets/:idPocket/activities/:id", cl.ActivityController.Update)
 	v1.DELETE("pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
 
+	//POCKETS
+
+	v1.GET("users/:userId/wishlists", cl.WishlistController.Get)
+	v1.GET("users/:userId/wishlists/:wishlistId", cl.WishlistController.GetById)
+	v1.POST("users/:userId/wishlists", cl.WishlistController.Create)
+	v1.PUT("users/:userId/wishlists/:wishlistId", cl.WishlistController.Update)
+	v1.DELETE("users/:userId/wishlists/:wishlistId", cl.WishlistController.Destroy)
+
 	//COINS
 	v1.GET("coins", cl.CoinController.GetBySymbol)
 }
