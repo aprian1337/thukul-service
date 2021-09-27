@@ -7,6 +7,7 @@ import (
 	"aprian1337/thukul-service/deliveries/pockets"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
+	"aprian1337/thukul-service/deliveries/wishlists"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -19,6 +20,7 @@ type ControllerList struct {
 	PocketController   pockets.Controller
 	ActivityController activities.Controller
 	CoinController     coins.Controller
+	WishlistController wishlists.Controller
 }
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
