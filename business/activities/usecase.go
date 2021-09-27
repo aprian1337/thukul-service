@@ -2,6 +2,7 @@ package activities
 
 import (
 	businesses "aprian1337/thukul-service/business"
+	"aprian1337/thukul-service/helpers"
 	"context"
 	"time"
 )
@@ -41,6 +42,10 @@ func (uc *ActivityUsecase) Create(ctx context.Context, domain Domain, pocketId i
 	if domain.Type != "income" && domain.Type != "expense" {
 		return Domain{}, businesses.ErrTypeActivity
 	}
+	if !helpers.IsDate(domain.Date) {
+		return Domain{}, businesses.ErrInvalidDate
+	}
+
 	pockets, err := uc.Repo.Create(ctx, domain, pocketId)
 	if err != nil {
 		return Domain{}, err
@@ -50,6 +55,9 @@ func (uc *ActivityUsecase) Create(ctx context.Context, domain Domain, pocketId i
 
 func (uc *ActivityUsecase) Update(ctx context.Context, domain Domain, pocketId int, id int) (Domain, error) {
 	pockets, err := uc.Repo.Update(ctx, domain, pocketId, id)
+	if !helpers.IsDate(domain.Date) {
+		return Domain{}, businesses.ErrInvalidDate
+	}
 	if err != nil {
 		return Domain{}, err
 	}

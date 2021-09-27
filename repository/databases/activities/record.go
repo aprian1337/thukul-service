@@ -13,10 +13,15 @@ type Activities struct {
 	Type      string
 	Nominal   float64
 	Note      string
-	Date      string    `gorm:"type:date"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
-	DeletedAt gorm.DeletedAt
+	Date      string         `gorm:"type:date"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type Total struct {
+	ID    int
+	Total int64
 }
 
 func (data *Activities) ToDomain() activities.Domain {

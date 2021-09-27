@@ -7,6 +7,7 @@ import (
 	"aprian1337/thukul-service/deliveries/pockets"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
+	"aprian1337/thukul-service/deliveries/wishlists"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -19,6 +20,7 @@ type ControllerList struct {
 	PocketController   pockets.Controller
 	ActivityController activities.Controller
 	CoinController     coins.Controller
+	WishlistController wishlists.Controller
 }
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
@@ -44,6 +46,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	//POCKETS
 	v1.GET("pockets", cl.PocketController.Get)
 	v1.GET("pockets/:id", cl.PocketController.GetById)
+	v1.GET("pockets/:id/total", cl.PocketController.Total)
 	v1.POST("pockets", cl.PocketController.Create)
 	v1.PUT("pockets/:id", cl.PocketController.Update)
 	v1.DELETE("pockets/:id", cl.PocketController.Destroy)
@@ -54,6 +57,14 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.POST("pockets/:idPocket/activities", cl.ActivityController.Create)
 	v1.PUT("pockets/:idPocket/activities/:id", cl.ActivityController.Update)
 	v1.DELETE("pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
+
+	//POCKETS
+
+	v1.GET("users/:userId/wishlists", cl.WishlistController.Get)
+	v1.GET("users/:userId/wishlists/:wishlistId", cl.WishlistController.GetById)
+	v1.POST("users/:userId/wishlists", cl.WishlistController.Create)
+	v1.PUT("users/:userId/wishlists/:wishlistId", cl.WishlistController.Update)
+	v1.DELETE("users/:userId/wishlists/:wishlistId", cl.WishlistController.Destroy)
 
 	//COINS
 	v1.GET("coins", cl.CoinController.GetBySymbol)

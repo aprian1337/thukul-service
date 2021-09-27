@@ -12,9 +12,14 @@ type Pockets struct {
 	UserId    int
 	User      users.Users `gorm:"foreignKey:user_id"`
 	Name      string
-	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
-	DeletedAt gorm.DeletedAt
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type Total struct {
+	ID    int
+	Total int64
 }
 
 func (data *Pockets) ToDomain() pockets.Domain {

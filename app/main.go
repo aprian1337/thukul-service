@@ -25,6 +25,10 @@ import (
 	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
 	_coinDb "aprian1337/thukul-service/repository/databases/coins"
 
+	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
+	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
+	_wishlistDb "aprian1337/thukul-service/repository/databases/wishlists"
+
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
 	"fmt"
@@ -112,17 +116,21 @@ func main() {
 	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
 	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
 
-	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
-	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, timeoutContext)
-	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
-
 	activityRepository := _activityDb.NewPostgresPocketsRepository(connPostgres)
 	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
 	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
 
+	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
+	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityRepository, timeoutContext)
+	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
+
 	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
+
+	wishlistRepository := _wishlistDb.NewPostgresWishlistRepository(connPostgres)
+	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, timeoutContext)
+	wishlistDelivery := _wishlistDelivery.NewSalariesController(wishlistUsecase)
 
 	routesInit := routes.ControllerList{
 		MiddlewareConfig:   *middlewareConf,
@@ -131,6 +139,7 @@ func main() {
 		PocketController:   *pocketDelivery,
 		ActivityController: *activityDelivery,
 		CoinController:     *coinDelivery,
+		WishlistController: *wishlistDelivery,
 		JWTMiddleware:      configJWT.Init(),
 	}
 
