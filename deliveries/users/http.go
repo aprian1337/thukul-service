@@ -37,7 +37,7 @@ func (ctrl *Controller) GetDetailUserController(c echo.Context) error {
 	if errConvInt != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, errConvInt)
 	}
-	data, err := ctrl.userUsecase.GetById(ctxNative, uint(convInt))
+	data, err := ctrl.userUsecase.GetById(ctxNative, convInt)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}

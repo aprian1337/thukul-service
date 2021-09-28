@@ -4,6 +4,7 @@ import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/deliveries/activities"
 	"aprian1337/thukul-service/deliveries/coins"
+	"aprian1337/thukul-service/deliveries/favorites"
 	"aprian1337/thukul-service/deliveries/pockets"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
@@ -21,6 +22,7 @@ type ControllerList struct {
 	ActivityController activities.Controller
 	CoinController     coins.Controller
 	WishlistController wishlists.Controller
+	FavoriteController favorites.Controller
 }
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
@@ -59,12 +61,17 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.DELETE("pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
 
 	//WISHLISTS
-
 	v1.GET("users/:userId/wishlists", cl.WishlistController.Get)
 	v1.GET("users/:userId/wishlists/:wishlistId", cl.WishlistController.GetById)
 	v1.POST("users/:userId/wishlists", cl.WishlistController.Create)
 	v1.PUT("users/:userId/wishlists/:wishlistId", cl.WishlistController.Update)
 	v1.DELETE("users/:userId/wishlists/:wishlistId", cl.WishlistController.Destroy)
+
+	//FAVORITES
+	v1.GET("users/:userId/favorites", cl.FavoriteController.Get)
+	v1.GET("users/:userId/favorites/:favId", cl.FavoriteController.GetById)
+	v1.POST("users/:userId/favorites", cl.FavoriteController.Create)
+	v1.DELETE("users/:userId/favorites/:favId", cl.FavoriteController.Destroy)
 
 	//COINS
 	v1.GET("coins", cl.CoinController.GetBySymbol)

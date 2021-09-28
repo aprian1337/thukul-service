@@ -51,3 +51,12 @@ func (repo *PostgresFavoritesRepository) Delete(ctx context.Context, userId int,
 	}
 	return err.RowsAffected, nil
 }
+
+func (repo *PostgresFavoritesRepository) Check(ctx context.Context, userId int, coinId int) (int64, error) {
+	var count int64
+	err := repo.ConnPostgres.Model(&Favorites{}).Where("user_id = ? AND coin_id=?", userId, coinId).Count(&count)
+	if err.Error != nil {
+		return 0, err.Error
+	}
+	return count, nil
+}

@@ -15,10 +15,11 @@ type FavoriteUsecase struct {
 	Timeout     time.Duration
 }
 
-func NewFavoriteUsecase(repo Repository, coin coins.Usecase, timeout time.Duration) *FavoriteUsecase {
+func NewFavoriteUsecase(repo Repository, user users.Usecase, coin coins.Usecase, timeout time.Duration) *FavoriteUsecase {
 	return &FavoriteUsecase{
 		Repo:        repo,
 		CoinUsecase: coin,
+		UserUsecase: user,
 		Timeout:     timeout,
 	}
 }
@@ -40,7 +41,7 @@ func (uc *FavoriteUsecase) GetById(ctx context.Context, userId int, favoriteId i
 }
 
 func (uc *FavoriteUsecase) Create(ctx context.Context, domain Domain, userId int) (Domain, error) {
-	symbol, err := uc.CoinUsecase.GetBySymbol(ctx, domain.CoinSymbol)
+	symbol, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coins.CoinSymbol)
 	if err != nil {
 		return Domain{}, businesses.ErrUserIdNotFound
 	}
@@ -48,12 +49,22 @@ func (uc *FavoriteUsecase) Create(ctx context.Context, domain Domain, userId int
 	if err != nil {
 		return Domain{}, businesses.ErrUserIdNotFound
 	}
+	res, err := uc.Repo.Check(ctx, userId, symbol.Id)
+	if err != nil {
+		return Domain{}, businesses.ErrUserIdNotFound
+	}
+	if res > 0 {
+		return Domain{}, businesses.ErrFavoriteIsAlready
+	}
+
 	domain.CoinId = symbol.Id
-	data, err := uc.Repo.Create(ctx, domain, userId)
+	domain.UserId = userId
+	data, err := uc.Repo.Create(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}
-	return data, nil
+
+	return data.AddCoins(symbol), nil
 }
 
 func (uc *FavoriteUsecase) Delete(ctx context.Context, userId int, favoriteId int) error {

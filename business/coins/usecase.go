@@ -41,5 +41,6 @@ func (uc *CoinUsecase) GetBySymbol(ctx context.Context, symbol string) (Domain, 
 		}
 		return createSymbol, nil
 	}
+
 	return data, nil
 }

@@ -29,6 +29,10 @@ import (
 	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
 	_wishlistDb "aprian1337/thukul-service/repository/databases/wishlists"
 
+	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
+	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
+	_favoriteDb "aprian1337/thukul-service/repository/databases/favorites"
+
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
 	"fmt"
@@ -57,6 +61,7 @@ func DbMigrate(db *gorm.DB) {
 		&_pocketDb.Pockets{},
 		&_activityDb.Activities{},
 		&_coinDb.Coins{},
+		&_favoriteDb.Favorites{},
 	)
 	if err != nil {
 		panic(err)
@@ -94,6 +99,7 @@ func main() {
 		DbName:     viper.GetString(`databases.mongodb.dbname`),
 		Collection: viper.GetString(`databases.mongodb.collection.logger`),
 	})
+
 	initMongo := mongoConfig.InitDb()
 	middlewareConf := middlewares.InitConfig(initMongo, logCol)
 
@@ -132,6 +138,10 @@ func main() {
 	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, timeoutContext)
 	wishlistDelivery := _wishlistDelivery.NewSalariesController(wishlistUsecase)
 
+	favoriteRepository := _favoriteDb.NewPostgresFavoritesRepository(connPostgres)
+	favoriteUsecase := _favoriteUsecase.NewFavoriteUsecase(favoriteRepository, userUsecase, coinUsecase, timeoutContext)
+	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
+
 	routesInit := routes.ControllerList{
 		MiddlewareConfig:   *middlewareConf,
 		UserController:     *userDelivery,
@@ -140,6 +150,7 @@ func main() {
 		ActivityController: *activityDelivery,
 		CoinController:     *coinDelivery,
 		WishlistController: *wishlistDelivery,
+		FavoriteController: *favoriteDelivery,
 		JWTMiddleware:      configJWT.Init(),
 	}
 

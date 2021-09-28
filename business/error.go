@@ -9,6 +9,7 @@ var (
 	ErrUserIdNotFound           = errors.New("user id not found")
 	ErrCoinNotFound             = errors.New("coin not found")
 	ErrInvalidDate              = errors.New("invalid date, date must be formed : yyyy-mm-dd")
+	ErrFavoriteIsAlready        = errors.New("this coin is already favorited by user")
 	ErrUsernamePasswordNotFound = errors.New("username or password empty")
 	ErrInvalidAuthentication    = errors.New("authentication failed: invalid user credentials")
 	ErrInvalidTokenCredential   = errors.New("token not found or expired")
