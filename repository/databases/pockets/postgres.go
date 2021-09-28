@@ -34,9 +34,9 @@ func (repo *PostgresPocketsRepository) GetList(_ context.Context, id int) ([]poc
 
 	return ToListDomain(data), nil
 }
-func (repo *PostgresPocketsRepository) GetById(_ context.Context, id int) (pockets.Domain, error) {
+func (repo *PostgresPocketsRepository) GetById(_ context.Context, userId int, pocketId int) (pockets.Domain, error) {
 	var data Pockets
-	err := repo.ConnPostgres.First(&data, "id=?", id)
+	err := repo.ConnPostgres.First(&data, "user_id = ? AND id = ?", userId, pocketId)
 	if err.Error != nil {
 		return pockets.Domain{}, err.Error
 	}
@@ -55,20 +55,20 @@ func (repo *PostgresPocketsRepository) Create(_ context.Context, domain pockets.
 	}
 	return pocket.ToDomain(), nil
 }
-func (repo *PostgresPocketsRepository) Update(_ context.Context, domain pockets.Domain) (pockets.Domain, error) {
+func (repo *PostgresPocketsRepository) Update(_ context.Context, domain pockets.Domain, userId int, pocketId int) (pockets.Domain, error) {
 	data := FromDomain(domain)
-	dataTemp := FromDomain(domain)
-	err := repo.ConnPostgres.First(&data)
+	pocket := Pockets{}
+	err := repo.ConnPostgres.First(&pocket, "user_id = ? AND id = ?", userId, pocketId)
 	if err.Error != nil {
 		return pockets.Domain{}, err.Error
 	}
-	data.Name = dataTemp.Name
-	repo.ConnPostgres.Save(&data)
-	return data.ToDomain(), nil
+	pocket.Name = data.Name
+	repo.ConnPostgres.Save(&pocket)
+	return pocket.ToDomain(), nil
 }
-func (repo *PostgresPocketsRepository) Delete(_ context.Context, id int) (int64, error) {
+func (repo *PostgresPocketsRepository) Delete(_ context.Context, userId int, pocketId int) (int64, error) {
 	data := Pockets{}
-	err := repo.ConnPostgres.Delete(&data, id)
+	err := repo.ConnPostgres.Delete(&data, "user_id = ? AND pocket_id = ?", userId, pocketId)
 	if err.Error != nil {
 		return 0, err.Error
 	}

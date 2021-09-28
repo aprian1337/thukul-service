@@ -86,10 +86,10 @@ func (repo *PostgresPocketsRepository) Delete(ctx context.Context, pocketId int,
 	return err.RowsAffected, nil
 }
 
-func (repo *PostgresPocketsRepository) GetTotal(ctx context.Context, id int, kind string) (int64, error) {
+func (repo *PostgresPocketsRepository) GetTotal(ctx context.Context, userId int, pocketId int, kind string) (int64, error) {
 	total := Total{}
 	activity := Activities{}
-	err := repo.ConnPostgres.Model(activity).Select("id, sum(nominal) as total").Where("pocket_id = ?", id).Group("id").Having("type=?", kind).First(&total)
+	err := repo.ConnPostgres.Model(activity).Select("id, sum(nominal) as total").Where("pocket_id = ? ", pocketId).Group("id").Having("type=?", kind).First(&total)
 	if err.Error != nil {
 		return 0, err.Error
 	}

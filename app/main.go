@@ -127,7 +127,7 @@ func main() {
 	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
 
 	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
-	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityRepository, timeoutContext)
+	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityUsecase, timeoutContext)
 	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
 
 	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
