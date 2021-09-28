@@ -18,7 +18,7 @@ func NewPostgresFavoritesRepository(conn *gorm.DB) *PostgresFavoritesRepository 
 
 func (repo *PostgresFavoritesRepository) GetList(ctx context.Context, userId int) ([]favorites.Domain, error) {
 	var data []Favorites
-	err := repo.ConnPostgres.Find(&data, "user_id=?", userId)
+	err := repo.ConnPostgres.Joins("Coin").Find(&data, "user_id=?", userId)
 	if err.Error != nil {
 		return []favorites.Domain{}, err.Error
 	}
@@ -27,7 +27,7 @@ func (repo *PostgresFavoritesRepository) GetList(ctx context.Context, userId int
 
 func (repo *PostgresFavoritesRepository) GetById(ctx context.Context, userId int, wishlistId int) (favorites.Domain, error) {
 	var data Favorites
-	err := repo.ConnPostgres.First(&data, "user_id=? AND id=?", userId, wishlistId)
+	err := repo.ConnPostgres.Joins("Coin").First(&data, "user_id=? AND favorites.id=?", userId, wishlistId)
 	if err.Error != nil {
 		return favorites.Domain{}, err.Error
 	}

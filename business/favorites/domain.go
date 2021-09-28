@@ -2,18 +2,16 @@ package favorites
 
 import (
 	"aprian1337/thukul-service/business/coins"
+	coins2 "aprian1337/thukul-service/repository/databases/coins"
 	"context"
 	"time"
 )
 
 type Domain struct {
-	ID     int
-	UserId int
-	CoinId int
-	Coins  struct {
-		CoinSymbol string
-		CoinName   string
-	}
+	ID        int
+	UserId    int
+	CoinId    int
+	Coin      coins2.Coins
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -38,22 +36,11 @@ func (d *Domain) AddCoins(symbol coins.Domain) Domain {
 		ID:     d.ID,
 		UserId: d.UserId,
 		CoinId: d.CoinId,
-		Coins: struct {
-			CoinSymbol string
-			CoinName   string
-		}{
-			CoinSymbol: symbol.Symbol,
-			CoinName:   symbol.Name,
+		Coin: coins2.Coins{
+			Symbol: symbol.Symbol,
+			Name:   symbol.Name,
 		},
 		CreatedAt: d.CreatedAt,
 		UpdatedAt: d.UpdatedAt,
 	}
-}
-
-func AddCoinsList(data []Domain, symbol coins.Domain) []Domain {
-	res := []Domain{}
-	for _, v := range data {
-		res = append(res, v.AddCoins(symbol))
-	}
-	return res
 }

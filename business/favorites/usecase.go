@@ -41,9 +41,9 @@ func (uc *FavoriteUsecase) GetById(ctx context.Context, userId int, favoriteId i
 }
 
 func (uc *FavoriteUsecase) Create(ctx context.Context, domain Domain, userId int) (Domain, error) {
-	symbol, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coins.CoinSymbol)
+	symbol, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coin.Symbol)
 	if err != nil {
-		return Domain{}, businesses.ErrUserIdNotFound
+		return Domain{}, businesses.ErrTokenNotFound
 	}
 	_, err = uc.UserUsecase.GetById(ctx, userId)
 	if err != nil {

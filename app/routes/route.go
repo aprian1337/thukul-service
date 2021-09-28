@@ -14,7 +14,7 @@ import (
 )
 
 type ControllerList struct {
-	MiddlewareConfig   middlewares.MiddlewareConfig
+	LoggerMiddleware   middlewares.MongoConfig
 	JWTMiddleware      middleware.JWTConfig
 	UserController     users.Controller
 	SalaryController   salaries.Controller
@@ -27,7 +27,7 @@ type ControllerList struct {
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1 := e.Group("api/v1/")
-	cl.MiddlewareConfig.Start(e)
+	cl.LoggerMiddleware.Start(e)
 	//AUTH
 	v1.POST("auth/login", cl.UserController.LoginUserController)
 

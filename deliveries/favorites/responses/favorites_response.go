@@ -10,8 +10,8 @@ type FavoriteResponse struct {
 	UserId int `json:"user_id"`
 	CoinId int `json:"coin_id"`
 	Coins  struct {
-		CoinSymbol string `json:"coin_symbol"`
-		CoinName   string `json:"coin_name"`
+		Symbol string `json:"symbol"`
+		Name   string `json:"name"`
 	} `json:"coins"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -23,15 +23,12 @@ func FromDomain(domain favorites.Domain) FavoriteResponse {
 		UserId: domain.UserId,
 		CoinId: domain.CoinId,
 		Coins: struct {
-			CoinSymbol string `json:"coin_symbol"`
-			CoinName   string `json:"coin_name"`
+			Symbol string `json:"symbol"`
+			Name   string `json:"name"`
 		}(struct {
-			CoinSymbol string
-			CoinName   string
-		}{
-			CoinSymbol: domain.Coins.CoinSymbol,
-			CoinName:   domain.Coins.CoinName,
-		}),
+			Symbol string
+			Name   string
+		}{Symbol: domain.Coin.Symbol, Name: domain.Coin.Name}),
 		CreatedAt: domain.CreatedAt,
 		UpdatedAt: domain.UpdatedAt,
 	}
