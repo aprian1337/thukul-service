@@ -17,7 +17,7 @@ func NewPostgresUserRepository(conn *gorm.DB) *PostgresUserRepository {
 	}
 }
 
-func (repo *PostgresUserRepository) GetById(ctx context.Context, id uint) (users.Domain, error) {
+func (repo *PostgresUserRepository) GetById(ctx context.Context, id int) (users.Domain, error) {
 	var user Users
 	err := repo.ConnPostgres.Find(&user, "id = ?", id)
 	if err.Error != nil {
