@@ -7,7 +7,6 @@ import (
 	"aprian1337/thukul-service/utilities"
 	"aprian1337/thukul-service/utilities/constants"
 	"context"
-	"errors"
 	"log"
 	"time"
 )
@@ -47,15 +46,20 @@ func (uc *UserUsecase) GetById(ctx context.Context, id int) (Domain, error) {
 
 func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, error) {
 	if domain.Email == "" {
-		return Domain{}, errors.New("email is required")
+		return Domain{}, businesses.ErrEmailRequired
 	}
 
 	if !helpers.IsEmailValid(domain.Email) {
-		return Domain{}, errors.New("email is not valid")
+		return Domain{}, businesses.ErrEmailNotValid
+	}
+
+	data, err := uc.Repo.GetByEmail(ctx, domain.Email)
+	if data.ID > 0 {
+		return Domain{}, businesses.ErrEmailHasBeenRegister
 	}
 
 	if domain.Password == "" {
-		return Domain{}, errors.New("password is required")
+		return Domain{}, businesses.ErrPasswordRequired
 	}
 
 	if !helpers.IsDate(domain.Birthday) {
@@ -107,11 +111,17 @@ func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Dom
 		}
 	}
 	if domain.Email == "" {
-		return Domain{}, errors.New("email is required")
+		return Domain{}, businesses.ErrEmailRequired
 	}
 	if !helpers.IsEmailValid(domain.Email) {
-		return Domain{}, errors.New("email is not valid")
+		return Domain{}, businesses.ErrEmailNotValid
 	}
+
+	data, err := uc.Repo.GetByEmail(ctx, domain.Email)
+	if data.ID > 0 && data.ID != id {
+		return Domain{}, businesses.ErrEmailHasBeenRegister
+	}
+
 	domain.Password, _ = utilities.HashPassword(domain.Password)
 	domain.ID = id
 	user, err := uc.Repo.Update(ctx, domain)
