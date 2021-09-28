@@ -10,16 +10,16 @@ import (
 )
 
 type PocketUsecase struct {
-	Repo    Repository
-	RepoAct activities.Repository
-	Timeout time.Duration
+	Repo            Repository
+	ActivityUsecase activities.Usecase
+	Timeout         time.Duration
 }
 
-func NewPocketUsecase(repo Repository, repoActivity activities.Repository, timeout time.Duration) *PocketUsecase {
+func NewPocketUsecase(repo Repository, activityUsecase activities.Usecase, timeout time.Duration) *PocketUsecase {
 	return &PocketUsecase{
-		Repo:    repo,
-		RepoAct: repoActivity,
-		Timeout: timeout,
+		Repo:            repo,
+		ActivityUsecase: activityUsecase,
+		Timeout:         timeout,
 	}
 }
 
@@ -38,15 +38,15 @@ func (pu *PocketUsecase) GetList(ctx context.Context, id string) ([]Domain, erro
 	}
 	return pockets, nil
 }
-func (pu *PocketUsecase) GetById(ctx context.Context, id int) (Domain, error) {
-	pockets, err := pu.Repo.GetById(ctx, id)
+func (pu *PocketUsecase) GetById(ctx context.Context, userId int, pocketId int) (Domain, error) {
+	pockets, err := pu.Repo.GetById(ctx, userId, pocketId)
 	if err != nil {
 		return Domain{}, err
 	}
 	return pockets, nil
 }
 func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, error) {
-	if domain.UserId == 0 || domain.Name == "" {
+	if domain.Name == "" {
 		return Domain{}, businesses.ErrBadRequest
 	}
 	pockets, err := pu.Repo.Create(ctx, domain)
@@ -55,17 +55,16 @@ func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, err
 	}
 	return pockets, nil
 }
-func (pu *PocketUsecase) Update(ctx context.Context, id int, domain Domain) (Domain, error) {
-	domain.ID = id
-	pockets, err := pu.Repo.Update(ctx, domain)
+func (pu *PocketUsecase) Update(ctx context.Context, domain Domain, userId int, pocketId int) (Domain, error) {
+	pockets, err := pu.Repo.Update(ctx, domain, userId, pocketId)
 	if err != nil {
 		return Domain{}, err
 	}
 	return pockets, nil
 }
 
-func (pu *PocketUsecase) Delete(ctx context.Context, id int) error {
-	rowsAffected, err := pu.Repo.Delete(ctx, id)
+func (pu *PocketUsecase) Delete(ctx context.Context, userId int, pocketId int) error {
+	rowsAffected, err := pu.Repo.Delete(ctx, userId, pocketId)
 	if err != nil {
 		return err
 	}
@@ -75,11 +74,15 @@ func (pu *PocketUsecase) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-func (pu *PocketUsecase) GetTotal(ctx context.Context, id int, kind string) (int64, error) {
+func (pu *PocketUsecase) GetTotalByActivities(ctx context.Context, userId int, pocketId int, kind string) (int64, error) {
 	if kind != "income" && kind != "expense" && kind != "profit" {
 		return 0, businesses.ErrBadRequest
 	}
-	total, err := pu.RepoAct.GetTotal(ctx, id, kind)
+	_, err := pu.GetById(ctx, userId, pocketId)
+	if err != nil {
+		return 0, businesses.ErrUserIdOrPocketNotFound
+	}
+	total, err := pu.ActivityUsecase.GetTotal(ctx, userId, pocketId, kind)
 	if err != nil {
 		return 0, err
 	}

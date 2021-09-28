@@ -2,19 +2,22 @@ package wishlists
 
 import (
 	businesses "aprian1337/thukul-service/business"
+	"aprian1337/thukul-service/business/users"
 	"context"
 	"time"
 )
 
 type WishlistUsecase struct {
-	Repo    Repository
-	Timeout time.Duration
+	Repo        Repository
+	UserUsecase users.Usecase
+	Timeout     time.Duration
 }
 
-func NewWishlistUsecase(repo Repository, timeout time.Duration) *WishlistUsecase {
+func NewWishlistUsecase(repo Repository, userUsecase users.Usecase, timeout time.Duration) *WishlistUsecase {
 	return &WishlistUsecase{
-		Repo:    repo,
-		Timeout: timeout,
+		Repo:        repo,
+		UserUsecase: userUsecase,
+		Timeout:     timeout,
 	}
 }
 
@@ -35,6 +38,10 @@ func (uc *WishlistUsecase) GetById(ctx context.Context, userId int, wishlistId i
 }
 
 func (uc *WishlistUsecase) Create(ctx context.Context, domain Domain, userId int) (Domain, error) {
+	_, err := uc.UserUsecase.GetById(ctx, userId)
+	if err != nil {
+		return Domain{}, businesses.ErrUserIdNotFound
+	}
 	data, err := uc.Repo.Create(ctx, domain, userId)
 	if err != nil {
 		return Domain{}, err

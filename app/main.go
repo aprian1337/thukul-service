@@ -62,6 +62,7 @@ func DbMigrate(db *gorm.DB) {
 		&_activityDb.Activities{},
 		&_coinDb.Coins{},
 		&_favoriteDb.Favorites{},
+		&_wishlistDb.Wishlists{},
 	)
 	if err != nil {
 		panic(err)
@@ -127,7 +128,7 @@ func main() {
 	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
 
 	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
-	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityRepository, timeoutContext)
+	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityUsecase, timeoutContext)
 	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
 
 	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
@@ -135,7 +136,7 @@ func main() {
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
 
 	wishlistRepository := _wishlistDb.NewPostgresWishlistRepository(connPostgres)
-	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, timeoutContext)
+	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, userUsecase, timeoutContext)
 	wishlistDelivery := _wishlistDelivery.NewSalariesController(wishlistUsecase)
 
 	favoriteRepository := _favoriteDb.NewPostgresFavoritesRepository(connPostgres)

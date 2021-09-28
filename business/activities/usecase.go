@@ -74,3 +74,11 @@ func (uc *ActivityUsecase) Delete(ctx context.Context, id int, pocketId int) err
 	}
 	return nil
 }
+
+func (uc *ActivityUsecase) GetTotal(ctx context.Context, userId int, pocketId int, kind string) (int64, error) {
+	total, err := uc.Repo.GetTotal(ctx, userId, pocketId, kind)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
