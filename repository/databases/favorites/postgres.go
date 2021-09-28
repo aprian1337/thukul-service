@@ -3,6 +3,7 @@ package favorites
 import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/favorites"
+	"aprian1337/thukul-service/repository/databases/coins"
 	"aprian1337/thukul-service/repository/databases/users"
 	"context"
 	"gorm.io/gorm"
@@ -37,9 +38,14 @@ func (repo *PostgresFavoritesRepository) GetById(ctx context.Context, userId int
 }
 
 func (repo *PostgresFavoritesRepository) Create(ctx context.Context, domain favorites.Domain, userId int) (favorites.Domain, error) {
-	pocket := FromDomain(domain)
+	favorite := FromDomain(domain)
 	var user users.Users
 	err := repo.ConnPostgres.First(&user, "user_id=?", userId)
+	if err.Error != nil {
+		return favorites.Domain{}, businesses.ErrUserIdNotFound
+	}
+	var coin coins.Coins
+	err := repo.ConnPostgres.First(&coin, "id=?", favorite.CoinId)
 	if err.Error != nil {
 		return favorites.Domain{}, businesses.ErrUserIdNotFound
 	}

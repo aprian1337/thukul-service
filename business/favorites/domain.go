@@ -16,13 +16,13 @@ type Domain struct {
 type Usecase interface {
 	GetList(ctx context.Context, userId int) ([]Domain, error)
 	GetById(ctx context.Context, userId int, favoriteId int) (Domain, error)
-	Create(ctx context.Context, domain Domain, userId int, coin string) (Domain, error)
-	Delete(ctx context.Context, userId int, wishlistId int) error
+	Create(ctx context.Context, domain Domain, userId int) (Domain, error)
+	Delete(ctx context.Context, userId int, favoriteId int) error
 }
 
 type Repository interface {
 	GetList(ctx context.Context, userId int) ([]Domain, error)
-	GetById(ctx context.Context, userId int, wishlistId int) (Domain, error)
+	GetById(ctx context.Context, userId int, favoriteId int) (Domain, error)
 	Create(ctx context.Context, domain Domain, userId int) (Domain, error)
-	Delete(ctx context.Context, userId int, wishlistId int) (int64, error)
+	Delete(ctx context.Context, userId int, favoriteId int) (int64, error)
 }
