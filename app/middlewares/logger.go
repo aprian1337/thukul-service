@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type MiddlewareConfig struct {
+type MongoConfig struct {
 	Mongo *mongo.Client
 	Logs  *LogCollection
 }
@@ -28,8 +28,8 @@ type Logger struct {
 	Response string
 }
 
-func InitConfig(db *mongo.Client, logs *LogCollection) *MiddlewareConfig {
-	return &MiddlewareConfig{
+func InitConfig(db *mongo.Client, logs *LogCollection) *MongoConfig {
+	return &MongoConfig{
 		Mongo: db,
 		Logs:  logs,
 	}
@@ -42,7 +42,7 @@ func InitCollection(logs LogCollection) *LogCollection {
 	}
 }
 
-func (mc *MiddlewareConfig) Start(e *echo.Echo) {
+func (mc *MongoConfig) Start(e *echo.Echo) {
 	e.Use(middleware.BodyDumpWithConfig(middleware.BodyDumpConfig{
 		Skipper: middleware.DefaultSkipper,
 		Handler: func(e echo.Context, req []byte, resp []byte) {

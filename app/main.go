@@ -101,7 +101,7 @@ func main() {
 	})
 
 	initMongo := mongoConfig.InitDb()
-	middlewareConf := middlewares.InitConfig(initMongo, logCol)
+	loggerMiddleware := middlewares.InitConfig(initMongo, logCol)
 
 	DbMigrate(connPostgres)
 	e := echo.New()
@@ -143,7 +143,6 @@ func main() {
 	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
 
 	routesInit := routes.ControllerList{
-		MiddlewareConfig:   *middlewareConf,
 		UserController:     *userDelivery,
 		SalaryController:   *salaryDelivery,
 		PocketController:   *pocketDelivery,
@@ -151,6 +150,7 @@ func main() {
 		CoinController:     *coinDelivery,
 		WishlistController: *wishlistDelivery,
 		FavoriteController: *favoriteDelivery,
+		LoggerMiddleware:   *loggerMiddleware,
 		JWTMiddleware:      configJWT.Init(),
 	}
 

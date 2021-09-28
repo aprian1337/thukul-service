@@ -7,6 +7,7 @@ var (
 	ErrIDNotFound               = errors.New("id not found")
 	ErrInvalidId                = errors.New("invalid id, id not numeric")
 	ErrUserIdNotFound           = errors.New("user id not found")
+	ErrTokenNotFound            = errors.New("coin simbol not found")
 	ErrCoinNotFound             = errors.New("coin not found")
 	ErrInvalidDate              = errors.New("invalid date, date must be formed : yyyy-mm-dd")
 	ErrFavoriteIsAlready        = errors.New("this coin is already favorited by user")

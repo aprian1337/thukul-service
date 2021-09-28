@@ -6,7 +6,6 @@ import (
 	"aprian1337/thukul-service/deliveries"
 	"aprian1337/thukul-service/deliveries/favorites/requests"
 	"aprian1337/thukul-service/deliveries/favorites/responses"
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -33,7 +32,6 @@ func (ctrl *Controller) Get(c echo.Context) error {
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	fmt.Println(data)
 	return deliveries.NewSuccessResponse(c, responses.FromListDomain(data))
 }
 
