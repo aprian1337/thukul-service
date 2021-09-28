@@ -1,9 +1,7 @@
 package wishlists
 
 import (
-	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/wishlists"
-	"aprian1337/thukul-service/repository/databases/users"
 	"context"
 	"gorm.io/gorm"
 )
@@ -38,12 +36,7 @@ func (repo *PostgresWishlistRepository) GetById(ctx context.Context, userId int,
 
 func (repo *PostgresWishlistRepository) Create(ctx context.Context, domain wishlists.Domain, userId int) (wishlists.Domain, error) {
 	pocket := FromDomain(domain)
-	var user users.Users
-	err := repo.ConnPostgres.First(&user, "user_id=?", userId)
-	if err.Error != nil {
-		return wishlists.Domain{}, businesses.ErrUserIdNotFound
-	}
-	err = repo.ConnPostgres.Create(&pocket)
+	err := repo.ConnPostgres.Create(&pocket)
 	if err.Error != nil {
 		return wishlists.Domain{}, err.Error
 	}
