@@ -34,7 +34,7 @@ func (uc *UserUsecase) GetAll(ctx context.Context) ([]Domain, error) {
 	return user, nil
 }
 
-func (uc *UserUsecase) GetById(ctx context.Context, id uint) (Domain, error) {
+func (uc *UserUsecase) GetById(ctx context.Context, id int) (Domain, error) {
 	user, err := uc.Repo.GetById(ctx, id)
 	if err != nil {
 		return Domain{}, err

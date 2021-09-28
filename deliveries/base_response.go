@@ -11,8 +11,8 @@ type BaseResponse struct {
 		Code     int      `json:"code"`
 		Message  string   `json:"message"`
 		Messages []string `json:"messages"`
-	}
-	Data interface{}
+	} `json:"status"`
+	Data interface{} `json:"data"`
 }
 
 func NewSuccessResponse(c echo.Context, data interface{}) error {
