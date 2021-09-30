@@ -1,6 +1,7 @@
 package users
 
 import (
+	wallets_domain "aprian1337/thukul-service/business/wallets"
 	"context"
 	"time"
 )
@@ -38,4 +39,10 @@ type Repository interface {
 	Create(ctx context.Context, register *Domain) (Domain, error)
 	Update(ctx context.Context, domain *Domain) (Domain, error)
 	Delete(ctx context.Context, id uint) error
+}
+
+func (d *Domain) ToWalletDomain() wallets_domain.Domain {
+	return wallets_domain.Domain{
+		UserId: int(d.ID),
+	}
 }

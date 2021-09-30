@@ -3,6 +3,7 @@ package users
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	businesses "aprian1337/thukul-service/business"
+	"aprian1337/thukul-service/business/wallets"
 	"aprian1337/thukul-service/helpers"
 	"aprian1337/thukul-service/utilities"
 	"aprian1337/thukul-service/utilities/constants"
@@ -12,16 +13,18 @@ import (
 )
 
 type UserUsecase struct {
-	Repo    Repository
-	Timeout time.Duration
-	jwtAuth *middlewares.ConfigJWT
+	Repo          Repository
+	WalletUsecase wallets.Usecase
+	Timeout       time.Duration
+	jwtAuth       *middlewares.ConfigJWT
 }
 
-func NewUserUsecase(repo Repository, timeout time.Duration, jwtAuth *middlewares.ConfigJWT) *UserUsecase {
+func NewUserUsecase(repo Repository, walletUsecase wallets.Usecase, timeout time.Duration, jwtAuth *middlewares.ConfigJWT) *UserUsecase {
 	return &UserUsecase{
-		Repo:    repo,
-		Timeout: timeout,
-		jwtAuth: jwtAuth,
+		Repo:          repo,
+		WalletUsecase: walletUsecase,
+		Timeout:       timeout,
+		jwtAuth:       jwtAuth,
 	}
 }
 
@@ -70,6 +73,11 @@ func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, erro
 
 	user, err := uc.Repo.Create(ctx, domain)
 
+	if err != nil {
+		return Domain{}, err
+	}
+
+	err = uc.WalletUsecase.Create(ctx, user.ToWalletDomain())
 	if err != nil {
 		return Domain{}, err
 	}

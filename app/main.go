@@ -5,6 +5,7 @@ import (
 	"aprian1337/thukul-service/app/routes"
 	_usersUsecase "aprian1337/thukul-service/business/users"
 	_usersDelivery "aprian1337/thukul-service/deliveries/users"
+	_transactionHistoryDb "aprian1337/thukul-service/repository/databases/transactions"
 	_usersDb "aprian1337/thukul-service/repository/databases/users"
 
 	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
@@ -32,6 +33,15 @@ import (
 	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
 	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
 	_favoriteDb "aprian1337/thukul-service/repository/databases/favorites"
+
+	_walletUsecase "aprian1337/thukul-service/business/wallets"
+	_walletDb "aprian1337/thukul-service/repository/databases/wallets"
+
+	_walletHistoryUsecase "aprian1337/thukul-service/business/wallet_histories"
+	_walletHistoryDb "aprian1337/thukul-service/repository/databases/wallet_histories"
+
+	_paymentsUsecase "aprian1337/thukul-service/business/payments"
+	_paymentDelivery "aprian1337/thukul-service/deliveries/payments"
 
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
@@ -63,6 +73,9 @@ func DbMigrate(db *gorm.DB) {
 		&_coinDb.Coins{},
 		&_favoriteDb.Favorites{},
 		&_wishlistDb.Wishlists{},
+		&_transactionHistoryDb.Transactions{},
+		&_walletDb.Wallets{},
+		&_walletHistoryDb.WalletHistories{},
 	)
 	if err != nil {
 		panic(err)
@@ -102,7 +115,7 @@ func main() {
 	})
 
 	initMongo := mongoConfig.InitDb()
-	loggerMiddleware := middlewares.InitConfig(initMongo, logCol)
+	loggerMiddleware := middlewares.InitConfig(initMongo, logCol, viper.GetDuration(`context.timeout`))
 
 	DbMigrate(connPostgres)
 	e := echo.New()
@@ -115,8 +128,17 @@ func main() {
 	}
 	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
 
+	walletsRepository := _walletDb.NewPostgresWalletsRepository(connPostgres)
+	walletsUsecase := _walletUsecase.NewWalletsUsecase(walletsRepository, timeoutContext)
+
+	walletsHistoryRepository := _walletHistoryDb.NewPostgresWalletHistoriesRepository(connPostgres)
+	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
+
+	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(walletsUsecase, walletsHistoryUsecase, timeoutContext)
+	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
+
 	userRepository := _usersDb.NewPostgresUserRepository(connPostgres)
-	userUsecase := _usersUsecase.NewUserUsecase(userRepository, timeoutContext, &configJWT)
+	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
 
 	salaryRepository := _salaryDb.NewPostgresSalariesRepository(connPostgres)
@@ -151,6 +173,7 @@ func main() {
 		CoinController:     *coinDelivery,
 		WishlistController: *wishlistDelivery,
 		FavoriteController: *favoriteDelivery,
+		PaymentController:  *paymentDelivery,
 		LoggerMiddleware:   *loggerMiddleware,
 		JWTMiddleware:      configJWT.Init(),
 	}
