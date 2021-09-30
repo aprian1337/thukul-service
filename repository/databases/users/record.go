@@ -8,7 +8,6 @@ import (
 )
 
 type Users struct {
-	gorm.Model
 	ID        uint `gorm:"primaryKey"`
 	SalaryId  int
 	Salary    salaries.Salaries `gorm:"foreignKey:SalaryId"`

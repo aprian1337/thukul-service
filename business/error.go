@@ -20,6 +20,7 @@ var (
 	ErrInvalidAuthentication    = errors.New("authentication failed: invalid user credentials")
 	ErrInvalidTokenCredential   = errors.New("token not found or expired")
 	ErrBadRequest               = errors.New("bad requests")
+	ErrTypeTransaction          = errors.New("type transaction not valid")
 	ErrNothingDestroy           = errors.New("no data found to delete")
 	ErrTypeActivity             = errors.New("type must be only 'income' and 'expense'")
 	ErrInsufficientPermission   = errors.New("insufficient permission")

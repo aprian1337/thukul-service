@@ -9,8 +9,9 @@ import (
 )
 
 type MongoConfig struct {
-	Mongo *mongo.Client
-	Logs  *LogCollection
+	Mongo   *mongo.Client
+	Logs    *LogCollection
+	Timeout time.Duration
 }
 
 type LogCollection struct {
@@ -28,10 +29,11 @@ type Logger struct {
 	Response string
 }
 
-func InitConfig(db *mongo.Client, logs *LogCollection) *MongoConfig {
+func InitConfig(db *mongo.Client, logs *LogCollection, timeout time.Duration) *MongoConfig {
 	return &MongoConfig{
-		Mongo: db,
-		Logs:  logs,
+		Mongo:   db,
+		Logs:    logs,
+		Timeout: timeout,
 	}
 }
 
@@ -56,7 +58,7 @@ func (mc *MongoConfig) Start(e *echo.Echo) {
 				Time:     time.Now().Local(),
 				Response: string(resp),
 			}
-			ctx, cancel := context.WithTimeout(context.Background(), 22*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), mc.Timeout*time.Second)
 			defer cancel()
 			_, err := collection.InsertOne(ctx, logs)
 			if err != nil {
