@@ -1,13 +1,15 @@
 package wallets
 
 import (
+	"aprian1337/thukul-service/business/wallet_histories"
 	"context"
 	"time"
 )
 
 type WalletUsecase struct {
-	Repo    Repository
-	Timeout time.Duration
+	Repo                 Repository
+	WalletHistoryUsecase wallet_histories.Usecase
+	Timeout              time.Duration
 }
 
 func (uc *WalletUsecase) Create(ctx context.Context, domain Domain) error {
@@ -18,10 +20,11 @@ func (uc *WalletUsecase) Create(ctx context.Context, domain Domain) error {
 	return nil
 }
 
-func NewWalletsUsecase(repo Repository, timeout time.Duration) *WalletUsecase {
+func NewWalletsUsecase(repo Repository, walletHistoryUsecase wallet_histories.Usecase, timeout time.Duration) *WalletUsecase {
 	return &WalletUsecase{
-		Repo:    repo,
-		Timeout: timeout,
+		Repo:                 repo,
+		WalletHistoryUsecase: walletHistoryUsecase,
+		Timeout:              timeout,
 	}
 }
 
@@ -36,6 +39,16 @@ func (uc *WalletUsecase) UpdateByUserId(ctx context.Context, domain Domain) (Dom
 	data, err := uc.Repo.UpdateByUserId(ctx, domain)
 	if err != nil {
 		return Domain{}, err
+	}
+	data.Kind = domain.Kind
+	data.NominalTransaction = domain.NominalTransaction
+	data.CoinId = domain.CoinId
+	data.TransactionId = domain.TransactionId
+	if data.Kind == "topup" {
+		err := uc.WalletHistoryUsecase.Create(ctx, data.ToHistoryDomain())
+		if err != nil {
+			return Domain{}, err
+		}
 	}
 
 	return data, nil

@@ -17,7 +17,7 @@ func NewPostgresWalletHistoriesRepository(conn *gorm.DB) *PostgresWalletHistorie
 }
 func (repo *PostgresWalletHistoriesRepository) Create(ctx context.Context, domain wallet_histories.Domain) error {
 	data := FromDomain(domain)
-	err := repo.ConnPostgres.Create(data)
+	err := repo.ConnPostgres.Create(&data)
 	if err.Error != nil {
 		return err.Error
 	}

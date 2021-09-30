@@ -30,8 +30,8 @@ func (repo *PostgresWalletsRepository) GetByUserId(ctx context.Context, userId i
 	return data.ToDomain(), nil
 }
 func (repo *PostgresWalletsRepository) UpdateByUserId(ctx context.Context, domain wallets.Domain) (wallets.Domain, error) {
-	var data Wallets
-	err := repo.ConnPostgres.Model(&Wallets{}).Where("user_id = ? AND id = ?", domain.UserId, domain.Id).Update("total", domain.Total)
+	data := FromDomain(domain)
+	err := repo.ConnPostgres.Model(&data).Where("user_id=?", data.UserId).Update("total", data.Total)
 	if err.Error != nil {
 		return wallets.Domain{}, err.Error
 	}

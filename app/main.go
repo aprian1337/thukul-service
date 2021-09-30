@@ -128,11 +128,11 @@ func main() {
 	}
 	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
 
-	walletsRepository := _walletDb.NewPostgresWalletsRepository(connPostgres)
-	walletsUsecase := _walletUsecase.NewWalletsUsecase(walletsRepository, timeoutContext)
-
 	walletsHistoryRepository := _walletHistoryDb.NewPostgresWalletHistoriesRepository(connPostgres)
 	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
+
+	walletsRepository := _walletDb.NewPostgresWalletsRepository(connPostgres)
+	walletsUsecase := _walletUsecase.NewWalletsUsecase(walletsRepository, walletsHistoryUsecase, timeoutContext)
 
 	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(walletsUsecase, walletsHistoryUsecase, timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)

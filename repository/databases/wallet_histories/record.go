@@ -5,6 +5,7 @@ import (
 	wallets_domain "aprian1337/thukul-service/business/wallets"
 	"aprian1337/thukul-service/repository/databases/transactions"
 	"aprian1337/thukul-service/repository/databases/wallets"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -12,7 +13,7 @@ type WalletHistories struct {
 	ID            int `gorm:"primaryKey"`
 	WalletId      int
 	Wallet        wallets.Wallets `gorm:"foreignKey:wallet_id"`
-	TransactionId int
+	TransactionId *uuid.UUID
 	Transaction   transactions.Transactions `gorm:"foreignKey:transaction_id"`
 	Type          string
 	Nominal       float64
@@ -29,9 +30,8 @@ func (data *WalletHistories) ToDomain() wallets_domain.Domain {
 
 func FromDomain(domain wallet_histories.Domain) WalletHistories {
 	return WalletHistories{
-		WalletId:      domain.WalletId,
-		TransactionId: domain.TransactionId,
-		Type:          domain.Type,
-		Nominal:       domain.Nominal,
+		WalletId: domain.WalletId,
+		Type:     domain.Type,
+		Nominal:  domain.Nominal,
 	}
 }

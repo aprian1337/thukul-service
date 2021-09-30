@@ -9,16 +9,14 @@ import (
 )
 
 type PaymentUsecase struct {
-	WalletUsecase        wallets.Usecase
-	WalletHistoryUsecase wallet_histories.Usecase
-	Timeout              time.Duration
+	WalletUsecase wallets.Usecase
+	Timeout       time.Duration
 }
 
 func NewPaymentUsecase(walletUsecase wallets.Usecase, walletHistoryUsecase wallet_histories.Usecase, timeout time.Duration) *PaymentUsecase {
 	return &PaymentUsecase{
-		WalletUsecase:        walletUsecase,
-		WalletHistoryUsecase: walletHistoryUsecase,
-		Timeout:              timeout,
+		WalletUsecase: walletUsecase,
+		Timeout:       timeout,
 	}
 }
 
@@ -31,6 +29,8 @@ func (uc *PaymentUsecase) TopUp(ctx context.Context, domain Domain) (wallets.Dom
 		return wallets.Domain{}, businesses.ErrUserIdNotFound
 	}
 	wallet.Total += domain.Nominal
+	wallet.NominalTransaction = domain.Nominal
+	wallet.Kind = "topup"
 	_, err = uc.WalletUsecase.UpdateByUserId(ctx, wallet)
 	if err != nil {
 		return wallets.Domain{}, nil

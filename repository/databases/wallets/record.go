@@ -17,7 +17,7 @@ type Wallets struct {
 
 func (data *Wallets) ToDomain() wallets.Domain {
 	return wallets.Domain{
-		Id:     data.UserId,
+		Id:     data.ID,
 		UserId: data.UserId,
 		Total:  data.Total,
 	}
