@@ -130,7 +130,7 @@ func main() {
 
 	configMarketRepo := _coinmarketRepo.MarketCapAPI{
 		BaseUrl:        constants.BaseUrlApiMarketcap,
-		EndpointSymbol: constants.EndpointMarketcapPrice,
+		EndpointSymbol: constants.EndpointMarketcapSymbol,
 		EndpointPrice:  constants.EndpointMarketcapPrice,
 		ApiKey:         viper.GetString("thirdparties.coinmarketcap.api_key"),
 	}

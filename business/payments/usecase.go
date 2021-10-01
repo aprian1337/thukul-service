@@ -98,6 +98,7 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return businesses.ErrQtyRequired
 	}
+	//fmt.Println(wallet.Total, price)
 	diff := wallet.Total - price
 	if diff < 0 {
 		return businesses.ErrWalletNotEnough

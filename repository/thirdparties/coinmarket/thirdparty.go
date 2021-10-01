@@ -23,7 +23,7 @@ func NewMarketCapAPI(api MarketCapAPI) *MarketCapAPI {
 		BaseUrl:        api.BaseUrl,
 		ApiKey:         api.ApiKey,
 		EndpointSymbol: api.EndpointSymbol,
-		EndpointPrice:  api.EndpointSymbol,
+		EndpointPrice:  api.EndpointPrice,
 	}
 }
 
@@ -54,6 +54,8 @@ func (api *MarketCapAPI) GetPrice(ctx context.Context, symbol string, amount flo
 	}
 	response := PriceResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
+	fmt.Println("URI")
+	fmt.Println(uri)
 	if err != nil {
 		return 0, repository.ErrDataNotFound
 	}

@@ -40,3 +40,25 @@ func (ctrl *Controller) TopUp(c echo.Context) error {
 		Data:    pay,
 	})
 }
+
+func (ctrl *Controller) Buy(c echo.Context) error {
+	ctxNative := c.Request().Context()
+	var data requests.PaymentRequest
+	err := c.Bind(&data)
+	if err != nil {
+		return err
+	}
+	err = ctrl.PaymentUsecase.BuyCoin(ctxNative, data.ToDomain())
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+		//if err == businesses.ErrBadRequest {
+		//	return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
+		//} else if err == businesses.ErrUserIdNotFound {
+		//	return deliveries.NewErrorResponse(c, http.StatusForbidden, err)
+		//}
+	}
+	return deliveries.NewSuccessResponse(c, responses.TopUpResponse{
+		Message: "Buy coin success",
+		Data:    nil,
+	})
+}
