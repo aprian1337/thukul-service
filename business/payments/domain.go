@@ -15,5 +15,6 @@ type Domain struct {
 
 type Usecase interface {
 	BuyCoin(ctx context.Context, domain Domain) error
+	SellCoin(ctx context.Context, domain Domain) error
 	TopUp(ctx context.Context, domain Domain) (wallets.Domain, error)
 }

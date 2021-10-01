@@ -37,7 +37,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	//middleware.JWTWithConfig(cl.JWTMiddleware)
 	v1.GET("users", cl.UserController.GetUsersController)
 	v1.GET("users/:id", cl.UserController.GetDetailUserController)
-	v1.POST("users", cl.UserController.CreateUserController)
+	v1.POST("users", cl.UserController.CreateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
 	v1.DELETE("users/:id", cl.UserController.DeleteUserController)
 	v1.PUT("users/:id", cl.UserController.UpdateUserController)
 
@@ -78,6 +78,9 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 
 	//PAYMENTS
 	v1.POST("payments/topup", cl.PaymentController.TopUp)
+	v1.POST("payments/buy", cl.PaymentController.TopUp)
+	v1.POST("payments/sell", cl.PaymentController.TopUp)
+	v1.POST("payments/confirm/:uuid/:encrypt", cl.PaymentController.TopUp)
 
 	//COINS
 	v1.GET("coins", cl.CoinController.GetBySymbol)

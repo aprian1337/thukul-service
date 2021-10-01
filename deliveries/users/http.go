@@ -1,11 +1,13 @@
 package users
 
 import (
+	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/business/users"
 	"aprian1337/thukul-service/deliveries"
 	"aprian1337/thukul-service/deliveries/users/requests"
 	"aprian1337/thukul-service/deliveries/users/responses"
 	"aprian1337/thukul-service/helpers"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -46,6 +48,8 @@ func (ctrl *Controller) GetDetailUserController(c echo.Context) error {
 
 func (ctrl *Controller) CreateUserController(c echo.Context) error {
 	request := requests.UserRegister{}
+	u := middlewares.GetClaimUser(c)
+	fmt.Println(u)
 	var err error
 	err = c.Bind(&request)
 	if err != nil {

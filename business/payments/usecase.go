@@ -13,6 +13,10 @@ type PaymentUsecase struct {
 	Timeout       time.Duration
 }
 
+func (uc *PaymentUsecase) SellCoin(ctx context.Context, domain Domain) error {
+	panic("implement me")
+}
+
 func NewPaymentUsecase(walletUsecase wallets.Usecase, walletHistoryUsecase wallet_histories.Usecase, timeout time.Duration) *PaymentUsecase {
 	return &PaymentUsecase{
 		WalletUsecase: walletUsecase,
@@ -39,5 +43,11 @@ func (uc *PaymentUsecase) TopUp(ctx context.Context, domain Domain) (wallets.Dom
 }
 
 func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
-	panic("implement me")
+	if domain.Coin == "" {
+		return businesses.ErrCoinRequired
+	}
+	if domain.Qty == 0 {
+		return businesses.ErrQtyRequired
+	}
+	return businesses.ErrUserIdRequired
 }
