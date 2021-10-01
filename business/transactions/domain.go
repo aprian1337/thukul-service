@@ -19,7 +19,7 @@ type Domain struct {
 type Usecase interface {
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	UpdaterVerify(ctx context.Context, transactionId string) (Domain, error)
-	UpdaterCompleted(ctx context.Context, transactionId string, status string) (Domain, error)
+	UpdaterCompleted(ctx context.Context, transactionId string, status int) (Domain, error)
 }
 
 type Repository interface {

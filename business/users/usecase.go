@@ -5,8 +5,7 @@ import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/wallets"
 	"aprian1337/thukul-service/helpers"
-	"aprian1337/thukul-service/utilities"
-	"aprian1337/thukul-service/utilities/constants"
+	"aprian1337/thukul-service/helpers/constants"
 	"context"
 	"log"
 	"time"
@@ -69,7 +68,7 @@ func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, erro
 		return Domain{}, businesses.ErrInvalidDate
 	}
 
-	domain.Password, _ = utilities.HashPassword(domain.Password)
+	domain.Password, _ = helpers.HashPassword(domain.Password)
 
 	user, err := uc.Repo.Create(ctx, domain)
 
@@ -95,7 +94,7 @@ func (uc *UserUsecase) Login(ctx context.Context, email string, password string)
 		return Domain{}, "", err
 	}
 
-	if !utilities.CheckPassword(password, user.Password) {
+	if !helpers.CheckPassword(password, user.Password) {
 		return Domain{}, "", businesses.ErrInvalidAuthentication
 	}
 
@@ -130,7 +129,7 @@ func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Dom
 		return Domain{}, businesses.ErrEmailHasBeenRegister
 	}
 
-	domain.Password, _ = utilities.HashPassword(domain.Password)
+	domain.Password, _ = helpers.HashPassword(domain.Password)
 	domain.ID = id
 	user, err := uc.Repo.Update(ctx, domain)
 

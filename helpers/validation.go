@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"aprian1337/thukul-service/utilities/constants"
+	"aprian1337/thukul-service/helpers/constants"
 	"reflect"
 	"regexp"
 	"strconv"

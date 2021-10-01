@@ -5,6 +5,7 @@ import (
 	"aprian1337/thukul-service/app/routes"
 	_usersUsecase "aprian1337/thukul-service/business/users"
 	_usersDelivery "aprian1337/thukul-service/deliveries/users"
+	"aprian1337/thukul-service/helpers/constants"
 	_transactionHistoryDb "aprian1337/thukul-service/repository/databases/transactions"
 	_usersDb "aprian1337/thukul-service/repository/databases/users"
 
@@ -42,6 +43,12 @@ import (
 
 	_paymentsUsecase "aprian1337/thukul-service/business/payments"
 	_paymentDelivery "aprian1337/thukul-service/deliveries/payments"
+
+	_cryptosUsecase "aprian1337/thukul-service/business/cryptos"
+	_cryptoDb "aprian1337/thukul-service/repository/databases/cryptos"
+
+	_transactionUsecase "aprian1337/thukul-service/business/transactions"
+	_transactionDb "aprian1337/thukul-service/repository/databases/transactions"
 
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
@@ -122,11 +129,19 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
 	configMarketRepo := _coinmarketRepo.MarketCapAPI{
-		BaseUrl:        viper.GetString("thirdparties.coinmarketcap.base_url"),
+		BaseUrl:        constants.BaseUrlApiMarketcap,
+		EndpointSymbol: constants.EndpointMarketcapPrice,
+		EndpointPrice:  constants.EndpointMarketcapPrice,
 		ApiKey:         viper.GetString("thirdparties.coinmarketcap.api_key"),
-		EndpointSymbol: viper.GetString("thirdparties.coinmarketcap.endpoint_symbol"),
 	}
 	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
+
+	cryptoRepository := _cryptoDb.NewPostgresCryptosRepository(connPostgres)
+	cryptoUsecase := _cryptosUsecase.NewCryptoUsecase(cryptoRepository, timeoutContext)
+
+	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
+	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
+	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
 
 	walletsHistoryRepository := _walletHistoryDb.NewPostgresWalletHistoriesRepository(connPostgres)
 	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
@@ -134,7 +149,10 @@ func main() {
 	walletsRepository := _walletDb.NewPostgresWalletsRepository(connPostgres)
 	walletsUsecase := _walletUsecase.NewWalletsUsecase(walletsRepository, walletsHistoryUsecase, timeoutContext)
 
-	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(walletsUsecase, walletsHistoryUsecase, timeoutContext)
+	transactionsRepository := _transactionDb.NewPostgresTransactionRepository(connPostgres)
+	transactionsUsecase := _transactionUsecase.NewTransactionUsecase(transactionsRepository, timeoutContext)
+
+	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
 
 	userRepository := _usersDb.NewPostgresUserRepository(connPostgres)
@@ -152,10 +170,6 @@ func main() {
 	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
 	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityUsecase, timeoutContext)
 	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
-
-	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
-	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
-	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
 
 	wishlistRepository := _wishlistDb.NewPostgresWishlistRepository(connPostgres)
 	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, userUsecase, timeoutContext)
