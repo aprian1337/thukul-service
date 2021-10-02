@@ -1,6 +1,7 @@
 package users
 
 import (
+	"aprian1337/thukul-service/business/smtp"
 	wallets_domain "aprian1337/thukul-service/business/wallets"
 	"context"
 	"time"
@@ -19,16 +20,21 @@ type Domain struct {
 	Birthday  string
 	Address   string
 	Company   string
-	Wallets   interface{}
 	IsValid   int
+	Wallets   Wallets
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type Salary struct {
-	ID      uint
-	Minimal float64
-	Maximal float64
+	ID      uint    `json:"id"`
+	Minimal float64 `json:"minimal"`
+	Maximal float64 `json:"maximal"`
+}
+
+type Wallets struct {
+	ID    int     `json:"id"`
+	Total float64 `json:"total"`
 }
 
 type Usecase interface {
@@ -54,5 +60,13 @@ type Repository interface {
 func (d *Domain) ToWalletDomain() wallets_domain.Domain {
 	return wallets_domain.Domain{
 		UserId: int(d.ID),
+	}
+}
+
+func (d *Domain) ToSmtpDomain(subject string, message string) smtp.Domain {
+	return smtp.Domain{
+		MailTo:  []string{d.Email},
+		Subject: subject,
+		Message: message,
 	}
 }

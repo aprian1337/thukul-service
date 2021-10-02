@@ -20,7 +20,7 @@ func NewPostgresUserRepository(conn *gorm.DB) *UserRepository {
 
 func (repo *UserRepository) UsersGetById(ctx context.Context, id int) (users.Domain, error) {
 	var user records.Users
-	err := repo.ConnPostgres.Joins("Salary").Find(&user, "users.id = ?", id)
+	err := repo.ConnPostgres.Preload("Wallets").Joins("Salary").Find(&user, "users.id = ?", id)
 	if err.Error != nil {
 		return users.Domain{}, err.Error
 	}

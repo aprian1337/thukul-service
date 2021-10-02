@@ -117,7 +117,7 @@ func main() {
 
 	smtpUsecase := _smtpUsecase.NewSmtpUsecase(
 		viper.GetString(`smtp.host`),
-		viper.GetString(`smtp.port`),
+		viper.GetInt(`smtp.port`),
 		viper.GetString(`smtp.sender_name`),
 		viper.GetString(`smtp.email`),
 		viper.GetString(`smtp.password`),

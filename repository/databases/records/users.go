@@ -19,7 +19,7 @@ type Users struct {
 	Birthday  string `gorm:"type:date"`
 	Address   string `gorm:"type:text"`
 	Company   string
-	Wallets   []Wallets      `gorm:"foreignKey:user_id"`
+	Wallets   Wallets        `gorm:"foreignKey:user_id"`
 	IsValid   int            `gorm:"type:smallint; default:0"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
@@ -30,17 +30,18 @@ func (user *Users) UsersToDomain() users.Domain {
 	return users.Domain{
 		ID:       user.ID,
 		SalaryId: user.SalaryId,
-		Salary: struct {
+		Salary: users.Salary(struct {
 			ID      uint
 			Minimal float64
 			Maximal float64
-		}{ID: user.Salary.ID, Minimal: user.Salary.Minimal, Maximal: user.Salary.Maximal},
+		}{ID: user.Salary.ID, Minimal: user.Salary.Minimal, Maximal: user.Salary.Maximal}),
 		Name:      user.Name,
 		Password:  user.Password,
 		IsAdmin:   user.IsAdmin,
 		Email:     user.Email,
 		Phone:     user.Phone,
 		Gender:    user.Gender,
+		Wallets:   user.Wallets.WalletsToUsersWalletDomain(),
 		Birthday:  user.Birthday,
 		Address:   user.Address,
 		Company:   user.Company,

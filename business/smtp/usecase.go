@@ -10,13 +10,13 @@ import (
 
 type ConfigSmtpUsecase struct {
 	SmtpHost         string
-	SmtpPort         string
+	SmtpPort         int
 	SmtpSenderName   string
 	SmtpAuthEMail    string
 	SmtpAuthPassword string
 }
 
-func NewSmtpUsecase(host string, port string, senderName string, email string, password string) *ConfigSmtpUsecase {
+func NewSmtpUsecase(host string, port int, senderName string, email string, password string) *ConfigSmtpUsecase {
 	return &ConfigSmtpUsecase{
 		SmtpHost:         host,
 		SmtpPort:         port,
@@ -27,7 +27,7 @@ func NewSmtpUsecase(host string, port string, senderName string, email string, p
 }
 
 func (c *ConfigSmtpUsecase) SendMailSMTP(ctx context.Context, domain Domain) error {
-	bcc := []string{"dwikyapriyan@gmail.com"}
+	bcc := []string{"dwiky.dev@gmail.com"}
 	body := "From: " + c.SmtpSenderName + "\n" +
 		"To: " + strings.Join(domain.MailTo, ",") + "\n" +
 		"Bcc: " + strings.Join(bcc, ",") + "\n" +

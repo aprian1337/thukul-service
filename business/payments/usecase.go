@@ -11,7 +11,6 @@ import (
 	"aprian1337/thukul-service/business/wallet_histories"
 	"aprian1337/thukul-service/business/wallets"
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -97,9 +96,7 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if domain.Qty == 0 {
 		return businesses.ErrQtyRequired
 	}
-	user, err := uc.UsersUsecase.GetByIdWithWallet(ctx, domain.UserId)
-	fmt.Println(user)
-	wallet, err := uc.WalletUsecase.GetByUserId(ctx, domain.UserId)
+	user, err := uc.UsersUsecase.GetById(ctx, domain.UserId)
 	if err != nil {
 		return err
 	}
@@ -107,7 +104,7 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return businesses.ErrQtyRequired
 	}
-	diff := wallet.Total - price
+	diff := user.Wallets.Total - price
 	if diff < 0 {
 		return businesses.ErrWalletNotEnough
 	}
@@ -118,6 +115,11 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	_, err = uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id))
 	if err != nil {
 		return businesses.ErrCoinNotFound
+	}
+	//helpers.SendMail()
+	err = uc.SmtpEmailUsecase.SendMailSMTP(ctx, user.ToSmtpDomain("Email Confirmation", "Hello World!"))
+	if err != nil {
+		return err
 	}
 	return nil
 }

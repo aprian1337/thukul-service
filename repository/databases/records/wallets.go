@@ -1,6 +1,7 @@
 package records
 
 import (
+	"aprian1337/thukul-service/business/users"
 	"aprian1337/thukul-service/business/wallets"
 	"time"
 )
@@ -13,11 +14,18 @@ type Wallets struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
-func (data *Wallets) WalletsToDomain() wallets.Domain {
+func (data *Wallets) WalletsToWalletsDomain() wallets.Domain {
 	return wallets.Domain{
 		Id:     data.ID,
 		UserId: data.UserId,
 		Total:  data.Total,
+	}
+}
+
+func (data *Wallets) WalletsToUsersWalletDomain() users.Wallets {
+	return users.Wallets{
+		ID:    data.ID,
+		Total: data.Total,
 	}
 }
 
@@ -32,7 +40,7 @@ func WalletsFromDomain(domain wallets.Domain) Wallets {
 func WalletsToListDomain(data []Wallets) []wallets.Domain {
 	var list []wallets.Domain
 	for _, v := range data {
-		list = append(list, v.WalletsToDomain())
+		list = append(list, v.WalletsToWalletsDomain())
 	}
 	return list
 }

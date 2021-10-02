@@ -28,7 +28,7 @@ func (repo *WalletsRepository) GetByUserId(ctx context.Context, userId int) (wal
 		return wallets.Domain{}, errors.New("user id not found")
 	}
 
-	return data.WalletsToDomain(), nil
+	return data.WalletsToWalletsDomain(), nil
 }
 func (repo *WalletsRepository) UpdateByUserId(ctx context.Context, domain wallets.Domain) (wallets.Domain, error) {
 	data := records.WalletsFromDomain(domain)
@@ -36,7 +36,7 @@ func (repo *WalletsRepository) UpdateByUserId(ctx context.Context, domain wallet
 	if err.Error != nil {
 		return wallets.Domain{}, err.Error
 	}
-	return data.WalletsToDomain(), nil
+	return data.WalletsToWalletsDomain(), nil
 }
 
 func (repo *WalletsRepository) Create(ctx context.Context, domain wallets.Domain) error {
