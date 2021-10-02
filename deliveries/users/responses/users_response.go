@@ -2,22 +2,22 @@ package responses
 
 import (
 	"aprian1337/thukul-service/business/users"
-	"aprian1337/thukul-service/repository/databases/salaries"
+	"aprian1337/thukul-service/repository/databases/records"
 )
 
 type UsersResponse struct {
-	Id       uint              `json:"id"`
-	SalaryId int               `json:"salary_id" validate:"numeric"`
-	Salary   salaries.Salaries `json:"salary"`
-	Name     string            `json:"name"`
-	IsAdmin  int               `json:"is_admin" validate:"numeric"`
-	Email    string            `json:"email"`
-	Phone    string            `json:"phone"`
-	Gender   string            `json:"gender"`
-	Birthday string            `json:"birthday"`
-	Address  string            `json:"address"`
-	Company  string            `json:"company"`
-	IsValid  int               `json:"is_valid"`
+	Id       uint             `json:"id"`
+	SalaryId int              `json:"salary_id" validate:"numeric"`
+	Salary   records.Salaries `json:"salary"`
+	Name     string           `json:"name"`
+	IsAdmin  int              `json:"is_admin" validate:"numeric"`
+	Email    string           `json:"email"`
+	Phone    string           `json:"phone"`
+	Gender   string           `json:"gender"`
+	Birthday string           `json:"birthday"`
+	Address  string           `json:"address"`
+	Company  string           `json:"company"`
+	IsValid  int              `json:"is_valid"`
 }
 
 type LoginResponse struct {

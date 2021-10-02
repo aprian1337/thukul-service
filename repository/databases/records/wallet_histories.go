@@ -1,10 +1,8 @@
-package wallets
+package records
 
 import (
 	"aprian1337/thukul-service/business/wallet_histories"
 	wallets_domain "aprian1337/thukul-service/business/wallets"
-	"aprian1337/thukul-service/repository/databases/transactions"
-	"aprian1337/thukul-service/repository/databases/wallets"
 	"github.com/google/uuid"
 	"time"
 )
@@ -12,15 +10,15 @@ import (
 type WalletHistories struct {
 	ID            int `gorm:"primaryKey"`
 	WalletId      int
-	Wallet        wallets.Wallets `gorm:"foreignKey:wallet_id"`
+	Wallet        Wallets `gorm:"foreignKey:wallet_id"`
 	TransactionId *uuid.UUID
-	Transaction   transactions.Transactions `gorm:"foreignKey:transaction_id"`
+	Transaction   Transactions `gorm:"foreignKey:transaction_id"`
 	Type          string
 	Nominal       float64
 	CreatedAt     time.Time `gorm:"autoCreateTime"`
 }
 
-func (data *WalletHistories) ToDomain() wallets_domain.Domain {
+func (data *WalletHistories) WalletHistoriesToDomain() wallets_domain.Domain {
 	return wallets_domain.Domain{
 		Id:     0,
 		UserId: 0,
@@ -28,7 +26,7 @@ func (data *WalletHistories) ToDomain() wallets_domain.Domain {
 	}
 }
 
-func FromDomain(domain wallet_histories.Domain) WalletHistories {
+func WalletHistoriesFromDomain(domain wallet_histories.Domain) WalletHistories {
 	return WalletHistories{
 		WalletId: domain.WalletId,
 		Type:     domain.Type,

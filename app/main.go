@@ -3,54 +3,33 @@ package main
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
+	_smtpUsecase "aprian1337/thukul-service/business/smtp"
 	_usersUsecase "aprian1337/thukul-service/business/users"
 	_usersDelivery "aprian1337/thukul-service/deliveries/users"
 	"aprian1337/thukul-service/helpers/constants"
-	_transactionHistoryDb "aprian1337/thukul-service/repository/databases/transactions"
-	_usersDb "aprian1337/thukul-service/repository/databases/users"
-
-	_smtpUsecase "aprian1337/thukul-service/business/smtp"
+	postgres2 "aprian1337/thukul-service/repository/databases/postgres"
+	_activityDb "aprian1337/thukul-service/repository/databases/records"
 	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
 
-	_salaryUsecase "aprian1337/thukul-service/business/salaries"
-	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
-	_salaryDb "aprian1337/thukul-service/repository/databases/salaries"
-
-	_pocketUsecase "aprian1337/thukul-service/business/pockets"
-	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
-	_pocketDb "aprian1337/thukul-service/repository/databases/pockets"
-
 	_activityUsecase "aprian1337/thukul-service/business/activities"
-	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
-	_activityDb "aprian1337/thukul-service/repository/databases/activities"
-
 	_coinUsecase "aprian1337/thukul-service/business/coins"
-	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
-	_coinDb "aprian1337/thukul-service/repository/databases/coins"
-
-	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
-	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
-	_wishlistDb "aprian1337/thukul-service/repository/databases/wishlists"
-
 	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
-	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
-	_favoriteDb "aprian1337/thukul-service/repository/databases/favorites"
-
-	_walletUsecase "aprian1337/thukul-service/business/wallets"
-	_walletDb "aprian1337/thukul-service/repository/databases/wallets"
-
-	_walletHistoryUsecase "aprian1337/thukul-service/business/wallet_histories"
-	_walletHistoryDb "aprian1337/thukul-service/repository/databases/wallet_histories"
-
 	_paymentsUsecase "aprian1337/thukul-service/business/payments"
+	_pocketUsecase "aprian1337/thukul-service/business/pockets"
+	_salaryUsecase "aprian1337/thukul-service/business/salaries"
+	_walletHistoryUsecase "aprian1337/thukul-service/business/wallet_histories"
+	_walletUsecase "aprian1337/thukul-service/business/wallets"
+	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
+	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
+	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
+	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
 	_paymentDelivery "aprian1337/thukul-service/deliveries/payments"
+	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
+	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
+	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
 
 	_cryptosUsecase "aprian1337/thukul-service/business/cryptos"
-	_cryptoDb "aprian1337/thukul-service/repository/databases/cryptos"
-
 	_transactionUsecase "aprian1337/thukul-service/business/transactions"
-	_transactionDb "aprian1337/thukul-service/repository/databases/transactions"
-
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
 	"fmt"
@@ -74,16 +53,16 @@ func init() {
 
 func DbMigrate(db *gorm.DB) {
 	err := db.AutoMigrate(
-		&_salaryDb.Salaries{},
-		&_usersDb.Users{},
-		&_pocketDb.Pockets{},
+		&_activityDb.Salaries{},
+		&_activityDb.Users{},
+		&_activityDb.Pockets{},
 		&_activityDb.Activities{},
-		&_coinDb.Coins{},
-		&_favoriteDb.Favorites{},
-		&_wishlistDb.Wishlists{},
-		&_transactionHistoryDb.Transactions{},
-		&_walletDb.Wallets{},
-		&_walletHistoryDb.WalletHistories{},
+		&_activityDb.Coins{},
+		&_activityDb.Favorites{},
+		&_activityDb.Wishlists{},
+		&_activityDb.Transactions{},
+		&_activityDb.Wallets{},
+		&_activityDb.WalletHistories{},
 	)
 	if err != nil {
 		panic(err)
@@ -146,46 +125,46 @@ func main() {
 
 	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
 
-	cryptoRepository := _cryptoDb.NewPostgresCryptosRepository(connPostgres)
+	cryptoRepository := postgres2.NewPostgresCryptosRepository(connPostgres)
 	cryptoUsecase := _cryptosUsecase.NewCryptoUsecase(cryptoRepository, timeoutContext)
 
-	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
+	coinRepository := postgres2.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
 
-	walletsHistoryRepository := _walletHistoryDb.NewPostgresWalletHistoriesRepository(connPostgres)
+	walletsHistoryRepository := postgres2.NewPostgresWalletHistoriesRepository(connPostgres)
 	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
 
-	walletsRepository := _walletDb.NewPostgresWalletsRepository(connPostgres)
+	walletsRepository := postgres2.NewPostgresWalletsRepository(connPostgres)
 	walletsUsecase := _walletUsecase.NewWalletsUsecase(walletsRepository, walletsHistoryUsecase, timeoutContext)
 
-	transactionsRepository := _transactionDb.NewPostgresTransactionRepository(connPostgres)
+	transactionsRepository := postgres2.NewPostgresTransactionRepository(connPostgres)
 	transactionsUsecase := _transactionUsecase.NewTransactionUsecase(transactionsRepository, timeoutContext)
 
-	userRepository := _usersDb.NewPostgresUserRepository(connPostgres)
+	userRepository := postgres2.NewPostgresUserRepository(connPostgres)
 	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
 
 	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
 
-	salaryRepository := _salaryDb.NewPostgresSalariesRepository(connPostgres)
+	salaryRepository := postgres2.NewPostgresSalariesRepository(connPostgres)
 	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
 	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
 
-	activityRepository := _activityDb.NewPostgresPocketsRepository(connPostgres)
+	activityRepository := postgres2.NewPostgresActivitiesRepository(connPostgres)
 	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
 	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
 
-	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
+	pocketRepository := postgres2.NewPostgresPocketsRepository(connPostgres)
 	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityUsecase, timeoutContext)
 	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
 
-	wishlistRepository := _wishlistDb.NewPostgresWishlistRepository(connPostgres)
+	wishlistRepository := postgres2.NewPostgresWishlistRepository(connPostgres)
 	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, userUsecase, timeoutContext)
 	wishlistDelivery := _wishlistDelivery.NewSalariesController(wishlistUsecase)
 
-	favoriteRepository := _favoriteDb.NewPostgresFavoritesRepository(connPostgres)
+	favoriteRepository := postgres2.NewPostgresFavoritesRepository(connPostgres)
 	favoriteUsecase := _favoriteUsecase.NewFavoriteUsecase(favoriteRepository, userUsecase, coinUsecase, timeoutContext)
 	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
 

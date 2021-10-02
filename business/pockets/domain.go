@@ -23,9 +23,9 @@ type Usecase interface {
 }
 
 type Repository interface {
-	GetList(ctx context.Context, id int) ([]Domain, error)
-	GetById(ctx context.Context, userId int, pocketId int) (Domain, error)
-	Create(ctx context.Context, domain Domain) (Domain, error)
-	Update(ctx context.Context, domain Domain, userId int, pocketId int) (Domain, error)
-	Delete(ctx context.Context, userId int, pocketId int) (int64, error)
+	PocketsGetList(ctx context.Context, id int) ([]Domain, error)
+	PocketsGetById(ctx context.Context, userId int, pocketId int) (Domain, error)
+	PocketsCreate(ctx context.Context, domain Domain) (Domain, error)
+	PocketsUpdate(ctx context.Context, domain Domain, userId int, pocketId int) (Domain, error)
+	PocketsDelete(ctx context.Context, userId int, pocketId int) (int64, error)
 }

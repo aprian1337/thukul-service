@@ -28,7 +28,7 @@ func NewUserUsecase(repo Repository, walletUsecase wallets.Usecase, timeout time
 }
 
 func (uc *UserUsecase) GetByIdWithWallet(ctx context.Context, id int) (Domain, error) {
-	user, err := uc.Repo.GetByIdWithWallet(ctx, id)
+	user, err := uc.Repo.UsersGetByIdWithWallet(ctx, id)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -36,7 +36,7 @@ func (uc *UserUsecase) GetByIdWithWallet(ctx context.Context, id int) (Domain, e
 }
 
 func (uc *UserUsecase) GetAll(ctx context.Context) ([]Domain, error) {
-	user, err := uc.Repo.GetAll(ctx)
+	user, err := uc.Repo.UsersGetAll(ctx)
 	if err != nil {
 		return []Domain{}, err
 	}
@@ -44,7 +44,7 @@ func (uc *UserUsecase) GetAll(ctx context.Context) ([]Domain, error) {
 }
 
 func (uc *UserUsecase) GetById(ctx context.Context, id int) (Domain, error) {
-	user, err := uc.Repo.GetById(ctx, id)
+	user, err := uc.Repo.UsersGetById(ctx, id)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -63,7 +63,7 @@ func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, erro
 		return Domain{}, businesses.ErrEmailNotValid
 	}
 
-	data, err := uc.Repo.GetByEmail(ctx, domain.Email)
+	data, err := uc.Repo.UsersGetByEmail(ctx, domain.Email)
 	if data.ID > 0 {
 		return Domain{}, businesses.ErrEmailHasBeenRegister
 	}
@@ -78,7 +78,7 @@ func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, erro
 
 	domain.Password, _ = helpers.HashPassword(domain.Password)
 
-	user, err := uc.Repo.Create(ctx, domain)
+	user, err := uc.Repo.UsersCreate(ctx, domain)
 
 	if err != nil {
 		return Domain{}, err
@@ -96,7 +96,7 @@ func (uc *UserUsecase) Login(ctx context.Context, email string, password string)
 		return Domain{}, "", businesses.ErrUsernamePasswordNotFound
 	}
 
-	user, err := uc.Repo.GetByEmail(ctx, email)
+	user, err := uc.Repo.UsersGetByEmail(ctx, email)
 
 	if err != nil {
 		return Domain{}, "", err
@@ -132,14 +132,14 @@ func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Dom
 		return Domain{}, businesses.ErrEmailNotValid
 	}
 
-	data, err := uc.Repo.GetByEmail(ctx, domain.Email)
+	data, err := uc.Repo.UsersGetByEmail(ctx, domain.Email)
 	if data.ID > 0 && data.ID != id {
 		return Domain{}, businesses.ErrEmailHasBeenRegister
 	}
 
 	domain.Password, _ = helpers.HashPassword(domain.Password)
 	domain.ID = id
-	user, err := uc.Repo.Update(ctx, domain)
+	user, err := uc.Repo.UsersUpdate(ctx, domain)
 
 	if err != nil {
 		return Domain{}, err
@@ -149,7 +149,7 @@ func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Dom
 }
 
 func (uc *UserUsecase) Delete(ctx context.Context, id uint) error {
-	err := uc.Repo.Delete(ctx, id)
+	err := uc.Repo.UsersDelete(ctx, id)
 	if err != nil {
 		return err
 	}

@@ -32,14 +32,14 @@ func (pu *PocketUsecase) GetList(ctx context.Context, id string) ([]Domain, erro
 		convId, _ = strconv.Atoi(id)
 	}
 
-	pockets, err := pu.Repo.GetList(ctx, convId)
+	pockets, err := pu.Repo.PocketsGetList(ctx, convId)
 	if err != nil {
 		return []Domain{}, err
 	}
 	return pockets, nil
 }
 func (pu *PocketUsecase) GetById(ctx context.Context, userId int, pocketId int) (Domain, error) {
-	pockets, err := pu.Repo.GetById(ctx, userId, pocketId)
+	pockets, err := pu.Repo.PocketsGetById(ctx, userId, pocketId)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -49,14 +49,14 @@ func (pu *PocketUsecase) Create(ctx context.Context, domain Domain) (Domain, err
 	if domain.Name == "" {
 		return Domain{}, businesses.ErrBadRequest
 	}
-	pockets, err := pu.Repo.Create(ctx, domain)
+	pockets, err := pu.Repo.PocketsCreate(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}
 	return pockets, nil
 }
 func (pu *PocketUsecase) Update(ctx context.Context, domain Domain, userId int, pocketId int) (Domain, error) {
-	pockets, err := pu.Repo.Update(ctx, domain, userId, pocketId)
+	pockets, err := pu.Repo.PocketsUpdate(ctx, domain, userId, pocketId)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -64,7 +64,7 @@ func (pu *PocketUsecase) Update(ctx context.Context, domain Domain, userId int, 
 }
 
 func (pu *PocketUsecase) Delete(ctx context.Context, userId int, pocketId int) error {
-	rowsAffected, err := pu.Repo.Delete(ctx, userId, pocketId)
+	rowsAffected, err := pu.Repo.PocketsDelete(ctx, userId, pocketId)
 	if err != nil {
 		return err
 	}

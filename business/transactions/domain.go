@@ -17,13 +17,13 @@ type Domain struct {
 }
 
 type Usecase interface {
-	Create(ctx context.Context, domain Domain) (Domain, error)
-	UpdaterVerify(ctx context.Context, transactionId string) (Domain, error)
-	UpdaterCompleted(ctx context.Context, transactionId string, status int) (Domain, error)
+	TransactionsCreate(ctx context.Context, domain Domain) (Domain, error)
+	TransactionsUpdaterVerify(ctx context.Context, transactionId string) (Domain, error)
+	TransactionsUpdaterCompleted(ctx context.Context, transactionId string, status int) (Domain, error)
 }
 
 type Repository interface {
-	Create(ctx context.Context, domain Domain) (Domain, error)
-	UpdaterVerify(ctx context.Context, transactionId string) (Domain, error)
-	UpdaterCompleted(ctx context.Context, transactionId string, status int) (Domain, error)
+	TransactionsCreate(ctx context.Context, domain Domain) (Domain, error)
+	TransactionsUpdaterVerify(ctx context.Context, transactionId string) (Domain, error)
+	TransactionsUpdaterCompleted(ctx context.Context, transactionId string, status int) (Domain, error)
 }

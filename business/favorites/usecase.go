@@ -25,7 +25,7 @@ func NewFavoriteUsecase(repo Repository, user users.Usecase, coin coins.Usecase,
 }
 
 func (uc *FavoriteUsecase) GetList(ctx context.Context, userId int) ([]Domain, error) {
-	data, err := uc.Repo.GetList(ctx, userId)
+	data, err := uc.Repo.FavoritesGetList(ctx, userId)
 	if err != nil {
 		return []Domain{}, err
 	}
@@ -33,7 +33,7 @@ func (uc *FavoriteUsecase) GetList(ctx context.Context, userId int) ([]Domain, e
 }
 
 func (uc *FavoriteUsecase) GetById(ctx context.Context, userId int, favoriteId int) (Domain, error) {
-	data, err := uc.Repo.GetById(ctx, userId, favoriteId)
+	data, err := uc.Repo.FavoritesGetById(ctx, userId, favoriteId)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -41,7 +41,7 @@ func (uc *FavoriteUsecase) GetById(ctx context.Context, userId int, favoriteId i
 }
 
 func (uc *FavoriteUsecase) Create(ctx context.Context, domain Domain, userId int) (Domain, error) {
-	symbol, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coin.Symbol)
+	getSymbol, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Symbol)
 	if err != nil {
 		return Domain{}, businesses.ErrTokenNotFound
 	}
@@ -49,7 +49,7 @@ func (uc *FavoriteUsecase) Create(ctx context.Context, domain Domain, userId int
 	if err != nil {
 		return Domain{}, businesses.ErrUserIdNotFound
 	}
-	res, err := uc.Repo.Check(ctx, userId, symbol.Id)
+	res, err := uc.Repo.FavoritesCheck(ctx, userId, getSymbol.Id)
 	if err != nil {
 		return Domain{}, businesses.ErrUserIdNotFound
 	}
@@ -57,18 +57,18 @@ func (uc *FavoriteUsecase) Create(ctx context.Context, domain Domain, userId int
 		return Domain{}, businesses.ErrFavoriteIsAlready
 	}
 
-	domain.CoinId = symbol.Id
+	domain.CoinId = getSymbol.Id
 	domain.UserId = userId
-	data, err := uc.Repo.Create(ctx, domain)
+	data, err := uc.Repo.FavoritesCreate(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}
 
-	return data.AddCoins(symbol), nil
+	return data.AddCoins(getSymbol), nil
 }
 
 func (uc *FavoriteUsecase) Delete(ctx context.Context, userId int, favoriteId int) error {
-	rowsAffected, err := uc.Repo.Delete(ctx, userId, favoriteId)
+	rowsAffected, err := uc.Repo.FavoritesDelete(ctx, userId, favoriteId)
 	if err != nil {
 		return err
 	}

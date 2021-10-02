@@ -1,4 +1,4 @@
-package cryptos
+package records
 
 import (
 	"aprian1337/thukul-service/business/cryptos"
@@ -14,7 +14,7 @@ type Cryptos struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
-func FromDomain(domain cryptos.Domain) Cryptos {
+func CryptosFromDomain(domain cryptos.Domain) Cryptos {
 	return Cryptos{
 		UserId: domain.UserId,
 		CoinId: domain.CoinId,
@@ -22,7 +22,7 @@ func FromDomain(domain cryptos.Domain) Cryptos {
 	}
 }
 
-func (c *Cryptos) ToDomain() cryptos.Domain {
+func (c *Cryptos) CryptosToDomain() cryptos.Domain {
 	return cryptos.Domain{
 		ID:        c.ID,
 		UserId:    c.UserId,

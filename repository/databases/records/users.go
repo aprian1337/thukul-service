@@ -1,8 +1,7 @@
-package users
+package records
 
 import (
 	"aprian1337/thukul-service/business/users"
-	"aprian1337/thukul-service/repository/databases/salaries"
 	"gorm.io/gorm"
 	"time"
 )
@@ -10,7 +9,7 @@ import (
 type Users struct {
 	ID       uint `gorm:"primaryKey"`
 	SalaryId int
-	Salary   salaries.Salaries `gorm:"foreignKey:SalaryId"`
+	Salary   Salaries `gorm:"foreignKey:SalaryId"`
 	Name     string
 	Password string
 	IsAdmin  int `gorm:"type:smallint; default:0"`
@@ -27,7 +26,7 @@ type Users struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-func (user *Users) ToDomain() users.Domain {
+func (user *Users) UsersToDomain() users.Domain {
 	return users.Domain{
 		ID:        user.ID,
 		SalaryId:  user.SalaryId,
@@ -46,7 +45,7 @@ func (user *Users) ToDomain() users.Domain {
 	}
 }
 
-func FromDomain(domain *users.Domain) Users {
+func UsersFromDomain(domain *users.Domain) Users {
 	return Users{
 		ID:        domain.ID,
 		SalaryId:  domain.SalaryId,
@@ -65,10 +64,10 @@ func FromDomain(domain *users.Domain) Users {
 	}
 }
 
-func ToListDomain(data []Users) []users.Domain {
+func UsersToListDomain(data []Users) []users.Domain {
 	list := []users.Domain{}
 	for _, v := range data {
-		list = append(list, v.ToDomain())
+		list = append(list, v.UsersToDomain())
 	}
 	return list
 }
