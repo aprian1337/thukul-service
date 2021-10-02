@@ -25,6 +25,7 @@ type Domain struct {
 
 type Usecase interface {
 	GetAll(ctx context.Context) ([]Domain, error)
+	GetByIdWithWallet(ctx context.Context, id int) (Domain, error)
 	GetById(ctx context.Context, id int) (Domain, error)
 	Create(ctx context.Context, register *Domain) (Domain, error)
 	Login(ctx context.Context, email string, password string) (Domain, string, error)
@@ -34,6 +35,7 @@ type Usecase interface {
 
 type Repository interface {
 	GetAll(ctx context.Context) ([]Domain, error)
+	GetByIdWithWallet(ctx context.Context, id int) (Domain, error)
 	GetById(ctx context.Context, id int) (Domain, error)
 	GetByEmail(ctx context.Context, email string) (Domain, error)
 	Create(ctx context.Context, register *Domain) (Domain, error)

@@ -27,6 +27,14 @@ func NewUserUsecase(repo Repository, walletUsecase wallets.Usecase, timeout time
 	}
 }
 
+func (uc *UserUsecase) GetByIdWithWallet(ctx context.Context, id int) (Domain, error) {
+	user, err := uc.Repo.GetByIdWithWallet(ctx, id)
+	if err != nil {
+		return Domain{}, err
+	}
+	return user, nil
+}
+
 func (uc *UserUsecase) GetAll(ctx context.Context) ([]Domain, error) {
 	user, err := uc.Repo.GetAll(ctx)
 	if err != nil {

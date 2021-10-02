@@ -63,6 +63,15 @@ func (repo *PostgresUserRepository) GetAll(ctx context.Context) ([]users.Domain,
 	return ToListDomain(data), nil
 }
 
+func (repo *PostgresUserRepository) GetByIdWithWallet(ctx context.Context, id int) (users.Domain, error) {
+	var data Users
+	err := repo.ConnPostgres.Preload("Wallets").Find(&data)
+	if err.Error != nil {
+		return users.Domain{}, err.Error
+	}
+	return data.ToDomain(), nil
+}
+
 func (repo *PostgresUserRepository) Update(ctx context.Context, domain *users.Domain) (users.Domain, error) {
 	data := FromDomain(domain)
 	if repo.ConnPostgres.Save(&data).Error != nil {

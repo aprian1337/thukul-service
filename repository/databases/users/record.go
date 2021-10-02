@@ -8,18 +8,19 @@ import (
 )
 
 type Users struct {
-	ID        uint `gorm:"primaryKey"`
-	SalaryId  int
-	Salary    salaries.Salaries `gorm:"foreignKey:SalaryId"`
-	Name      string
-	Password  string
-	IsAdmin   int `gorm:"type:smallint; default:0"`
-	Email     string
-	Phone     string `gorm:"size:18"`
-	Gender    string `gorm:"size:8"`
-	Birthday  string `gorm:"type:date"`
-	Address   string `gorm:"type:text"`
-	Company   string
+	ID       uint `gorm:"primaryKey"`
+	SalaryId int
+	Salary   salaries.Salaries `gorm:"foreignKey:SalaryId"`
+	Name     string
+	Password string
+	IsAdmin  int `gorm:"type:smallint; default:0"`
+	Email    string
+	Phone    string `gorm:"size:18"`
+	Gender   string `gorm:"size:8"`
+	Birthday string `gorm:"type:date"`
+	Address  string `gorm:"type:text"`
+	Company  string
+	//Wallets   *[]wallets.Wallets
 	IsValid   int            `gorm:"type:smallint; default:0"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`

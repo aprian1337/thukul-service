@@ -9,6 +9,7 @@ import (
 	_transactionHistoryDb "aprian1337/thukul-service/repository/databases/transactions"
 	_usersDb "aprian1337/thukul-service/repository/databases/users"
 
+	_smtpUsecase "aprian1337/thukul-service/business/smtp"
 	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
 
 	_salaryUsecase "aprian1337/thukul-service/business/salaries"
@@ -134,6 +135,15 @@ func main() {
 		EndpointPrice:  constants.EndpointMarketcapPrice,
 		ApiKey:         viper.GetString("thirdparties.coinmarketcap.api_key"),
 	}
+
+	smtpUsecase := _smtpUsecase.NewSmtpUsecase(
+		viper.GetString(`smtp.host`),
+		viper.GetString(`smtp.port`),
+		viper.GetString(`smtp.sender_name`),
+		viper.GetString(`smtp.email`),
+		viper.GetString(`smtp.password`),
+	)
+
 	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
 
 	cryptoRepository := _cryptoDb.NewPostgresCryptosRepository(connPostgres)
@@ -152,12 +162,12 @@ func main() {
 	transactionsRepository := _transactionDb.NewPostgresTransactionRepository(connPostgres)
 	transactionsUsecase := _transactionUsecase.NewTransactionUsecase(transactionsRepository, timeoutContext)
 
-	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, timeoutContext)
-	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
-
 	userRepository := _usersDb.NewPostgresUserRepository(connPostgres)
 	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
+
+	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, timeoutContext)
+	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
 
 	salaryRepository := _salaryDb.NewPostgresSalariesRepository(connPostgres)
 	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)

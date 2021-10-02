@@ -5,21 +5,40 @@ import (
 	"aprian1337/thukul-service/business/coinmarket"
 	"aprian1337/thukul-service/business/coins"
 	"aprian1337/thukul-service/business/cryptos"
+	"aprian1337/thukul-service/business/smtp"
 	"aprian1337/thukul-service/business/transactions"
+	"aprian1337/thukul-service/business/users"
 	"aprian1337/thukul-service/business/wallet_histories"
 	"aprian1337/thukul-service/business/wallets"
 	"context"
+	"fmt"
 	"time"
 )
 
 type PaymentUsecase struct {
+	UsersUsecase         users.Usecase
 	CryptoUsecase        cryptos.Usecase
 	CoinUsecase          coins.Usecase
 	WalletUsecase        wallets.Usecase
 	TransactionUsecase   transactions.Usecase
 	WalletHistoryUsecase wallet_histories.Usecase
+	SmtpEmailUsecase     smtp.Usecase
 	CoinMarketRepo       coinmarket.Repository
 	Timeout              time.Duration
+}
+
+func NewPaymentUsecase(usersUsecase users.Usecase, smtpUsecase smtp.Usecase, cryptoUsecase cryptos.Usecase, coinUsecase coins.Usecase, coinMarketRepo coinmarket.Repository, walletsUsecase wallets.Usecase, walletsHistoryUsecase wallet_histories.Usecase, transactionsUsecase transactions.Usecase, timeoutContext time.Duration) *PaymentUsecase {
+	return &PaymentUsecase{
+		UsersUsecase:         usersUsecase,
+		SmtpEmailUsecase:     smtpUsecase,
+		CryptoUsecase:        cryptoUsecase,
+		CoinUsecase:          coinUsecase,
+		CoinMarketRepo:       coinMarketRepo,
+		WalletUsecase:        walletsUsecase,
+		TransactionUsecase:   transactionsUsecase,
+		WalletHistoryUsecase: walletsHistoryUsecase,
+		Timeout:              timeoutContext,
+	}
 }
 
 func (uc *PaymentUsecase) SellCoin(ctx context.Context, domain Domain) error {
@@ -53,18 +72,6 @@ func (uc *PaymentUsecase) SellCoin(ctx context.Context, domain Domain) error {
 	panic("PANIC")
 }
 
-func NewPaymentUsecase(cryptoUsecase cryptos.Usecase, coinUsecase coins.Usecase, coinMarketRepo coinmarket.Repository, walletsUsecase wallets.Usecase, walletsHistoryUsecase wallet_histories.Usecase, transactionsUsecase transactions.Usecase, timeoutContext time.Duration) *PaymentUsecase {
-	return &PaymentUsecase{
-		CryptoUsecase:        cryptoUsecase,
-		CoinUsecase:          coinUsecase,
-		CoinMarketRepo:       coinMarketRepo,
-		WalletUsecase:        walletsUsecase,
-		TransactionUsecase:   transactionsUsecase,
-		WalletHistoryUsecase: walletsHistoryUsecase,
-		Timeout:              timeoutContext,
-	}
-}
-
 func (uc *PaymentUsecase) TopUp(ctx context.Context, domain Domain) (wallets.Domain, error) {
 	if domain.Nominal == 0 || domain.UserId == 0 {
 		return wallets.Domain{}, businesses.ErrBadRequest
@@ -90,6 +97,8 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if domain.Qty == 0 {
 		return businesses.ErrQtyRequired
 	}
+	user, err := uc.UsersUsecase.GetByIdWithWallet(ctx, domain.UserId)
+	fmt.Println(user)
 	wallet, err := uc.WalletUsecase.GetByUserId(ctx, domain.UserId)
 	if err != nil {
 		return err
@@ -98,7 +107,6 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return businesses.ErrQtyRequired
 	}
-	//fmt.Println(wallet.Total, price)
 	diff := wallet.Total - price
 	if diff < 0 {
 		return businesses.ErrWalletNotEnough
