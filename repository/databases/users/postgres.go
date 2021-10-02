@@ -19,7 +19,7 @@ func NewPostgresUserRepository(conn *gorm.DB) *PostgresUserRepository {
 
 func (repo *PostgresUserRepository) GetById(ctx context.Context, id int) (users.Domain, error) {
 	var user Users
-	err := repo.ConnPostgres.Find(&user, "id = ?", id)
+	err := repo.ConnPostgres.Joins("Salary").Find(&user, "users.id = ?", id)
 	if err.Error != nil {
 		return users.Domain{}, err.Error
 	}
@@ -56,7 +56,7 @@ func (repo *PostgresUserRepository) Create(ctx context.Context, register *users.
 
 func (repo *PostgresUserRepository) GetAll(ctx context.Context) ([]users.Domain, error) {
 	var data []Users
-	err := repo.ConnPostgres.Find(&data)
+	err := repo.ConnPostgres.Joins("Salary").Find(&data)
 	if err.Error != nil {
 		return []users.Domain{}, err.Error
 	}

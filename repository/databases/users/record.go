@@ -20,17 +20,23 @@ type Users struct {
 	Birthday string `gorm:"type:date"`
 	Address  string `gorm:"type:text"`
 	Company  string
-	//Wallets   *[]wallets.Wallets
+	//Wallets   interface{}
 	IsValid   int            `gorm:"type:smallint; default:0"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
+//type Wallets struct {
+//	ID    int
+//	Total float64
+//}
+
 func (user *Users) ToDomain() users.Domain {
 	return users.Domain{
 		ID:        user.ID,
 		SalaryId:  user.SalaryId,
+		Salary:    user.Salary,
 		Name:      user.Name,
 		Password:  user.Password,
 		IsAdmin:   user.IsAdmin,
@@ -66,7 +72,7 @@ func FromDomain(domain *users.Domain) Users {
 }
 
 func ToListDomain(data []Users) []users.Domain {
-	list := []users.Domain{}
+	var list []users.Domain
 	for _, v := range data {
 		list = append(list, v.ToDomain())
 	}
