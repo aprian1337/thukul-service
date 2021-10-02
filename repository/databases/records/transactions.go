@@ -1,9 +1,7 @@
-package transactions
+package records
 
 import (
 	"aprian1337/thukul-service/business/transactions"
-	"aprian1337/thukul-service/repository/databases/coins"
-	"aprian1337/thukul-service/repository/databases/users"
 	"github.com/google/uuid"
 	"time"
 )
@@ -11,9 +9,9 @@ import (
 type Transactions struct {
 	ID                uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	UserId            int
-	User              users.Users `gorm:"foreignKey:user_id"`
+	User              Users `gorm:"foreignKey:user_id"`
 	CoinId            int
-	Coin              coins.Coins `gorm:"foreignKey:coin_id"`
+	Coin              Coins `gorm:"foreignKey:coin_id"`
 	Qty               float64
 	Status            int `gorm:"size:1"`
 	DatetimeRequest   time.Time
@@ -21,7 +19,7 @@ type Transactions struct {
 	DatetimeCompleted time.Time
 }
 
-func FromDomain(domain transactions.Domain) Transactions {
+func TransactionsFromDomain(domain transactions.Domain) Transactions {
 	return Transactions{
 		UserId:          domain.UserId,
 		CoinId:          domain.CoinId,
@@ -31,7 +29,7 @@ func FromDomain(domain transactions.Domain) Transactions {
 	}
 }
 
-func (t *Transactions) ToDomain() transactions.Domain {
+func (t *Transactions) TransactionsToDomain() transactions.Domain {
 	return transactions.Domain{
 		Id:                t.ID.String(),
 		UserId:            t.UserId,

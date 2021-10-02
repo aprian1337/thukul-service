@@ -64,7 +64,7 @@ func (uc *PaymentUsecase) SellCoin(ctx context.Context, domain Domain) error {
 	//if err != nil {
 	//	return businesses.ErrCoinNotFound
 	//}
-	//_, err = uc.TransactionUsecase.Create(ctx, domain.ToTransactionDomain(coin.Id))
+	//_, err = uc.TransactionUsecase.ActivitiesCreate(ctx, domain.ToTransactionDomain(coin.Id))
 	//if err != nil {
 	//	return businesses.ErrCoinNotFound
 	//}
@@ -115,7 +115,7 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return businesses.ErrCoinNotFound
 	}
-	_, err = uc.TransactionUsecase.Create(ctx, domain.ToTransactionDomain(coin.Id))
+	_, err = uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id))
 	if err != nil {
 		return businesses.ErrCoinNotFound
 	}

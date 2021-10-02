@@ -1,25 +1,25 @@
-package activities
+package postgres
 
 import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/activities"
 	"aprian1337/thukul-service/repository"
-	"aprian1337/thukul-service/repository/databases/pockets"
+	activities2 "aprian1337/thukul-service/repository/databases/records"
 	"context"
 	"gorm.io/gorm"
 )
 
-type PostgresPocketsRepository struct {
+type ActivitiesRepository struct {
 	ConnPostgres *gorm.DB
 }
 
-func NewPostgresPocketsRepository(conn *gorm.DB) *PostgresPocketsRepository {
-	return &PostgresPocketsRepository{
+func NewPostgresActivitiesRepository(conn *gorm.DB) *ActivitiesRepository {
+	return &ActivitiesRepository{
 		ConnPostgres: conn,
 	}
 }
-func (repo *PostgresPocketsRepository) GetList(ctx context.Context, pocketId int) ([]activities.Domain, error) {
-	var data []Activities
+func (repo *ActivitiesRepository) ActivitiesGetAll(ctx context.Context, pocketId int) ([]activities.Domain, error) {
+	var data []activities2.Activities
 	if pocketId > 0 {
 		err := repo.ConnPostgres.Find(&data, "pocket_id=?", pocketId)
 		if err.Error != nil {
@@ -32,21 +32,21 @@ func (repo *PostgresPocketsRepository) GetList(ctx context.Context, pocketId int
 		}
 	}
 
-	return ToListDomain(data), nil
+	return activities2.ActivitiesToListDomain(data), nil
 }
 
-func (repo *PostgresPocketsRepository) GetById(ctx context.Context, pocketId int, id int) (activities.Domain, error) {
-	var data Activities
+func (repo *ActivitiesRepository) ActivitiesGetById(ctx context.Context, pocketId int, id int) (activities.Domain, error) {
+	var data activities2.Activities
 	err := repo.ConnPostgres.First(&data, "id=? AND pocket_id=?", id, pocketId)
 	if err.Error != nil {
 		return activities.Domain{}, err.Error
 	}
-	return data.ToDomain(), nil
+	return data.ActivitiesToDomain(), nil
 }
 
-func (repo *PostgresPocketsRepository) Create(ctx context.Context, domain activities.Domain, pocketId int) (activities.Domain, error) {
-	data := FromDomain(domain)
-	var pocket pockets.Pockets
+func (repo *ActivitiesRepository) ActivitiesCreate(ctx context.Context, domain activities.Domain, pocketId int) (activities.Domain, error) {
+	data := activities2.ActivitiesFromDomain(domain)
+	var pocket activities2.Pockets
 	err := repo.ConnPostgres.First(&pocket, "id=?", pocketId)
 	if err.Error != nil {
 		return activities.Domain{}, businesses.ErrUserIdNotFound
@@ -55,22 +55,22 @@ func (repo *PostgresPocketsRepository) Create(ctx context.Context, domain activi
 	if err.Error != nil {
 		return activities.Domain{}, err.Error
 	}
-	return data.ToDomain(), nil
+	return data.ActivitiesToDomain(), nil
 }
 
-func (repo *PostgresPocketsRepository) Update(ctx context.Context, domain activities.Domain, pocketId int, id int) (activities.Domain, error) {
-	data := Activities{}
-	dataTemp := FromDomain(domain)
+func (repo *ActivitiesRepository) ActivitiesUpdate(ctx context.Context, domain activities.Domain, pocketId int, id int) (activities.Domain, error) {
+	data := activities2.Activities{}
+	dataTemp := activities2.ActivitiesFromDomain(domain)
 	err := repo.ConnPostgres.First(&data, "id=?", id)
 	if err.Error != nil {
 		return activities.Domain{}, err.Error
 	}
 	repo.ConnPostgres.Save(&dataTemp)
-	return data.ToDomain(), nil
+	return data.ActivitiesToDomain(), nil
 }
 
-func (repo *PostgresPocketsRepository) Delete(ctx context.Context, pocketId int, id int) (int64, error) {
-	data := Activities{}
+func (repo *ActivitiesRepository) ActivitiesDelete(ctx context.Context, pocketId int, id int) (int64, error) {
+	data := activities2.Activities{}
 	err := repo.ConnPostgres.First(&data, "id=? AND pocket_id=?", id, pocketId)
 	if err.Error != nil {
 		return 0, err.Error
@@ -86,9 +86,9 @@ func (repo *PostgresPocketsRepository) Delete(ctx context.Context, pocketId int,
 	return err.RowsAffected, nil
 }
 
-func (repo *PostgresPocketsRepository) GetTotal(ctx context.Context, userId int, pocketId int, kind string) (int64, error) {
-	total := Total{}
-	activity := Activities{}
+func (repo *ActivitiesRepository) ActivitiesGetTotal(ctx context.Context, userId int, pocketId int, kind string) (int64, error) {
+	total := activities2.ActivitiesTotal{}
+	activity := activities2.Activities{}
 	err := repo.ConnPostgres.Model(activity).Select("id, sum(nominal) as total").Where("pocket_id = ? ", pocketId).Group("id").Having("type=?", kind).First(&total)
 	if err.Error != nil {
 		return 0, err.Error

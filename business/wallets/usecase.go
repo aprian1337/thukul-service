@@ -45,7 +45,7 @@ func (uc *WalletUsecase) UpdateByUserId(ctx context.Context, domain Domain) (Dom
 	data.CoinId = domain.CoinId
 	data.TransactionId = domain.TransactionId
 	if data.Kind == "topup" {
-		err := uc.WalletHistoryUsecase.Create(ctx, data.ToHistoryDomain())
+		err := uc.WalletHistoryUsecase.WalletHistoriesCreate(ctx, data.ToHistoryDomain())
 		if err != nil {
 			return Domain{}, err
 		}

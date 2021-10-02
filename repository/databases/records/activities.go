@@ -1,4 +1,4 @@
-package activities
+package records
 
 import (
 	"aprian1337/thukul-service/business/activities"
@@ -19,12 +19,12 @@ type Activities struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-type Total struct {
+type ActivitiesTotal struct {
 	ID    int
 	Total int64
 }
 
-func (data *Activities) ToDomain() activities.Domain {
+func (data *Activities) ActivitiesToDomain() activities.Domain {
 	return activities.Domain{
 		ID:        data.ID,
 		PocketId:  data.PocketId,
@@ -38,7 +38,7 @@ func (data *Activities) ToDomain() activities.Domain {
 	}
 }
 
-func FromDomain(domain activities.Domain) Activities {
+func ActivitiesFromDomain(domain activities.Domain) Activities {
 	return Activities{
 		ID:        domain.ID,
 		PocketId:  domain.PocketId,
@@ -52,10 +52,10 @@ func FromDomain(domain activities.Domain) Activities {
 	}
 }
 
-func ToListDomain(data []Activities) []activities.Domain {
+func ActivitiesToListDomain(data []Activities) []activities.Domain {
 	var list []activities.Domain
 	for _, v := range data {
-		list = append(list, v.ToDomain())
+		list = append(list, v.ActivitiesToDomain())
 	}
 	return list
 }

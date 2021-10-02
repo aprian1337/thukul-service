@@ -1,8 +1,7 @@
-package pockets
+package records
 
 import (
 	"aprian1337/thukul-service/business/pockets"
-	"aprian1337/thukul-service/repository/databases/users"
 	"gorm.io/gorm"
 	"time"
 )
@@ -10,19 +9,19 @@ import (
 type Pockets struct {
 	ID        int `gorm:"primaryKey"`
 	UserId    int
-	User      users.Users `gorm:"foreignKey:user_id"`
+	User      Users `gorm:"foreignKey:user_id"`
 	Name      string
 	CreatedAt time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-type Total struct {
+type PocketsTotal struct {
 	ID    int
 	Total int64
 }
 
-func (data *Pockets) ToDomain() pockets.Domain {
+func (data *Pockets) PocketsToDomain() pockets.Domain {
 	return pockets.Domain{
 		ID:        data.ID,
 		UserId:    data.UserId,
@@ -32,7 +31,7 @@ func (data *Pockets) ToDomain() pockets.Domain {
 	}
 }
 
-func FromDomain(domain pockets.Domain) Pockets {
+func PocketsFromDomain(domain pockets.Domain) Pockets {
 	return Pockets{
 		ID:        domain.ID,
 		UserId:    domain.UserId,
@@ -42,10 +41,10 @@ func FromDomain(domain pockets.Domain) Pockets {
 	}
 }
 
-func ToListDomain(data []Pockets) []pockets.Domain {
+func PocketsToListDomain(data []Pockets) []pockets.Domain {
 	var list []pockets.Domain
 	for _, v := range data {
-		list = append(list, v.ToDomain())
+		list = append(list, v.PocketsToDomain())
 	}
 	return list
 }

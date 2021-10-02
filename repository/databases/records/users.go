@@ -1,8 +1,7 @@
-package users
+package records
 
 import (
 	"aprian1337/thukul-service/business/users"
-	"aprian1337/thukul-service/repository/databases/salaries"
 	"gorm.io/gorm"
 	"time"
 )
@@ -10,7 +9,7 @@ import (
 type Users struct {
 	ID       uint `gorm:"primaryKey"`
 	SalaryId int
-	Salary   salaries.Salaries `gorm:"foreignKey:SalaryId"`
+	Salary   Salaries `gorm:"foreignKey:SalaryId"`
 	Name     string
 	Password string
 	IsAdmin  int `gorm:"type:smallint; default:0"`
@@ -20,23 +19,17 @@ type Users struct {
 	Birthday string `gorm:"type:date"`
 	Address  string `gorm:"type:text"`
 	Company  string
-	//Wallets   interface{}
+	//Wallets   *[]wallets.Wallets
 	IsValid   int            `gorm:"type:smallint; default:0"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-//type Wallets struct {
-//	ID    int
-//	Total float64
-//}
-
-func (user *Users) ToDomain() users.Domain {
+func (user *Users) UsersToDomain() users.Domain {
 	return users.Domain{
 		ID:        user.ID,
 		SalaryId:  user.SalaryId,
-		Salary:    user.Salary,
 		Name:      user.Name,
 		Password:  user.Password,
 		IsAdmin:   user.IsAdmin,
@@ -52,7 +45,7 @@ func (user *Users) ToDomain() users.Domain {
 	}
 }
 
-func FromDomain(domain *users.Domain) Users {
+func UsersFromDomain(domain *users.Domain) Users {
 	return Users{
 		ID:        domain.ID,
 		SalaryId:  domain.SalaryId,
@@ -71,10 +64,10 @@ func FromDomain(domain *users.Domain) Users {
 	}
 }
 
-func ToListDomain(data []Users) []users.Domain {
-	var list []users.Domain
+func UsersToListDomain(data []Users) []users.Domain {
+	list := []users.Domain{}
 	for _, v := range data {
-		list = append(list, v.ToDomain())
+		list = append(list, v.UsersToDomain())
 	}
 	return list
 }

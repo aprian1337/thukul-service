@@ -16,9 +16,9 @@ type Domain struct {
 }
 
 type Usecase interface {
-	Create(ctx context.Context, domain Domain) error
+	WalletHistoriesCreate(ctx context.Context, domain Domain) error
 }
 
 type Repository interface {
-	Create(ctx context.Context, domain Domain) error
+	WalletHistoriesCreate(ctx context.Context, domain Domain) error
 }

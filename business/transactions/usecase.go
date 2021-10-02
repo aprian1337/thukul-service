@@ -18,27 +18,27 @@ func NewTransactionUsecase(repo Repository, timeout time.Duration) *TransactionU
 	}
 }
 
-func (uc *TransactionUsecase) Create(ctx context.Context, domain Domain) (Domain, error) {
-	d, err := uc.Repo.Create(ctx, domain)
+func (uc *TransactionUsecase) TransactionsCreate(ctx context.Context, domain Domain) (Domain, error) {
+	d, err := uc.Repo.TransactionsCreate(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}
 	return d, nil
 }
 
-func (uc *TransactionUsecase) UpdaterVerify(ctx context.Context, transactionId string) (Domain, error) {
-	d, err := uc.Repo.UpdaterVerify(ctx, transactionId)
+func (uc *TransactionUsecase) TransactionsUpdaterVerify(ctx context.Context, transactionId string) (Domain, error) {
+	d, err := uc.Repo.TransactionsUpdaterVerify(ctx, transactionId)
 	if err != nil {
 		return Domain{}, err
 	}
 	return d, nil
 }
 
-func (uc *TransactionUsecase) UpdaterCompleted(ctx context.Context, transactionId string, status int) (Domain, error) {
+func (uc *TransactionUsecase) TransactionsUpdaterCompleted(ctx context.Context, transactionId string, status int) (Domain, error) {
 	if status != 2 && status != -1 {
 		return Domain{}, businesses.ErrBadRequest
 	}
-	d, err := uc.Repo.UpdaterCompleted(ctx, transactionId, status)
+	d, err := uc.Repo.TransactionsUpdaterCompleted(ctx, transactionId, status)
 	if err != nil {
 		return Domain{}, err
 	}

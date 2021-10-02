@@ -22,7 +22,7 @@ type Usecase interface {
 }
 
 type Repository interface {
-	GetDetail(ctx context.Context, userId int, coinId int) (Domain, error)
-	Create(ctx context.Context, domain Domain) (Domain, error)
-	Update(ctx context.Context, domain Domain) (Domain, error)
+	CryptosGetDetail(ctx context.Context, userId int, coinId int) (Domain, error)
+	CryptosCreate(ctx context.Context, domain Domain) (Domain, error)
+	CryptosUpdate(ctx context.Context, domain Domain) (Domain, error)
 }

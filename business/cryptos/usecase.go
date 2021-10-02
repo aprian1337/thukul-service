@@ -18,18 +18,18 @@ func NewCryptoUsecase(repo Repository, timeout time.Duration) *CryptoUsecase {
 }
 
 func (uc *CryptoUsecase) UpdateBuyCoin(ctx context.Context, domain Domain) (Domain, error) {
-	check, _ := uc.Repo.GetDetail(ctx, domain.UserId, domain.CoinId)
+	check, _ := uc.Repo.CryptosGetDetail(ctx, domain.UserId, domain.CoinId)
 	data := Domain{}
 	var err error
 	if check.ID == 0 {
-		data, err = uc.Repo.Create(ctx, domain)
+		data, err = uc.Repo.CryptosCreate(ctx, domain)
 		if err != nil {
 			return Domain{}, err
 		}
 		return data, nil
 	} else {
 		domain.Qty = check.Qty + domain.BuyQty
-		data, err = uc.Repo.Update(ctx, domain)
+		data, err = uc.Repo.CryptosUpdate(ctx, domain)
 		if err != nil {
 			return Domain{}, err
 		}
@@ -38,11 +38,11 @@ func (uc *CryptoUsecase) UpdateBuyCoin(ctx context.Context, domain Domain) (Doma
 }
 
 func (uc *CryptoUsecase) UpdateSellCoin(ctx context.Context, domain Domain) (Domain, error) {
-	check, _ := uc.Repo.GetDetail(ctx, domain.UserId, domain.CoinId)
+	check, _ := uc.Repo.CryptosGetDetail(ctx, domain.UserId, domain.CoinId)
 	data := Domain{}
 	var err error
 	domain.Qty = check.Qty + domain.BuyQty
-	data, err = uc.Repo.Update(ctx, domain)
+	data, err = uc.Repo.CryptosUpdate(ctx, domain)
 	if err != nil {
 		return Domain{}, err
 	}

@@ -37,13 +37,13 @@ type Usecase interface {
 }
 
 type Repository interface {
-	GetAll(ctx context.Context) ([]Domain, error)
-	GetByIdWithWallet(ctx context.Context, id int) (Domain, error)
-	GetById(ctx context.Context, id int) (Domain, error)
-	GetByEmail(ctx context.Context, email string) (Domain, error)
-	Create(ctx context.Context, register *Domain) (Domain, error)
-	Update(ctx context.Context, domain *Domain) (Domain, error)
-	Delete(ctx context.Context, id uint) error
+	UsersGetAll(ctx context.Context) ([]Domain, error)
+	UsersGetByIdWithWallet(ctx context.Context, id int) (Domain, error)
+	UsersGetById(ctx context.Context, id int) (Domain, error)
+	UsersGetByEmail(ctx context.Context, email string) (Domain, error)
+	UsersCreate(ctx context.Context, register *Domain) (Domain, error)
+	UsersUpdate(ctx context.Context, domain *Domain) (Domain, error)
+	UsersDelete(ctx context.Context, id uint) error
 }
 
 func (d *Domain) ToWalletDomain() wallets_domain.Domain {

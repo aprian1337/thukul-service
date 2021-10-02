@@ -17,8 +17,8 @@ func NewWalletsUsecase(repo Repository, timeout time.Duration) *WalletHistoryUse
 	}
 }
 
-func (uc *WalletHistoryUseacse) Create(ctx context.Context, domain Domain) error {
-	err := uc.Repo.Create(ctx, domain)
+func (uc *WalletHistoryUseacse) WalletHistoriesCreate(ctx context.Context, domain Domain) error {
+	err := uc.Repo.WalletHistoriesCreate(ctx, domain)
 	if err != nil {
 		return err
 	}

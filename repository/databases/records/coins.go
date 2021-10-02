@@ -1,4 +1,4 @@
-package coins
+package records
 
 import (
 	"aprian1337/thukul-service/business/coins"
@@ -13,7 +13,7 @@ type Coins struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
-func (data *Coins) ToDomain() coins.Domain {
+func (data *Coins) CoinsToDomain() coins.Domain {
 	return coins.Domain{
 		Id:        data.ID,
 		Symbol:    data.Symbol,
@@ -23,7 +23,7 @@ func (data *Coins) ToDomain() coins.Domain {
 	}
 }
 
-func FromDomain(domain coins.Domain) Coins {
+func CoinsFromDomain(domain coins.Domain) Coins {
 	return Coins{
 		ID:        domain.Id,
 		Symbol:    domain.Symbol,

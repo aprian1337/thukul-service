@@ -1,4 +1,4 @@
-package wishlists
+package records
 
 import (
 	"aprian1337/thukul-service/business/wishlists"
@@ -24,7 +24,7 @@ type Wishlists struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
-func (data *Wishlists) ToDomain() wishlists.Domain {
+func (data *Wishlists) WishlistsToDomain() wishlists.Domain {
 	return wishlists.Domain{
 		ID:          data.ID,
 		UserId:      data.UserId,
@@ -41,7 +41,7 @@ func (data *Wishlists) ToDomain() wishlists.Domain {
 	}
 }
 
-func FromDomain(domain wishlists.Domain) Wishlists {
+func WishlistsFromDomain(domain wishlists.Domain) Wishlists {
 	return Wishlists{
 		ID:          domain.ID,
 		UserId:      domain.UserId,
@@ -58,10 +58,10 @@ func FromDomain(domain wishlists.Domain) Wishlists {
 	}
 }
 
-func ToListDomain(data []Wishlists) []wishlists.Domain {
+func WishlistsToListDomain(data []Wishlists) []wishlists.Domain {
 	var list []wishlists.Domain
 	for _, v := range data {
-		list = append(list, v.ToDomain())
+		list = append(list, v.WishlistsToDomain())
 	}
 	return list
 }
