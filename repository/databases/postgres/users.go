@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"aprian1337/thukul-service/business/users"
-	users2 "aprian1337/thukul-service/repository/databases/records"
+	"aprian1337/thukul-service/repository/databases/records"
 	"context"
 	"errors"
 	"gorm.io/gorm"
@@ -19,8 +19,8 @@ func NewPostgresUserRepository(conn *gorm.DB) *UserRepository {
 }
 
 func (repo *UserRepository) UsersGetById(ctx context.Context, id int) (users.Domain, error) {
-	var user users2.Users
-	err := repo.ConnPostgres.Find(&user, "id = ?", id)
+	var user records.Users
+	err := repo.ConnPostgres.Joins("Salary").Find(&user, "users.id = ?", id)
 	if err.Error != nil {
 		return users.Domain{}, err.Error
 	}
@@ -28,7 +28,7 @@ func (repo *UserRepository) UsersGetById(ctx context.Context, id int) (users.Dom
 }
 
 func (repo *UserRepository) UsersGetByEmail(ctx context.Context, email string) (users.Domain, error) {
-	var user users2.Users
+	var user records.Users
 	err := repo.ConnPostgres.Find(&user, "email = ?", email)
 	if err.Error != nil {
 		return users.Domain{}, err.Error
@@ -37,7 +37,7 @@ func (repo *UserRepository) UsersGetByEmail(ctx context.Context, email string) (
 }
 
 func (repo *UserRepository) UsersCreate(ctx context.Context, register *users.Domain) (users.Domain, error) {
-	user := users2.Users{
+	user := records.Users{
 		SalaryId: register.SalaryId,
 		Name:     register.Name,
 		Password: register.Password,
@@ -56,16 +56,16 @@ func (repo *UserRepository) UsersCreate(ctx context.Context, register *users.Dom
 }
 
 func (repo *UserRepository) UsersGetAll(ctx context.Context) ([]users.Domain, error) {
-	var data []users2.Users
-	err := repo.ConnPostgres.Find(&data)
+	var data []records.Users
+	err := repo.ConnPostgres.Joins("Salary").Find(&data)
 	if err.Error != nil {
 		return []users.Domain{}, err.Error
 	}
-	return users2.UsersToListDomain(data), nil
+	return records.UsersToListDomain(data), nil
 }
 
 func (repo *UserRepository) UsersGetByIdWithWallet(ctx context.Context, id int) (users.Domain, error) {
-	var data users2.Users
+	var data records.Users
 	err := repo.ConnPostgres.Preload("Wallets").Find(&data)
 	if err.Error != nil {
 		return users.Domain{}, err.Error
@@ -74,7 +74,23 @@ func (repo *UserRepository) UsersGetByIdWithWallet(ctx context.Context, id int) 
 }
 
 func (repo *UserRepository) UsersUpdate(ctx context.Context, domain *users.Domain) (users.Domain, error) {
-	data := users2.UsersFromDomain(domain)
+	data := records.UsersFromDomain(domain)
+	err := repo.ConnPostgres.Joins("Salary").First(&data)
+	if err.Error != nil {
+		return users.Domain{}, err.Error
+	}
+	data.SalaryId = domain.SalaryId
+	data.IsValid = domain.IsValid
+	data.Name = domain.Name
+	data.Password = domain.Password
+	data.IsAdmin = domain.IsAdmin
+	data.Email = domain.Email
+	data.Phone = domain.Phone
+	data.Gender = domain.Gender
+	data.Birthday = domain.Birthday
+	data.Address = domain.Address
+	data.Company = domain.Company
+
 	if repo.ConnPostgres.Save(&data).Error != nil {
 		return users.Domain{}, errors.New("bad requests")
 	}
@@ -82,7 +98,7 @@ func (repo *UserRepository) UsersUpdate(ctx context.Context, domain *users.Domai
 }
 
 func (repo *UserRepository) UsersDelete(ctx context.Context, id uint) error {
-	user := users2.Users{}
+	user := records.Users{}
 	err := repo.ConnPostgres.Delete(&user, id)
 	if err.Error != nil {
 		return err.Error

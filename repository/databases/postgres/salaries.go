@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"aprian1337/thukul-service/business/salaries"
-	salaries2 "aprian1337/thukul-service/repository/databases/records"
+	"aprian1337/thukul-service/repository/databases/records"
 	"context"
 	"gorm.io/gorm"
 )
@@ -18,16 +18,16 @@ func NewPostgresSalariesRepository(conn *gorm.DB) *SalariesRepository {
 }
 
 func (repo *SalariesRepository) SalariesGetList(_ context.Context, search string) ([]salaries.Domain, error) {
-	var data []salaries2.Salaries
+	var data []records.Salaries
 	err := repo.ConnPostgres.Find(&data)
 	if err.Error != nil {
 		return []salaries.Domain{}, err.Error
 	}
-	return salaries2.SalariesToListDomain(data), nil
+	return records.SalariesToListDomain(data), nil
 }
 
 func (repo *SalariesRepository) SalariesGetById(_ context.Context, id uint) (salaries.Domain, error) {
-	var data salaries2.Salaries
+	var data records.Salaries
 	err := repo.ConnPostgres.First(&data, "id=?", id)
 	if err.Error != nil {
 		return salaries.Domain{}, err.Error
@@ -36,7 +36,7 @@ func (repo *SalariesRepository) SalariesGetById(_ context.Context, id uint) (sal
 }
 
 func (repo *SalariesRepository) SalariesCreate(_ context.Context, domain salaries.Domain) (salaries.Domain, error) {
-	salary := salaries2.SalariesFromDomain(domain)
+	salary := records.SalariesFromDomain(domain)
 	err := repo.ConnPostgres.Create(&salary)
 	if err.Error != nil {
 		return salaries.Domain{}, err.Error
@@ -44,7 +44,7 @@ func (repo *SalariesRepository) SalariesCreate(_ context.Context, domain salarie
 	return salary.SalariesToDomain(), nil
 }
 func (repo *SalariesRepository) SalariesUpdate(_ context.Context, domain salaries.Domain) (salaries.Domain, error) {
-	salary := salaries2.SalariesFromDomain(domain)
+	salary := records.SalariesFromDomain(domain)
 	err := repo.ConnPostgres.First(&salary)
 	if err.Error != nil {
 		return salaries.Domain{}, err.Error
@@ -56,7 +56,7 @@ func (repo *SalariesRepository) SalariesUpdate(_ context.Context, domain salarie
 }
 
 func (repo *SalariesRepository) SalariesDelete(_ context.Context, id uint) (int64, error) {
-	salary := salaries2.Salaries{}
+	salary := records.Salaries{}
 	err := repo.ConnPostgres.Delete(&salary, id)
 	if err.Error != nil {
 		return 0, err.Error

@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"aprian1337/thukul-service/business/wishlists"
-	wishlists2 "aprian1337/thukul-service/repository/databases/records"
+	"aprian1337/thukul-service/repository/databases/records"
 	"context"
 	"gorm.io/gorm"
 )
@@ -18,16 +18,16 @@ func NewPostgresWishlistRepository(conn *gorm.DB) *WishlistRepository {
 }
 
 func (repo *WishlistRepository) WishlistsGetList(ctx context.Context, userId int) ([]wishlists.Domain, error) {
-	var data []wishlists2.Wishlists
+	var data []records.Wishlists
 	err := repo.ConnPostgres.Find(&data, "user_id=?", userId)
 	if err.Error != nil {
 		return []wishlists.Domain{}, err.Error
 	}
-	return wishlists2.WishlistsToListDomain(data), nil
+	return records.WishlistsToListDomain(data), nil
 }
 
 func (repo *WishlistRepository) WishlistsGetById(ctx context.Context, userId int, wishlistId int) (wishlists.Domain, error) {
-	var data wishlists2.Wishlists
+	var data records.Wishlists
 	err := repo.ConnPostgres.First(&data, "user_id=? AND id=?", userId, wishlistId)
 	if err.Error != nil {
 		return wishlists.Domain{}, err.Error
@@ -36,7 +36,7 @@ func (repo *WishlistRepository) WishlistsGetById(ctx context.Context, userId int
 }
 
 func (repo *WishlistRepository) WishlistsCreate(ctx context.Context, domain wishlists.Domain, userId int) (wishlists.Domain, error) {
-	pocket := wishlists2.WishlistsFromDomain(domain)
+	pocket := records.WishlistsFromDomain(domain)
 	err := repo.ConnPostgres.Create(&pocket)
 	if err.Error != nil {
 		return wishlists.Domain{}, err.Error
@@ -45,8 +45,8 @@ func (repo *WishlistRepository) WishlistsCreate(ctx context.Context, domain wish
 }
 
 func (repo *WishlistRepository) WishlistsUpdate(ctx context.Context, domain wishlists.Domain, userId int, wishlistId int) (wishlists.Domain, error) {
-	data := wishlists2.WishlistsFromDomain(domain)
-	dataTemp := wishlists2.WishlistsFromDomain(domain)
+	data := records.WishlistsFromDomain(domain)
+	dataTemp := records.WishlistsFromDomain(domain)
 	err := repo.ConnPostgres.First(&data, "user_id = ? AND id = ?", userId, wishlistId)
 	if err.Error != nil {
 		return wishlists.Domain{}, err.Error
@@ -64,7 +64,7 @@ func (repo *WishlistRepository) WishlistsUpdate(ctx context.Context, domain wish
 }
 
 func (repo *WishlistRepository) WishlistsDelete(ctx context.Context, userId int, wishlistId int) (int64, error) {
-	data := wishlists2.Wishlists{}
+	data := records.Wishlists{}
 	err := repo.ConnPostgres.Delete(&data, "user_id=? AND id=?", userId, wishlistId)
 	if err.Error != nil {
 		return 0, err.Error

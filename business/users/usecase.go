@@ -125,16 +125,18 @@ func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Dom
 			return Domain{}, businesses.ErrInvalidDate
 		}
 	}
-	if domain.Email == "" {
-		return Domain{}, businesses.ErrEmailRequired
-	}
 	if !helpers.IsEmailValid(domain.Email) {
 		return Domain{}, businesses.ErrEmailNotValid
 	}
 
-	data, err := uc.Repo.UsersGetByEmail(ctx, domain.Email)
-	if data.ID > 0 && data.ID != id {
-		return Domain{}, businesses.ErrEmailHasBeenRegister
+	if domain.Email != "" {
+		data, err := uc.Repo.UsersGetByEmail(ctx, domain.Email)
+		if err != nil {
+			return Domain{}, err
+		}
+		if data.ID > 0 && data.ID != id {
+			return Domain{}, businesses.ErrEmailHasBeenRegister
+		}
 	}
 
 	domain.Password, _ = helpers.HashPassword(domain.Password)

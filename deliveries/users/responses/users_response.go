@@ -2,22 +2,26 @@ package responses
 
 import (
 	"aprian1337/thukul-service/business/users"
-	"aprian1337/thukul-service/repository/databases/records"
 )
 
 type UsersResponse struct {
-	Id       uint             `json:"id"`
-	SalaryId int              `json:"salary_id" validate:"numeric"`
-	Salary   records.Salaries `json:"salary"`
-	Name     string           `json:"name"`
-	IsAdmin  int              `json:"is_admin" validate:"numeric"`
-	Email    string           `json:"email"`
-	Phone    string           `json:"phone"`
-	Gender   string           `json:"gender"`
-	Birthday string           `json:"birthday"`
-	Address  string           `json:"address"`
-	Company  string           `json:"company"`
-	IsValid  int              `json:"is_valid"`
+	Id       uint   `json:"id"`
+	Salary   Salary `json:"salary"`
+	Name     string `json:"name"`
+	IsAdmin  int    `json:"is_admin" validate:"numeric"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Gender   string `json:"gender"`
+	Birthday string `json:"birthday"`
+	Address  string `json:"address"`
+	Company  string `json:"company"`
+	IsValid  int    `json:"is_valid"`
+}
+
+type Salary struct {
+	ID      uint    `json:"id"`
+	Minimal float64 `json:"minimal"`
+	Maximal float64 `json:"maximal"`
 }
 
 type LoginResponse struct {
@@ -27,10 +31,14 @@ type LoginResponse struct {
 
 func FromUsersDomain(domain users.Domain) UsersResponse {
 	return UsersResponse{
-		Id:       domain.ID,
-		SalaryId: domain.SalaryId,
-		Name:     domain.Name,
-		IsAdmin:  domain.IsAdmin,
+		Id:      domain.ID,
+		Name:    domain.Name,
+		IsAdmin: domain.IsAdmin,
+		Salary: Salary(struct {
+			ID      uint
+			Minimal float64
+			Maximal float64
+		}{ID: domain.Salary.ID, Minimal: domain.Salary.Minimal, Maximal: domain.Salary.Maximal}),
 		Email:    domain.Email,
 		Phone:    domain.Phone,
 		Gender:   domain.Gender,
@@ -51,9 +59,13 @@ func FromUsersListDomain(domain []users.Domain) []UsersResponse {
 
 func FromUsersDomainToLogin(domain users.Domain, token string) LoginResponse {
 	response := UsersResponse{
-		Id:       domain.ID,
-		SalaryId: domain.SalaryId,
-		Name:     domain.Name,
+		Id:   domain.ID,
+		Name: domain.Name,
+		Salary: Salary(struct {
+			ID      uint
+			Minimal float64
+			Maximal float64
+		}{ID: domain.Salary.ID, Minimal: domain.Salary.Minimal, Maximal: domain.Salary.Maximal}),
 		IsAdmin:  domain.IsAdmin,
 		Email:    domain.Email,
 		Phone:    domain.Phone,

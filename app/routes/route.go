@@ -37,7 +37,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	//middleware.JWTWithConfig(cl.JWTMiddleware)
 	v1.GET("users", cl.UserController.GetUsersController)
 	v1.GET("users/:id", cl.UserController.GetDetailUserController)
-	v1.POST("users", cl.UserController.CreateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.POST("users", cl.UserController.CreateUserController)
 	v1.DELETE("users/:id", cl.UserController.DeleteUserController)
 	v1.PUT("users/:id", cl.UserController.UpdateUserController)
 

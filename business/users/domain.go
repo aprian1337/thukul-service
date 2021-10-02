@@ -2,7 +2,6 @@ package users
 
 import (
 	wallets_domain "aprian1337/thukul-service/business/wallets"
-	"aprian1337/thukul-service/repository/databases/salaries"
 	"context"
 	"time"
 )
@@ -10,7 +9,7 @@ import (
 type Domain struct {
 	ID        uint
 	SalaryId  int
-	Salary    salaries.Salaries
+	Salary    Salary
 	Name      string
 	Password  string
 	IsAdmin   int
@@ -24,6 +23,12 @@ type Domain struct {
 	IsValid   int
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type Salary struct {
+	ID      uint
+	Minimal float64
+	Maximal float64
 }
 
 type Usecase interface {

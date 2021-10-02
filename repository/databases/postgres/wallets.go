@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"aprian1337/thukul-service/business/wallets"
-	wallets2 "aprian1337/thukul-service/repository/databases/records"
+	"aprian1337/thukul-service/repository/databases/records"
 	"context"
 	"errors"
 	"gorm.io/gorm"
@@ -19,7 +19,7 @@ func NewPostgresWalletsRepository(conn *gorm.DB) *WalletsRepository {
 }
 
 func (repo *WalletsRepository) GetByUserId(ctx context.Context, userId int) (wallets.Domain, error) {
-	var data wallets2.Wallets
+	var data records.Wallets
 	err := repo.ConnPostgres.Find(&data, "user_id=?", userId)
 	if err.Error != nil {
 		return wallets.Domain{}, err.Error
@@ -31,7 +31,7 @@ func (repo *WalletsRepository) GetByUserId(ctx context.Context, userId int) (wal
 	return data.WalletsToDomain(), nil
 }
 func (repo *WalletsRepository) UpdateByUserId(ctx context.Context, domain wallets.Domain) (wallets.Domain, error) {
-	data := wallets2.WalletsFromDomain(domain)
+	data := records.WalletsFromDomain(domain)
 	err := repo.ConnPostgres.Model(&data).Where("user_id=?", data.UserId).Update("total", data.Total)
 	if err.Error != nil {
 		return wallets.Domain{}, err.Error
@@ -40,7 +40,7 @@ func (repo *WalletsRepository) UpdateByUserId(ctx context.Context, domain wallet
 }
 
 func (repo *WalletsRepository) Create(ctx context.Context, domain wallets.Domain) error {
-	data := wallets2.WalletsFromDomain(domain)
+	data := records.WalletsFromDomain(domain)
 	err := repo.ConnPostgres.Create(&data)
 	if err.Error != nil {
 		return err.Error

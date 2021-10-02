@@ -8,7 +8,6 @@ import (
 type Wallets struct {
 	ID        int `gorm:"primaryKey"`
 	UserId    int
-	User      Users `gorm:"foreignKey:user_id"`
 	Total     float64
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`

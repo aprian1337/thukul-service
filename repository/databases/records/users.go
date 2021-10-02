@@ -7,19 +7,19 @@ import (
 )
 
 type Users struct {
-	ID       uint `gorm:"primaryKey"`
-	SalaryId int
-	Salary   Salaries `gorm:"foreignKey:SalaryId"`
-	Name     string
-	Password string
-	IsAdmin  int `gorm:"type:smallint; default:0"`
-	Email    string
-	Phone    string `gorm:"size:18"`
-	Gender   string `gorm:"size:8"`
-	Birthday string `gorm:"type:date"`
-	Address  string `gorm:"type:text"`
-	Company  string
-	//Wallets   *[]wallets.Wallets
+	ID        uint `gorm:"primaryKey"`
+	SalaryId  int
+	Salary    Salaries `gorm:"foreignKey:SalaryId"`
+	Name      string
+	Password  string
+	IsAdmin   int `gorm:"type:smallint; default:0"`
+	Email     string
+	Phone     string `gorm:"size:18"`
+	Gender    string `gorm:"size:8"`
+	Birthday  string `gorm:"type:date"`
+	Address   string `gorm:"type:text"`
+	Company   string
+	Wallets   []Wallets      `gorm:"foreignKey:user_id"`
 	IsValid   int            `gorm:"type:smallint; default:0"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
@@ -28,8 +28,13 @@ type Users struct {
 
 func (user *Users) UsersToDomain() users.Domain {
 	return users.Domain{
-		ID:        user.ID,
-		SalaryId:  user.SalaryId,
+		ID:       user.ID,
+		SalaryId: user.SalaryId,
+		Salary: struct {
+			ID      uint
+			Minimal float64
+			Maximal float64
+		}{ID: user.Salary.ID, Minimal: user.Salary.Minimal, Maximal: user.Salary.Maximal},
 		Name:      user.Name,
 		Password:  user.Password,
 		IsAdmin:   user.IsAdmin,
@@ -65,7 +70,7 @@ func UsersFromDomain(domain *users.Domain) Users {
 }
 
 func UsersToListDomain(data []Users) []users.Domain {
-	list := []users.Domain{}
+	var list []users.Domain
 	for _, v := range data {
 		list = append(list, v.UsersToDomain())
 	}
