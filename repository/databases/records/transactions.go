@@ -29,7 +29,7 @@ func TransactionsFromDomain(domain transactions.Domain) Transactions {
 		Price:           domain.Price,
 		Status:          0,
 		Type:            domain.Kind,
-		DatetimeRequest: time.Now(),
+		DatetimeRequest: time.Now().Local(),
 	}
 }
 

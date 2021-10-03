@@ -53,9 +53,26 @@ func (ctrl *Controller) Buy(c echo.Context) error {
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, responses.BuyResponse{
+	return deliveries.NewSuccessResponse(c, responses.BuySaleResponse{
 		Status:  "success",
 		Message: "check your email for confirm the purchase",
+	})
+}
+
+func (ctrl *Controller) Sell(c echo.Context) error {
+	ctxNative := c.Request().Context()
+	var data requests.PaymentRequest
+	err := c.Bind(&data)
+	if err != nil {
+		return err
+	}
+	err = ctrl.PaymentUsecase.SellCoin(ctxNative, data.ToDomain())
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, responses.BuySaleResponse{
+		Status:  "success",
+		Message: "check your email for sales confirmation",
 	})
 }
 

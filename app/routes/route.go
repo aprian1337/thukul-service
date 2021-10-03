@@ -79,7 +79,7 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	//PAYMENTS
 	v1.POST("payments/topup", cl.PaymentController.TopUp)
 	v1.POST("payments/buy", cl.PaymentController.Buy)
-	v1.POST("payments/sell", cl.PaymentController.TopUp)
+	v1.POST("payments/sell", cl.PaymentController.Sell)
 	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm)
 
 	//COINS

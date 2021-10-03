@@ -36,7 +36,6 @@ func DecodeTransactionFromSlug(encode string, encrypt string, keyString string, 
 	decodeStr := string(decodeDecrypt)
 	decodeStr = strings.ReplaceAll(decodeStr, keyAdditional, "")
 	if decodeStr == string(decode) {
-		fmt.Println("VALID!")
 		return decodeStr, nil
 	}
 	return "", nil

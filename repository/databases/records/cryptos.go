@@ -8,7 +8,9 @@ import (
 type Cryptos struct {
 	ID        int `gorm:"primaryKey"`
 	UserId    int
+	User      Users `gorm:"foreignKey:user_id"`
 	CoinId    int
+	Coin      Coins `gorm:"foreignKey:coin_id"`
 	Qty       float64
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`

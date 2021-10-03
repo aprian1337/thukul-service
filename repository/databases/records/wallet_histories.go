@@ -27,7 +27,8 @@ func (data *WalletHistories) WalletHistoriesToDomain() wallets_domain.Domain {
 
 func WalletHistoriesFromDomain(domain wallet_histories.Domain) WalletHistories {
 	return WalletHistories{
-		WalletId: domain.WalletId,
-		Nominal:  domain.Nominal,
+		WalletId:      domain.WalletId,
+		Nominal:       domain.Nominal,
+		TransactionId: domain.TransactionId,
 	}
 }

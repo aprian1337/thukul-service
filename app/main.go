@@ -7,7 +7,7 @@ import (
 	_usersUsecase "aprian1337/thukul-service/business/users"
 	_usersDelivery "aprian1337/thukul-service/deliveries/users"
 	"aprian1337/thukul-service/helpers/constants"
-	postgres2 "aprian1337/thukul-service/repository/databases/postgres"
+	postgresRepo "aprian1337/thukul-service/repository/databases/postgres"
 	_activityDb "aprian1337/thukul-service/repository/databases/records"
 	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
 
@@ -59,6 +59,7 @@ func DbMigrate(db *gorm.DB) {
 		&_activityDb.Activities{},
 		&_activityDb.Coins{},
 		&_activityDb.Favorites{},
+		&_activityDb.Cryptos{},
 		&_activityDb.Wishlists{},
 		&_activityDb.Transactions{},
 		&_activityDb.Wallets{},
@@ -125,46 +126,46 @@ func main() {
 
 	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
 
-	cryptoRepository := postgres2.NewPostgresCryptosRepository(connPostgres)
+	cryptoRepository := postgresRepo.NewPostgresCryptosRepository(connPostgres)
 	cryptoUsecase := _cryptosUsecase.NewCryptoUsecase(cryptoRepository, timeoutContext)
 
-	coinRepository := postgres2.NewPostgresCoinsRepository(connPostgres)
+	coinRepository := postgresRepo.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
 
-	walletsHistoryRepository := postgres2.NewPostgresWalletHistoriesRepository(connPostgres)
+	walletsHistoryRepository := postgresRepo.NewPostgresWalletHistoriesRepository(connPostgres)
 	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
 
-	walletsRepository := postgres2.NewPostgresWalletsRepository(connPostgres)
+	walletsRepository := postgresRepo.NewPostgresWalletsRepository(connPostgres)
 	walletsUsecase := _walletUsecase.NewWalletsUsecase(walletsRepository, walletsHistoryUsecase, timeoutContext)
 
-	transactionsRepository := postgres2.NewPostgresTransactionRepository(connPostgres)
+	transactionsRepository := postgresRepo.NewPostgresTransactionRepository(connPostgres)
 	transactionsUsecase := _transactionUsecase.NewTransactionUsecase(transactionsRepository, timeoutContext)
 
-	userRepository := postgres2.NewPostgresUserRepository(connPostgres)
+	userRepository := postgresRepo.NewPostgresUserRepository(connPostgres)
 	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
 
 	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, viper.GetString(`encrypt.keystring`), viper.GetString(`encrypt.additional`), viper.GetString("server.address.host"), viper.GetString("server.address.port"), timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
 
-	salaryRepository := postgres2.NewPostgresSalariesRepository(connPostgres)
+	salaryRepository := postgresRepo.NewPostgresSalariesRepository(connPostgres)
 	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
 	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
 
-	activityRepository := postgres2.NewPostgresActivitiesRepository(connPostgres)
+	activityRepository := postgresRepo.NewPostgresActivitiesRepository(connPostgres)
 	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
 	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
 
-	pocketRepository := postgres2.NewPostgresPocketsRepository(connPostgres)
+	pocketRepository := postgresRepo.NewPostgresPocketsRepository(connPostgres)
 	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityUsecase, timeoutContext)
 	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
 
-	wishlistRepository := postgres2.NewPostgresWishlistRepository(connPostgres)
+	wishlistRepository := postgresRepo.NewPostgresWishlistRepository(connPostgres)
 	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, userUsecase, timeoutContext)
 	wishlistDelivery := _wishlistDelivery.NewSalariesController(wishlistUsecase)
 
-	favoriteRepository := postgres2.NewPostgresFavoritesRepository(connPostgres)
+	favoriteRepository := postgresRepo.NewPostgresFavoritesRepository(connPostgres)
 	favoriteUsecase := _favoriteUsecase.NewFavoriteUsecase(favoriteRepository, userUsecase, coinUsecase, timeoutContext)
 	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
 

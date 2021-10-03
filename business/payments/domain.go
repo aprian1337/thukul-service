@@ -40,7 +40,7 @@ func ToWalletHistoriesDomain(walletId int, transactionId string, nominal float64
 	return wallet_histories.Domain{
 		WalletId:      walletId,
 		TransactionId: &transactionUuid,
-		Nominal:       0,
+		Nominal:       nominal,
 		CreatedAt:     time.Time{},
 	}
 }

@@ -51,34 +51,57 @@ func NewPaymentUsecase(usersUsecase users.Usecase, smtpUsecase smtp.Usecase, cry
 }
 
 func (uc *PaymentUsecase) SellCoin(ctx context.Context, domain Domain) error {
-	//if domain.Coin == "" {
-	//	return businesses.ErrCoinRequired
-	//}
-	//if domain.Qty == 0 {
-	//	return businesses.ErrQtyRequired
-	//}
-	//wallet, err := uc.WalletUsecase.GetByUserId(ctx, domain.UserId)
-	//if err != nil {
-	//	return err
-	//}
-	//price, err := uc.CoinMarketRepo.GetPrice(ctx, domain.Coin, domain.Qty)
-	//if err != nil {
-	//	return businesses.ErrQtyRequired
-	//}
-	//diff := wallet.Total - price
-	//if diff < 0 {
-	//	return businesses.ErrWalletNotEnough
-	//}
-	//coin, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coin)
-	//if err != nil {
-	//	return businesses.ErrCoinNotFound
-	//}
-	//_, err = uc.TransactionUsecase.ActivitiesCreate(ctx, domain.ToTransactionDomain(coin.Id))
-	//if err != nil {
-	//	return businesses.ErrCoinNotFound
-	//}
-	//return nil
-	panic("PANIC")
+	if domain.Coin == "" {
+		return businesses.ErrCoinRequired
+	}
+
+	if helpers.IsZero(domain.Qty) {
+		return businesses.ErrQtyRequired
+	}
+
+	coin, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coin)
+	if err != nil {
+		return businesses.ErrCoinNotFound
+	}
+
+	crypto, err := uc.CryptoUsecase.CryptosGetDetail(ctx, domain.UserId, coin.Id)
+	if err != nil {
+		return err
+	}
+
+	if crypto.Qty < domain.Qty {
+		return businesses.ErrCoinNotEnough
+	}
+
+	price, err := uc.CoinMarketRepo.GetPrice(ctx, domain.Coin, domain.Qty)
+	if err != nil {
+		return err
+	}
+
+	domain.Price = price
+	transaction, err := uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id, "sell"))
+	if err != nil {
+		return err
+	}
+
+	user, err := uc.UsersUsecase.GetById(ctx, domain.UserId)
+	if err != nil {
+		return err
+	}
+
+	tomorrow := transaction.DatetimeRequest.Add(time.Hour * 24).Local()
+	url := uc.BaseUrl + ":" + uc.BasePort + "/api/v1/payments/confirm/" + helpers.HashTransactionToSlug(transaction.Id, uc.KeyString, uc.KeyAdditional)
+	bodyEmail := `
+		<h2>Hello ` + user.Name + `!</h2><br/>
+		You will selling a <b>` + ` ` + helpers.FloatToString(domain.Qty) + ` ` + coin.Symbol + ` (` + coin.Name + `)` + ` for Rp` + helpers.FloatToString(price) + `</b>, please confirm by clicking the link below to sell<br/><br/>
+	` + url + `<br/><br/>
+	This link will expired at ` + tomorrow.Format(constants.TimeFormat)
+	err = uc.SmtpEmailUsecase.SendMailSMTP(ctx, user.ToSmtpDomain("Thukul Confirmation - SELL", bodyEmail))
+	if err != nil {
+		return err
+	}
+	_, err = uc.TransactionUsecase.TransactionsUpdaterVerify(ctx, transaction.Id)
+	return nil
 }
 
 func (uc *PaymentUsecase) TopUp(ctx context.Context, domain Domain) (wallets.Domain, error) {
@@ -135,7 +158,7 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 		You will buying a <b>` + ` ` + helpers.FloatToString(domain.Qty) + ` ` + coin.Symbol + ` (` + coin.Name + `)` + ` for Rp` + helpers.FloatToString(price) + `</b>, please confirm by clicking the link below to purchase<br/><br/>
 	` + url + `<br/><br/>
 	This link will expired at ` + tomorrow.Format(constants.TimeFormat)
-	err = uc.SmtpEmailUsecase.SendMailSMTP(ctx, user.ToSmtpDomain("Payment Confirmation - BUY", bodyEmail))
+	err = uc.SmtpEmailUsecase.SendMailSMTP(ctx, user.ToSmtpDomain("Thukul Confirmation - BUY", bodyEmail))
 	if err != nil {
 		return err
 	}
@@ -148,10 +171,12 @@ func (uc *PaymentUsecase) Confirm(ctx context.Context, encode string, encrypt st
 	if match == "" {
 		return wallets.Domain{}, businesses.ErrInvalidPayload
 	}
+
 	transaction, err := uc.TransactionUsecase.TransactionsById(ctx, match)
 	if err != nil {
 		return wallets.Domain{}, err
 	}
+
 	if transaction.DatetimeCompleted != nil {
 		return wallets.Domain{}, businesses.ErrHasBeenVerified
 	}
@@ -172,19 +197,46 @@ func (uc *PaymentUsecase) Confirm(ctx context.Context, encode string, encrypt st
 	if err != nil {
 		return wallets.Domain{}, nil
 	}
-	if wallet.Total-transaction.Price < 0 {
-		return wallets.Domain{}, businesses.ErrWalletNotEnoughVerify
+
+	crypto, err := uc.CryptoUsecase.CryptosGetDetail(ctx, transaction.UserId, transaction.CoinId)
+
+	if transaction.Kind == "buy" {
+		if wallet.Total-transaction.Price < 0 {
+			return wallets.Domain{}, businesses.ErrWalletNotEnoughVerify
+		}
+		wallet.Total -= transaction.Price
+		wallet.NominalTransaction = transaction.Price
+
+		_, err = uc.CryptoUsecase.UpdateBuyCoin(ctx, cryptos.Domain{
+			UserId: transaction.UserId,
+			CoinId: transaction.CoinId,
+			BuyQty: transaction.Qty,
+		})
+		wallet.Kind = "buy"
+
+	} else {
+		if transaction.Qty > crypto.Qty {
+			return wallets.Domain{}, businesses.ErrCoinNotEnough
+		}
+		wallet.Total += transaction.Price
+		wallet.NominalTransaction = transaction.Price
+
+		_, err = uc.CryptoUsecase.UpdateSellCoin(ctx, cryptos.Domain{
+			UserId:  transaction.UserId,
+			CoinId:  transaction.CoinId,
+			SellQty: transaction.Qty,
+		})
+		wallet.Kind = "sell"
+
 	}
-	wallet.Total -= transaction.Price
-	wallet.NominalTransaction = transaction.Price
+	if err != nil {
+		return wallets.Domain{}, err
+	}
 	wallet, err = uc.WalletUsecase.UpdateByUserId(ctx, wallet)
 	if err != nil {
 		return wallets.Domain{}, err
 	}
 	err = uc.WalletHistoryUsecase.WalletHistoriesCreate(ctx, ToWalletHistoriesDomain(wallet.Id, transaction.Id, transaction.Price))
-	if err != nil {
-		return wallets.Domain{}, err
-	}
-	wallet.Kind = "buy"
+
 	return wallet, nil
 }

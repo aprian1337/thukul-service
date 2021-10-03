@@ -1,6 +1,6 @@
 package responses
 
-type BuyResponse struct {
+type BuySaleResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
