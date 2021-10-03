@@ -32,7 +32,6 @@ func (d *Domain) ToHistoryDomain() wallet_histories.Domain {
 	return wallet_histories.Domain{
 		WalletId:      d.Id,
 		TransactionId: d.TransactionId,
-		Type:          d.Kind,
 		Nominal:       d.NominalTransaction,
 	}
 }

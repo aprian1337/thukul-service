@@ -13,10 +13,12 @@ type Transactions struct {
 	CoinId            int
 	Coin              Coins `gorm:"foreignKey:coin_id"`
 	Qty               float64
+	Price             float64
 	Status            int `gorm:"size:1"`
+	Type              string
 	DatetimeRequest   time.Time
-	DatetimeVerify    time.Time
-	DatetimeCompleted time.Time
+	DatetimeVerify    *time.Time
+	DatetimeCompleted *time.Time
 }
 
 func TransactionsFromDomain(domain transactions.Domain) Transactions {
@@ -24,7 +26,9 @@ func TransactionsFromDomain(domain transactions.Domain) Transactions {
 		UserId:          domain.UserId,
 		CoinId:          domain.CoinId,
 		Qty:             domain.Qty,
+		Price:           domain.Price,
 		Status:          0,
+		Type:            domain.Kind,
 		DatetimeRequest: time.Now(),
 	}
 }
@@ -35,6 +39,8 @@ func (t *Transactions) TransactionsToDomain() transactions.Domain {
 		UserId:            t.UserId,
 		CoinId:            t.CoinId,
 		Qty:               t.Qty,
+		Kind:              t.Type,
+		Price:             t.Price,
 		Status:            t.Status,
 		DatetimeRequest:   t.DatetimeRequest,
 		DatetimeVerify:    t.DatetimeVerify,

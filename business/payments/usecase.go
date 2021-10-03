@@ -28,10 +28,11 @@ type PaymentUsecase struct {
 	KeyString            string
 	KeyAdditional        string
 	BaseUrl              string
+	BasePort             string
 	Timeout              time.Duration
 }
 
-func NewPaymentUsecase(usersUsecase users.Usecase, smtpUsecase smtp.Usecase, cryptoUsecase cryptos.Usecase, coinUsecase coins.Usecase, coinMarketRepo coinmarket.Repository, walletsUsecase wallets.Usecase, walletsHistoryUsecase wallet_histories.Usecase, transactionsUsecase transactions.Usecase, keyString string, keyAdditional string, BaseUrl string, timeoutContext time.Duration) *PaymentUsecase {
+func NewPaymentUsecase(usersUsecase users.Usecase, smtpUsecase smtp.Usecase, cryptoUsecase cryptos.Usecase, coinUsecase coins.Usecase, coinMarketRepo coinmarket.Repository, walletsUsecase wallets.Usecase, walletsHistoryUsecase wallet_histories.Usecase, transactionsUsecase transactions.Usecase, keyString string, keyAdditional string, baseUrl string, basePort string, timeoutContext time.Duration) *PaymentUsecase {
 	return &PaymentUsecase{
 		UsersUsecase:         usersUsecase,
 		SmtpEmailUsecase:     smtpUsecase,
@@ -40,7 +41,8 @@ func NewPaymentUsecase(usersUsecase users.Usecase, smtpUsecase smtp.Usecase, cry
 		CoinMarketRepo:       coinMarketRepo,
 		KeyString:            keyString,
 		WalletUsecase:        walletsUsecase,
-		BaseUrl:              BaseUrl,
+		BasePort:             basePort,
+		BaseUrl:              baseUrl,
 		TransactionUsecase:   transactionsUsecase,
 		KeyAdditional:        keyAdditional,
 		WalletHistoryUsecase: walletsHistoryUsecase,
@@ -121,12 +123,13 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return businesses.ErrCoinNotFound
 	}
-	transaction, err := uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id))
+	domain.Price = price
+	transaction, err := uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id, "buy"))
 	if err != nil {
 		return err
 	}
-	tomorrow := time.Now().Add(time.Hour * 24).Local()
-	url := uc.BaseUrl + "/confirm/" + helpers.HashTransactionToSlug(transaction.Id, uc.KeyString, uc.KeyAdditional)
+	tomorrow := transaction.DatetimeRequest.Add(time.Hour * 24).Local()
+	url := uc.BaseUrl + ":" + uc.BasePort + "/api/v1/payments/confirm/" + helpers.HashTransactionToSlug(transaction.Id, uc.KeyString, uc.KeyAdditional)
 	bodyEmail := `
 		<h2>Hello ` + user.Name + `!</h2><br/>
 		You will buying a <b>` + ` ` + helpers.FloatToString(domain.Qty) + ` ` + coin.Symbol + ` (` + coin.Name + `)` + ` for Rp` + helpers.FloatToString(price) + `</b>, please confirm by clicking the link below to purchase<br/><br/>
@@ -136,5 +139,52 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return err
 	}
+	_, err = uc.TransactionUsecase.TransactionsUpdaterVerify(ctx, transaction.Id)
 	return nil
+}
+
+func (uc *PaymentUsecase) Confirm(ctx context.Context, encode string, encrypt string) (wallets.Domain, error) {
+	match, _ := helpers.DecodeTransactionFromSlug(encode, encrypt, uc.KeyString, uc.KeyAdditional)
+	if match == "" {
+		return wallets.Domain{}, businesses.ErrInvalidPayload
+	}
+	transaction, err := uc.TransactionUsecase.TransactionsById(ctx, match)
+	if err != nil {
+		return wallets.Domain{}, err
+	}
+	if transaction.DatetimeCompleted != nil {
+		return wallets.Domain{}, businesses.ErrHasBeenVerified
+	}
+	expired := transaction.DatetimeRequest.Add(time.Hour * 24).Local()
+	now := time.Now()
+	if now.After(expired) {
+		_, err := uc.TransactionUsecase.TransactionsUpdaterCompleted(ctx, transaction.Id, -1)
+		if err != nil {
+			return wallets.Domain{}, err
+		}
+		return wallets.Domain{}, businesses.ErrExpiredConfirm
+	}
+	_, err = uc.TransactionUsecase.TransactionsUpdaterCompleted(ctx, transaction.Id, 2)
+	if err != nil {
+		return wallets.Domain{}, err
+	}
+	wallet, err := uc.WalletUsecase.GetByUserId(ctx, transaction.UserId)
+	if err != nil {
+		return wallets.Domain{}, nil
+	}
+	if wallet.Total-transaction.Price < 0 {
+		return wallets.Domain{}, businesses.ErrWalletNotEnoughVerify
+	}
+	wallet.Total -= transaction.Price
+	wallet.NominalTransaction = transaction.Price
+	wallet, err = uc.WalletUsecase.UpdateByUserId(ctx, wallet)
+	if err != nil {
+		return wallets.Domain{}, err
+	}
+	err = uc.WalletHistoryUsecase.WalletHistoriesCreate(ctx, ToWalletHistoriesDomain(wallet.Id, transaction.Id, transaction.Price))
+	if err != nil {
+		return wallets.Domain{}, err
+	}
+	wallet.Kind = "buy"
+	return wallet, nil
 }
