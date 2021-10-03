@@ -18,6 +18,6 @@ type Usecase interface {
 }
 
 type Repository interface {
-	GetSymbol(ctx context.Context, symbol string) (Domain, int64, error)
-	CreateSymbol(ctx context.Context, domain Domain) (Domain, error)
+	CoinsGetSymbol(ctx context.Context, symbol string) (Domain, int64, error)
+	CoinsCreateSymbol(ctx context.Context, domain Domain) (Domain, error)
 }

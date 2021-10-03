@@ -22,7 +22,7 @@ func NewCoinUsecase(repo Repository, coinMarketRepo coinmarket.Repository, time 
 }
 
 func (uc *CoinUsecase) GetBySymbol(ctx context.Context, symbol string) (Domain, error) {
-	data, count, err := uc.Repo.GetSymbol(ctx, symbol)
+	data, count, err := uc.Repo.CoinsGetSymbol(ctx, symbol)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -35,7 +35,7 @@ func (uc *CoinUsecase) GetBySymbol(ctx context.Context, symbol string) (Domain, 
 			Symbol: symbol.Symbol,
 			Name:   symbol.Name,
 		}
-		createSymbol, err := uc.Repo.CreateSymbol(ctx, domain)
+		createSymbol, err := uc.Repo.CoinsCreateSymbol(ctx, domain)
 		if err != nil {
 			return Domain{}, err
 		}

@@ -11,3 +11,7 @@ func StringToUint(str string) (uint, error) {
 	}
 	return uint(convInt), nil
 }
+
+func FloatToString(input_num float64) string {
+	return strconv.FormatFloat(input_num, 'f', 6, 64)
+}

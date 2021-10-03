@@ -5,7 +5,7 @@ import "aprian1337/thukul-service/business/payments"
 type PaymentRequest struct {
 	UserId  int     `json:"user_id"`
 	Kind    string  `json:"kind"`
-	Coin    string  `json:"coin"`
+	Coin    string  `json:"symbol"`
 	Qty     float64 `json:"qty"`
 	Nominal float64 `json:"nominal"`
 }

@@ -66,8 +66,7 @@ func (ctrl *Controller) Create(c echo.Context) error {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, businesses.ErrBadRequest)
 	}
 	ctxNative := c.Request().Context()
-	var data favorites.Domain
-	data, err = ctrl.favoriteUsecase.Create(ctxNative, request.ToDomain(), convId)
+	data, err := ctrl.favoriteUsecase.Create(ctxNative, request.ToDomain(), convId)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}

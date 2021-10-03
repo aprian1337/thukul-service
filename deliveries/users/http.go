@@ -46,6 +46,8 @@ func (ctrl *Controller) GetDetailUserController(c echo.Context) error {
 
 func (ctrl *Controller) CreateUserController(c echo.Context) error {
 	request := requests.UserRegister{}
+	//u := middlewares.GetClaimUser(c)
+	//fmt.Println(u)
 	var err error
 	err = c.Bind(&request)
 	if err != nil {
@@ -57,7 +59,7 @@ func (ctrl *Controller) CreateUserController(c echo.Context) error {
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, responses.FromUsersDomain(data))
+	return deliveries.NewSuccessResponse(c, responses.FromDomainToCreateResponse(data))
 }
 
 func (ctrl *Controller) LoginUserController(c echo.Context) error {
@@ -108,5 +110,5 @@ func (cl *Controller) DeleteUserController(c echo.Context) error {
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, nil)
+	return deliveries.NewSuccessResponse(c, convId)
 }
