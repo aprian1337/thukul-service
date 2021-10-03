@@ -1,6 +1,5 @@
 package responses
 
-type TopUpResponse struct {
+type BuyResponse struct {
 	Message string `json:"message"`
-	Data    interface{}
 }

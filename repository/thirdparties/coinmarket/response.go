@@ -59,7 +59,7 @@ type PriceResponse struct {
 		ID          int       `json:"id"`
 		Symbol      string    `json:"symbol"`
 		Name        string    `json:"name"`
-		Amount      int       `json:"amount"`
+		Amount      float64   `json:"amount"`
 		LastUpdated time.Time `json:"last_updated"`
 		Quote       struct {
 			CurrencyIdr struct {

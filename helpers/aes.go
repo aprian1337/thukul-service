@@ -9,8 +9,7 @@ import (
 	"io"
 )
 
-func encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
-
+func AesEncrypt(stringToEncrypt string, keyString string) (encryptedString string) {
 	key, _ := hex.DecodeString(keyString)
 	plaintext := []byte(stringToEncrypt)
 
@@ -33,7 +32,7 @@ func encrypt(stringToEncrypt string, keyString string) (encryptedString string) 
 	return fmt.Sprintf("%x", ciphertext)
 }
 
-func decrypt(encryptedString string, keyString string) (decryptedString string) {
+func AesDecrypt(encryptedString string, keyString string) (decryptedString string) {
 
 	key, _ := hex.DecodeString(keyString)
 	enc, _ := hex.DecodeString(encryptedString)

@@ -28,10 +28,11 @@ func NewSmtpUsecase(host string, port int, senderName string, email string, pass
 
 func (c *ConfigSmtpUsecase) SendMailSMTP(ctx context.Context, domain Domain) error {
 	bcc := []string{"dwiky.dev@gmail.com"}
+	mime := "\r\n" + "MIME-Version: 1.0\r\n" + "Content-Type: text/html; charset=\"utf-8\"\r\n\r\n"
 	body := "From: " + c.SmtpSenderName + "\n" +
 		"To: " + strings.Join(domain.MailTo, ",") + "\n" +
-		"Bcc: " + strings.Join(bcc, ",") + "\n" +
-		"Subject: " + domain.Subject + "\n\n" +
+		"Cc: " + strings.Join(bcc, ",") + "\n" +
+		"Subject: " + domain.Subject + mime +
 		domain.Message
 
 	auth := smtp.PlainAuth("", c.SmtpAuthEMail, c.SmtpAuthPassword, c.SmtpHost)

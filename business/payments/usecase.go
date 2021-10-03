@@ -10,6 +10,8 @@ import (
 	"aprian1337/thukul-service/business/users"
 	"aprian1337/thukul-service/business/wallet_histories"
 	"aprian1337/thukul-service/business/wallets"
+	"aprian1337/thukul-service/helpers"
+	"aprian1337/thukul-service/helpers/constants"
 	"context"
 	"time"
 )
@@ -23,18 +25,24 @@ type PaymentUsecase struct {
 	WalletHistoryUsecase wallet_histories.Usecase
 	SmtpEmailUsecase     smtp.Usecase
 	CoinMarketRepo       coinmarket.Repository
+	KeyString            string
+	KeyAdditional        string
+	BaseUrl              string
 	Timeout              time.Duration
 }
 
-func NewPaymentUsecase(usersUsecase users.Usecase, smtpUsecase smtp.Usecase, cryptoUsecase cryptos.Usecase, coinUsecase coins.Usecase, coinMarketRepo coinmarket.Repository, walletsUsecase wallets.Usecase, walletsHistoryUsecase wallet_histories.Usecase, transactionsUsecase transactions.Usecase, timeoutContext time.Duration) *PaymentUsecase {
+func NewPaymentUsecase(usersUsecase users.Usecase, smtpUsecase smtp.Usecase, cryptoUsecase cryptos.Usecase, coinUsecase coins.Usecase, coinMarketRepo coinmarket.Repository, walletsUsecase wallets.Usecase, walletsHistoryUsecase wallet_histories.Usecase, transactionsUsecase transactions.Usecase, keyString string, keyAdditional string, BaseUrl string, timeoutContext time.Duration) *PaymentUsecase {
 	return &PaymentUsecase{
 		UsersUsecase:         usersUsecase,
 		SmtpEmailUsecase:     smtpUsecase,
 		CryptoUsecase:        cryptoUsecase,
 		CoinUsecase:          coinUsecase,
 		CoinMarketRepo:       coinMarketRepo,
+		KeyString:            keyString,
 		WalletUsecase:        walletsUsecase,
+		BaseUrl:              BaseUrl,
 		TransactionUsecase:   transactionsUsecase,
+		KeyAdditional:        keyAdditional,
 		WalletHistoryUsecase: walletsHistoryUsecase,
 		Timeout:              timeoutContext,
 	}
@@ -93,7 +101,8 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if domain.Coin == "" {
 		return businesses.ErrCoinRequired
 	}
-	if domain.Qty == 0 {
+
+	if helpers.IsZero(domain.Qty) {
 		return businesses.ErrQtyRequired
 	}
 	user, err := uc.UsersUsecase.GetById(ctx, domain.UserId)
@@ -102,7 +111,7 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	}
 	price, err := uc.CoinMarketRepo.GetPrice(ctx, domain.Coin, domain.Qty)
 	if err != nil {
-		return businesses.ErrQtyRequired
+		return err
 	}
 	diff := user.Wallets.Total - price
 	if diff < 0 {
@@ -112,12 +121,18 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return businesses.ErrCoinNotFound
 	}
-	_, err = uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id))
+	transaction, err := uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id))
 	if err != nil {
-		return businesses.ErrCoinNotFound
+		return err
 	}
-	//helpers.SendMail()
-	err = uc.SmtpEmailUsecase.SendMailSMTP(ctx, user.ToSmtpDomain("Email Confirmation", "Hello World!"))
+	tomorrow := time.Now().Add(time.Hour * 24).Local()
+	url := uc.BaseUrl + "/confirm/" + helpers.HashTransactionToSlug(transaction.Id, uc.KeyString, uc.KeyAdditional)
+	bodyEmail := `
+		<h2>Hello ` + user.Name + `!</h2><br/>
+		You will buying a <b>` + ` ` + helpers.FloatToString(domain.Qty) + ` ` + coin.Symbol + ` (` + coin.Name + `)` + ` for Rp` + helpers.FloatToString(price) + `</b>, please confirm by clicking the link below to purchase<br/><br/>
+	` + url + `<br/><br/>
+	This link will expired at ` + tomorrow.Format(constants.TimeFormat)
+	err = uc.SmtpEmailUsecase.SendMailSMTP(ctx, user.ToSmtpDomain("Payment Confirmation - BUY", bodyEmail))
 	if err != nil {
 		return err
 	}

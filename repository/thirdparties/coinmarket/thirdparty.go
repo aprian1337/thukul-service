@@ -44,7 +44,6 @@ func (api *MarketCapAPI) GetBySymbol(ctx context.Context, symbol string) (coinma
 }
 
 func (api *MarketCapAPI) GetPrice(ctx context.Context, symbol string, amount float64) (float64, error) {
-	//GET IDR CURRENCY FROM MARKETCAP API DOCS
 	uri := fmt.Sprintf("%v%vsymbol=%v&amount=%v", api.BaseUrl, api.EndpointPrice, symbol, amount)
 	req, _ := http.NewRequest("GET", uri, nil)
 	req.Header.Set("X-CMC_PRO_API_KEY", api.ApiKey)
@@ -54,10 +53,9 @@ func (api *MarketCapAPI) GetPrice(ctx context.Context, symbol string, amount flo
 	}
 	response := PriceResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
-	fmt.Println("URI")
-	fmt.Println(uri)
 	if err != nil {
 		return 0, repository.ErrDataNotFound
 	}
+
 	return response.Data.Quote.CurrencyIdr.Price, err
 }

@@ -35,9 +35,10 @@ func (ctrl *Controller) TopUp(c echo.Context) error {
 			return deliveries.NewErrorResponse(c, http.StatusForbidden, err)
 		}
 	}
+	response := responses.FromDomainWallets(pay)
 	return deliveries.NewSuccessResponse(c, responses.TopUpResponse{
-		Message: "Top up has been success",
-		Data:    pay,
+		Message: "top up has been success",
+		Data:    &response,
 	})
 }
 
@@ -51,14 +52,8 @@ func (ctrl *Controller) Buy(c echo.Context) error {
 	err = ctrl.PaymentUsecase.BuyCoin(ctxNative, data.ToDomain())
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
-		//if err == businesses.ErrBadRequest {
-		//	return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
-		//} else if err == businesses.ErrUserIdNotFound {
-		//	return deliveries.NewErrorResponse(c, http.StatusForbidden, err)
-		//}
 	}
-	return deliveries.NewSuccessResponse(c, responses.TopUpResponse{
-		Message: "Buy coin success",
-		Data:    nil,
+	return deliveries.NewSuccessResponse(c, responses.BuyResponse{
+		Message: "check your email for confirm the purchase",
 	})
 }
