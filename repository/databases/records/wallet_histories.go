@@ -13,7 +13,6 @@ type WalletHistories struct {
 	Wallet        Wallets `gorm:"foreignKey:wallet_id"`
 	TransactionId *uuid.UUID
 	Transaction   Transactions `gorm:"foreignKey:transaction_id"`
-	Type          string
 	Nominal       float64
 	CreatedAt     time.Time `gorm:"autoCreateTime"`
 }
@@ -28,8 +27,8 @@ func (data *WalletHistories) WalletHistoriesToDomain() wallets_domain.Domain {
 
 func WalletHistoriesFromDomain(domain wallet_histories.Domain) WalletHistories {
 	return WalletHistories{
-		WalletId: domain.WalletId,
-		Type:     domain.Type,
-		Nominal:  domain.Nominal,
+		WalletId:      domain.WalletId,
+		Nominal:       domain.Nominal,
+		TransactionId: domain.TransactionId,
 	}
 }

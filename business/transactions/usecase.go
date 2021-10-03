@@ -18,6 +18,14 @@ func NewTransactionUsecase(repo Repository, timeout time.Duration) *TransactionU
 	}
 }
 
+func (uc *TransactionUsecase) TransactionsById(ctx context.Context, id string) (Domain, error) {
+	d, err := uc.Repo.TransactionsById(ctx, id)
+	if err != nil {
+		return Domain{}, err
+	}
+	return d, nil
+}
+
 func (uc *TransactionUsecase) TransactionsCreate(ctx context.Context, domain Domain) (Domain, error) {
 	d, err := uc.Repo.TransactionsCreate(ctx, domain)
 	if err != nil {

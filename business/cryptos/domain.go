@@ -12,11 +12,13 @@ type Domain struct {
 	Symbol    string
 	Qty       float64
 	BuyQty    float64
+	SellQty   float64
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type Usecase interface {
+	CryptosGetDetail(ctx context.Context, userId int, coinId int) (Domain, error)
 	UpdateBuyCoin(ctx context.Context, domain Domain) (Domain, error)
 	UpdateSellCoin(ctx context.Context, domain Domain) (Domain, error)
 }

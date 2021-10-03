@@ -19,8 +19,9 @@ func NewPostgresCryptosRepository(conn *gorm.DB) *CryptosRepository {
 
 func (repo *CryptosRepository) CryptosUpdate(ctx context.Context, domain cryptos.Domain) (cryptos.Domain, error) {
 	model := records.Cryptos{}
-	data := records.CryptosFromDomain(domain)
-	err := repo.ConnPostgres.Model(&model).Where("user_id=? AND coin_id=?", data.UserId, data.CoinId)
+	err := repo.ConnPostgres.First(&model, "user_id=? AND coin_id=?", domain.UserId, domain.CoinId)
+	model.Qty = domain.Qty
+	repo.ConnPostgres.Save(&model)
 	if err.Error != nil {
 		return cryptos.Domain{}, err.Error
 	}
@@ -39,7 +40,7 @@ func (repo *CryptosRepository) CryptosCreate(ctx context.Context, domain cryptos
 
 func (repo *CryptosRepository) CryptosGetDetail(ctx context.Context, userId int, coinId int) (cryptos.Domain, error) {
 	model := records.Cryptos{}
-	err := repo.ConnPostgres.Model(&model).Where("user_id=? AND coin_id=?", userId, coinId)
+	err := repo.ConnPostgres.First(&model).Where("user_id=? AND coin_id=?", userId, coinId)
 	if err.Error != nil {
 		return cryptos.Domain{}, err.Error
 	}

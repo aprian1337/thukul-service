@@ -1,7 +1,7 @@
 package payments
 
 import (
-	businesses "aprian1337/thukul-service/business"
+	"aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/payments"
 	"aprian1337/thukul-service/deliveries"
 	"aprian1337/thukul-service/deliveries/payments/requests"
@@ -53,7 +53,46 @@ func (ctrl *Controller) Buy(c echo.Context) error {
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, responses.BuyResponse{
+	return deliveries.NewSuccessResponse(c, responses.BuySaleResponse{
+		Status:  "success",
 		Message: "check your email for confirm the purchase",
+	})
+}
+
+func (ctrl *Controller) Sell(c echo.Context) error {
+	ctxNative := c.Request().Context()
+	var data requests.PaymentRequest
+	err := c.Bind(&data)
+	if err != nil {
+		return err
+	}
+	err = ctrl.PaymentUsecase.SellCoin(ctxNative, data.ToDomain())
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, responses.BuySaleResponse{
+		Status:  "success",
+		Message: "check your email for sales confirmation",
+	})
+}
+
+func (ctrl *Controller) Confirm(c echo.Context) error {
+	ctxNative := c.Request().Context()
+	var data requests.PaymentRequest
+	err := c.Bind(&data)
+	if err != nil {
+		return err
+	}
+	uuidEncode := c.Param("uuid")
+	encrypt := c.Param("encrypt")
+	pay, err := ctrl.PaymentUsecase.Confirm(ctxNative, uuidEncode, encrypt)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return deliveries.NewSuccessResponse(c, responses.ConfirmResponse{
+		Message:      "success",
+		PaymentTotal: pay.NominalTransaction,
+		PaymentType:  pay.Kind,
+		WalletSaldo:  pay.Total,
 	})
 }

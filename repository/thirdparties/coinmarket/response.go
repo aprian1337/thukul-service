@@ -56,7 +56,7 @@ type PriceResponse struct {
 		Notice       interface{} `json:"notice"`
 	} `json:"status"`
 	Data struct {
-		ID          int       `json:"id"`
+		Id          int       `json:"id"`
 		Symbol      string    `json:"symbol"`
 		Name        string    `json:"name"`
 		Amount      float64   `json:"amount"`

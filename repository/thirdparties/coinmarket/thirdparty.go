@@ -53,6 +53,7 @@ func (api *MarketCapAPI) GetPrice(ctx context.Context, symbol string, amount flo
 	}
 	response := PriceResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
+	fmt.Println(response)
 	if err != nil {
 		return 0, repository.ErrDataNotFound
 	}
