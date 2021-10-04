@@ -23,8 +23,7 @@ func NewSalariesController(uc salaries.Usecase) *Controller {
 
 func (ctrl *Controller) GetSalariesController(c echo.Context) error {
 	ctx := c.Request().Context()
-	search := c.QueryParam("q")
-	data, err := ctrl.SalaryUsecase.GetList(ctx, search)
+	data, err := ctrl.SalaryUsecase.GetList(ctx)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}

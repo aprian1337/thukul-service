@@ -14,7 +14,7 @@ type Domain struct {
 }
 
 type Usecase interface {
-	GetList(ctx context.Context, search string) ([]Domain, error)
+	GetList(ctx context.Context) ([]Domain, error)
 	GetById(ctx context.Context, id uint) (Domain, error)
 	Create(ctx context.Context, domain Domain) (Domain, error)
 	Update(ctx context.Context, id uint, domain Domain) (Domain, error)
@@ -22,7 +22,7 @@ type Usecase interface {
 }
 
 type Repository interface {
-	SalariesGetList(ctx context.Context, search string) ([]Domain, error)
+	SalariesGetList(ctx context.Context) ([]Domain, error)
 	SalariesGetById(ctx context.Context, id uint) (Domain, error)
 	SalariesCreate(ctx context.Context, domain Domain) (Domain, error)
 	SalariesUpdate(ctx context.Context, domain Domain) (Domain, error)

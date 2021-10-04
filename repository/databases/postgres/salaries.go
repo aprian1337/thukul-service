@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/salaries"
 	"aprian1337/thukul-service/repository/databases/records"
 	"context"
@@ -17,7 +18,7 @@ func NewPostgresSalariesRepository(conn *gorm.DB) *SalariesRepository {
 	}
 }
 
-func (repo *SalariesRepository) SalariesGetList(_ context.Context, search string) ([]salaries.Domain, error) {
+func (repo *SalariesRepository) SalariesGetList(_ context.Context) ([]salaries.Domain, error) {
 	var data []records.Salaries
 	err := repo.ConnPostgres.Find(&data)
 	if err.Error != nil {
@@ -36,6 +37,9 @@ func (repo *SalariesRepository) SalariesGetById(_ context.Context, id uint) (sal
 }
 
 func (repo *SalariesRepository) SalariesCreate(_ context.Context, domain salaries.Domain) (salaries.Domain, error) {
+	if domain.Maximal == 0 {
+		return salaries.Domain{}, businesses.ErrBadRequest
+	}
 	salary := records.SalariesFromDomain(domain)
 	err := repo.ConnPostgres.Create(&salary)
 	if err.Error != nil {
