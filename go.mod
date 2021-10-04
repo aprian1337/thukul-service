@@ -10,6 +10,7 @@ require (
 	github.com/labstack/gommon v0.3.0
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/spf13/viper v1.9.0
+	github.com/stretchr/testify v1.7.0
 	go.mongodb.org/mongo-driver v1.7.2
 	golang.org/x/crypto v0.0.0-20210915214749-c084706c2272
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

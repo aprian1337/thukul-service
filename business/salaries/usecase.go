@@ -19,8 +19,8 @@ func NewSalaryUsecase(repo Repository, timeout time.Duration) *SalaryUsecase {
 	}
 }
 
-func (su *SalaryUsecase) GetList(ctx context.Context, search string) ([]Domain, error) {
-	salaries, err := su.Repo.SalariesGetList(ctx, search)
+func (su *SalaryUsecase) GetList(ctx context.Context) ([]Domain, error) {
+	salaries, err := su.Repo.SalariesGetList(ctx)
 	if err != nil {
 		return []Domain{}, err
 	}
