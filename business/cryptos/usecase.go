@@ -2,6 +2,7 @@ package cryptos
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -17,12 +18,20 @@ func NewCryptoUsecase(repo Repository, timeout time.Duration) *CryptoUsecase {
 	}
 }
 
-func (uc *CryptoUsecase) CryptosGetDetail(ctx context.Context, userId int, coinId int) (Domain, error) {
-	check, err := uc.Repo.CryptosGetDetail(ctx, userId, coinId)
+func (uc *CryptoUsecase) CryptosGetByUser(ctx context.Context, userId int) ([]Domain, error) {
+	data, err := uc.Repo.CryptosGetByUser(ctx, userId)
 	if err != nil {
-		return Domain{}, nil
+		return []Domain{}, nil
 	}
-	return check, nil
+	return data, nil
+}
+
+func (uc *CryptoUsecase) CryptosGetDetail(ctx context.Context, userId int, coinId int) (Domain, error) {
+	data, err := uc.Repo.CryptosGetDetail(ctx, userId, coinId)
+	if err != nil {
+		return Domain{}, err
+	}
+	return data, nil
 }
 
 func (uc *CryptoUsecase) UpdateBuyCoin(ctx context.Context, domain Domain) (Domain, error) {

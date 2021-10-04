@@ -3,15 +3,27 @@ package main
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
-	_smtpUsecase "aprian1337/thukul-service/business/smtp"
-	_usersUsecase "aprian1337/thukul-service/business/users"
-	_usersDelivery "aprian1337/thukul-service/deliveries/users"
 	"aprian1337/thukul-service/helpers/constants"
+	"aprian1337/thukul-service/repository/drivers/mongodb"
+	"aprian1337/thukul-service/repository/drivers/postgres"
+	"fmt"
+	"github.com/labstack/echo/v4"
+	"github.com/spf13/viper"
+	"gorm.io/gorm"
+	"log"
+	"time"
+
 	postgresRepo "aprian1337/thukul-service/repository/databases/postgres"
-	_activityDb "aprian1337/thukul-service/repository/databases/records"
+
+	_smtpUsecase "aprian1337/thukul-service/business/smtp"
 	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
 
+	_usersUsecase "aprian1337/thukul-service/business/users"
+	_usersDelivery "aprian1337/thukul-service/deliveries/users"
+
 	_activityUsecase "aprian1337/thukul-service/business/activities"
+	_activityDb "aprian1337/thukul-service/repository/databases/records"
+
 	_coinUsecase "aprian1337/thukul-service/business/coins"
 	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
 	_paymentsUsecase "aprian1337/thukul-service/business/payments"
@@ -30,14 +42,7 @@ import (
 
 	_cryptosUsecase "aprian1337/thukul-service/business/cryptos"
 	_transactionUsecase "aprian1337/thukul-service/business/transactions"
-	"aprian1337/thukul-service/repository/drivers/mongodb"
-	"aprian1337/thukul-service/repository/drivers/postgres"
-	"fmt"
-	"github.com/labstack/echo/v4"
-	"github.com/spf13/viper"
-	"gorm.io/gorm"
-	"log"
-	"time"
+	_cryptosDelivery "aprian1337/thukul-service/deliveries/cryptos"
 )
 
 func init() {
@@ -128,6 +133,7 @@ func main() {
 
 	cryptoRepository := postgresRepo.NewPostgresCryptosRepository(connPostgres)
 	cryptoUsecase := _cryptosUsecase.NewCryptoUsecase(cryptoRepository, timeoutContext)
+	cryptoDelivery := _cryptosDelivery.NewController(cryptoUsecase)
 
 	coinRepository := postgresRepo.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
@@ -172,6 +178,7 @@ func main() {
 	routesInit := routes.ControllerList{
 		UserController:     *userDelivery,
 		SalaryController:   *salaryDelivery,
+		CryptoController:   *cryptoDelivery,
 		PocketController:   *pocketDelivery,
 		ActivityController: *activityDelivery,
 		CoinController:     *coinDelivery,
