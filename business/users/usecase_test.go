@@ -6,7 +6,6 @@ import (
 	"aprian1337/thukul-service/business/users"
 	_usersMockRepository "aprian1337/thukul-service/business/users/mocks"
 	"aprian1337/thukul-service/business/wallets"
-	_walletsMock "aprian1337/thukul-service/business/wallets/mocks"
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -15,11 +14,8 @@ import (
 )
 
 var userRepository _usersMockRepository.Repository
-var walletRepository _walletsMock.Repository
-var walletUsecase _walletsMock.Usecase
 var userService users.Usecase
 var walletService wallets.Usecase
-var jwtMiddleware middlewares.ConfigJWT
 
 var userDomain users.Domain
 var listUserDomain []users.Domain

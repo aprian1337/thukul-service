@@ -134,6 +134,12 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	if err != nil {
 		return err
 	}
+
+	coin, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coin)
+	if err != nil {
+		return businesses.ErrCoinNotFound
+	}
+
 	price, err := uc.CoinMarketRepo.GetPrice(ctx, domain.Coin, domain.Qty)
 	if err != nil {
 		return err
@@ -141,10 +147,6 @@ func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
 	diff := user.Wallets.Total - price
 	if diff < 0 {
 		return businesses.ErrWalletNotEnough
-	}
-	coin, err := uc.CoinUsecase.GetBySymbol(ctx, domain.Coin)
-	if err != nil {
-		return businesses.ErrCoinNotFound
 	}
 	domain.Price = price
 	transaction, err := uc.TransactionUsecase.TransactionsCreate(ctx, domain.ToTransactionDomain(coin.Id, "buy"))
@@ -237,6 +239,5 @@ func (uc *PaymentUsecase) Confirm(ctx context.Context, encode string, encrypt st
 		return wallets.Domain{}, err
 	}
 	err = uc.WalletHistoryUsecase.WalletHistoriesCreate(ctx, ToWalletHistoriesDomain(wallet.Id, transaction.Id, transaction.Price))
-
 	return wallet, nil
 }

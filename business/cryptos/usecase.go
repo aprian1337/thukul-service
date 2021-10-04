@@ -2,7 +2,6 @@ package cryptos
 
 import (
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -21,7 +20,7 @@ func NewCryptoUsecase(repo Repository, timeout time.Duration) *CryptoUsecase {
 func (uc *CryptoUsecase) CryptosGetByUser(ctx context.Context, userId int) ([]Domain, error) {
 	data, err := uc.Repo.CryptosGetByUser(ctx, userId)
 	if err != nil {
-		return []Domain{}, nil
+		return []Domain{}, err
 	}
 	return data, nil
 }
