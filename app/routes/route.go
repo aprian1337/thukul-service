@@ -4,6 +4,7 @@ import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/deliveries/activities"
 	"aprian1337/thukul-service/deliveries/coins"
+	"aprian1337/thukul-service/deliveries/cryptos"
 	"aprian1337/thukul-service/deliveries/favorites"
 	"aprian1337/thukul-service/deliveries/payments"
 	"aprian1337/thukul-service/deliveries/pockets"
@@ -24,6 +25,7 @@ type ControllerList struct {
 	CoinController     coins.Controller
 	WishlistController wishlists.Controller
 	FavoriteController favorites.Controller
+	CryptoController   cryptos.Controller
 	PaymentController  payments.Controller
 }
 
@@ -81,6 +83,10 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.POST("payments/buy", cl.PaymentController.Buy)
 	v1.POST("payments/sell", cl.PaymentController.Sell)
 	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm)
+
+	//CRYPTOS
+	v1.GET("users/:userId/cryptos", cl.CryptoController.GetByUser)
+	v1.GET("users/:userId/cryptos/:cryptoId", cl.CryptoController.GetDetail)
 
 	//COINS
 	v1.GET("coins", cl.CoinController.GetBySymbol)

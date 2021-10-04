@@ -26,11 +26,23 @@ func CryptosFromDomain(domain cryptos.Domain) Cryptos {
 
 func (c *Cryptos) CryptosToDomain() cryptos.Domain {
 	return cryptos.Domain{
-		ID:        c.ID,
-		UserId:    c.UserId,
-		CoinId:    c.CoinId,
+		ID:     c.ID,
+		UserId: c.UserId,
+		CoinId: c.CoinId,
+		Coin: cryptos.Coin(struct {
+			Name   string
+			Symbol string
+		}{Name: c.Coin.Name, Symbol: c.Coin.Symbol}),
 		Qty:       c.Qty,
 		CreatedAt: c.CreatedAt,
 		UpdatedAt: c.UpdatedAt,
 	}
+}
+
+func CryptosToListDomain(d []Cryptos) []cryptos.Domain {
+	var cryptoList []cryptos.Domain
+	for _, v := range d {
+		cryptoList = append(cryptoList, v.CryptosToDomain())
+	}
+	return cryptoList
 }
