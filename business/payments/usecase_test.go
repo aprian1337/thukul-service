@@ -328,7 +328,7 @@ func TestSellCoin(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("Test Case 5 | Sell - Error - Qty Required", func(t *testing.T) {
+	t.Run("Test Case 6 | Sell - Error - Qty Required", func(t *testing.T) {
 		setup()
 		cryptoService.On("CryptosGetDetail", mock.Anything, mock.Anything, mock.Anything).Return(cryptoDomain, nil).Once()
 		coinService.On("GetBySymbol", mock.Anything, mock.Anything).Return(coinDomain, nil).Once()
@@ -340,7 +340,7 @@ func TestSellCoin(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("Test Case 5 | Sell - Error - Price Err", func(t *testing.T) {
+	t.Run("Test Case 7 | Sell - Error - Price Err", func(t *testing.T) {
 		setup()
 		cryptoService.On("CryptosGetDetail", mock.Anything, mock.Anything, mock.Anything).Return(cryptoDomain, nil).Once()
 		coinService.On("GetBySymbol", mock.Anything, mock.Anything).Return(coinDomain, nil).Once()
@@ -353,7 +353,7 @@ func TestSellCoin(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("Test Case 6 | Sell - Error - Send Email Error", func(t *testing.T) {
+	t.Run("Test Case 8 | Sell - Error - Send Email Error", func(t *testing.T) {
 		setup()
 		cryptoService.On("CryptosGetDetail", mock.Anything, mock.Anything, mock.Anything).Return(cryptoDomain, nil).Once()
 		coinService.On("GetBySymbol", mock.Anything, mock.Anything).Return(coinDomain, nil).Once()
@@ -367,7 +367,7 @@ func TestSellCoin(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("Test Case 6 | Sell - Error - Send Email Error", func(t *testing.T) {
+	t.Run("Test Case 9 | Sell - Error - Send Email Error", func(t *testing.T) {
 		setup()
 		cryptoService.On("CryptosGetDetail", mock.Anything, mock.Anything, mock.Anything).Return(cryptoDomain, nil).Once()
 		coinService.On("GetBySymbol", mock.Anything, mock.Anything).Return(coinDomain, nil).Once()

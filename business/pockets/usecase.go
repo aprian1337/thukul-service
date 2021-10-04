@@ -78,7 +78,7 @@ func (pu *PocketUsecase) GetTotalByActivities(ctx context.Context, userId int, p
 	if kind != "income" && kind != "expense" && kind != "profit" {
 		return 0, businesses.ErrBadRequest
 	}
-	_, err := pu.GetById(ctx, userId, pocketId)
+	_, err := pu.Repo.PocketsGetById(ctx, userId, pocketId)
 	if err != nil {
 		return 0, businesses.ErrUserIdOrPocketNotFound
 	}
