@@ -39,7 +39,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: push image to registry docker hub
-        run: docker push aprian1337/thukul:1.0.0\
+        run: docker push aprian1337/thukul:1.0.0
 
       deploy-to-ec2:
         name: "Deploy to ec2 from registry docker hub"
