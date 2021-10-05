@@ -10,27 +10,22 @@ import (
 )
 
 type ConfigDb struct {
-	DbHost string
-	DbPort string
+	Cluster string
+	Username string
+	Password string
 }
 
 func (config *ConfigDb) InitDb() *mongo.Client {
-	uri := fmt.Sprintf("mongodb://%v:%v",
-		config.DbHost,
-		config.DbPort,
+	uri := fmt.Sprintf("mongodb+srv://%v:%v@%v",
+		config.Username,
+		config.Password,
+		config.Cluster,
 	)
+
 	clientOptions := options.Client().ApplyURI(uri)
-	client, err := mongo.NewClient(clientOptions)
-	if err != nil {
-		panic(err)
-	}
-	err = client.Connect(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	err = client.Ping(ctx, nil)
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
