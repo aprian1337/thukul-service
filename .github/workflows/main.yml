@@ -27,6 +27,10 @@ jobs:
     needs: unit-test
     steps:
       - uses: actions/checkout@v2
+      - name: add config.json
+        env:
+          CONFIG_JSON: ${{secrets.CONFIG_JSON}}
+        run: echo "$CONFIG_JSON" > config.json
       - name: build docker
         run: docker build -t aprian1337/thukul:1.0.0 .
       - name: login registry docker hub
