@@ -12,20 +12,20 @@ type WalletUsecase struct {
 	Timeout              time.Duration
 }
 
-func (uc *WalletUsecase) Create(ctx context.Context, domain Domain) error {
-	err := uc.Repo.Create(ctx, domain)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func NewWalletsUsecase(repo Repository, walletHistoryUsecase wallet_histories.Usecase, timeout time.Duration) *WalletUsecase {
 	return &WalletUsecase{
 		Repo:                 repo,
 		WalletHistoryUsecase: walletHistoryUsecase,
 		Timeout:              timeout,
 	}
+}
+
+func (uc *WalletUsecase) Create(ctx context.Context, domain Domain) error {
+	err := uc.Repo.Create(ctx, domain)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (uc *WalletUsecase) GetByUserId(ctx context.Context, userId int) (Domain, error) {
