@@ -60,7 +60,7 @@ jobs:
           Host development
             HostName $SSH_HOST
             User $SSH_USER
-            IdentityFile ~/.ssh/alterra_academy_aws.pem
+            IdentityFile ~/.ssh/thukul.pem
             StrictHostKeyChecking=no
           END
       - name: Connect EC2 & Remove All Container & Pull from Registry & Start
