@@ -87,8 +87,9 @@ func main() {
 	}
 
 	mongoConfig := mongodb.ConfigDb{
-		DbHost: viper.GetString(`databases.mongodb.host`),
-		DbPort: viper.GetString(`databases.mongodb.port`),
+		Cluster: viper.GetString(`databases.mongodb.cluster`),
+		Username: viper.GetString(`databases.mongodb.username`),
+		Password: viper.GetString(`databases.mongodb.password`),
 	}
 
 	configJWT := middlewares.ConfigJWT{
