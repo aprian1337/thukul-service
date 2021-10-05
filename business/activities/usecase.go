@@ -54,10 +54,10 @@ func (uc *ActivityUsecase) Create(ctx context.Context, domain Domain, pocketId i
 }
 
 func (uc *ActivityUsecase) Update(ctx context.Context, domain Domain, pocketId int, id int) (Domain, error) {
-	pockets, err := uc.Repo.ActivitiesUpdate(ctx, domain, pocketId, id)
 	if !helpers.IsDate(domain.Date) {
 		return Domain{}, businesses.ErrInvalidDate
 	}
+	pockets, err := uc.Repo.ActivitiesUpdate(ctx, domain, pocketId, id)
 	if err != nil {
 		return Domain{}, err
 	}

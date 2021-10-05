@@ -66,7 +66,7 @@ func (repo *UserRepository) UsersGetAll(ctx context.Context) ([]users.Domain, er
 
 func (repo *UserRepository) UsersGetByIdWithWallet(ctx context.Context, id int) (users.Domain, error) {
 	var data records.Users
-	err := repo.ConnPostgres.Preload("Wallets").Find(&data)
+	err := repo.ConnPostgres.Preload("Wallets").Find(&data, "id=?", id)
 	if err.Error != nil {
 		return users.Domain{}, err.Error
 	}

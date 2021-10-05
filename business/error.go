@@ -23,6 +23,7 @@ var (
 	ErrBadRequest               = errors.New("bad requests")
 	ErrInvalidPayload           = errors.New("invalid payload")
 	ErrHasBeenVerified          = errors.New("transaction already verified")
+	ErrForTest                  = errors.New("testing error")
 	ErrExpiredConfirm           = errors.New("expired payment confirmation")
 	ErrTypeTransaction          = errors.New("type transaction not valid")
 	ErrCoinRequired             = errors.New("coin symbol is required")
