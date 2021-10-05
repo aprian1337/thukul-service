@@ -3,31 +3,40 @@ package users
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	businesses "aprian1337/thukul-service/business"
+	"aprian1337/thukul-service/business/wallets"
 	"aprian1337/thukul-service/helpers"
-	"aprian1337/thukul-service/utilities"
-	"aprian1337/thukul-service/utilities/constants"
+	"aprian1337/thukul-service/helpers/constants"
 	"context"
-	"errors"
 	"log"
 	"time"
 )
 
 type UserUsecase struct {
-	Repo    Repository
-	Timeout time.Duration
-	jwtAuth *middlewares.ConfigJWT
+	Repo          Repository
+	WalletUsecase wallets.Usecase
+	Timeout       time.Duration
+	jwtAuth       *middlewares.ConfigJWT
 }
 
-func NewUserUsecase(repo Repository, timeout time.Duration, jwtAuth *middlewares.ConfigJWT) *UserUsecase {
+func NewUserUsecase(repo Repository, walletUsecase wallets.Usecase, timeout time.Duration, jwtAuth *middlewares.ConfigJWT) *UserUsecase {
 	return &UserUsecase{
-		Repo:    repo,
-		Timeout: timeout,
-		jwtAuth: jwtAuth,
+		Repo:          repo,
+		WalletUsecase: walletUsecase,
+		Timeout:       timeout,
+		jwtAuth:       jwtAuth,
 	}
 }
 
+func (uc *UserUsecase) GetByIdWithWallet(ctx context.Context, id int) (Domain, error) {
+	user, err := uc.Repo.UsersGetByIdWithWallet(ctx, id)
+	if err != nil {
+		return Domain{}, err
+	}
+	return user, nil
+}
+
 func (uc *UserUsecase) GetAll(ctx context.Context) ([]Domain, error) {
-	user, err := uc.Repo.GetAll(ctx)
+	user, err := uc.Repo.UsersGetAll(ctx)
 	if err != nil {
 		return []Domain{}, err
 	}
@@ -35,7 +44,7 @@ func (uc *UserUsecase) GetAll(ctx context.Context) ([]Domain, error) {
 }
 
 func (uc *UserUsecase) GetById(ctx context.Context, id int) (Domain, error) {
-	user, err := uc.Repo.GetById(ctx, id)
+	user, err := uc.Repo.UsersGetById(ctx, id)
 	if err != nil {
 		return Domain{}, err
 	}
@@ -47,25 +56,35 @@ func (uc *UserUsecase) GetById(ctx context.Context, id int) (Domain, error) {
 
 func (uc *UserUsecase) Create(ctx context.Context, domain *Domain) (Domain, error) {
 	if domain.Email == "" {
-		return Domain{}, errors.New("email is required")
+		return Domain{}, businesses.ErrEmailRequired
 	}
 
 	if !helpers.IsEmailValid(domain.Email) {
-		return Domain{}, errors.New("email is not valid")
+		return Domain{}, businesses.ErrEmailNotValid
+	}
+
+	data, err := uc.Repo.UsersGetByEmail(ctx, domain.Email)
+	if data.ID > 0 {
+		return Domain{}, businesses.ErrEmailHasBeenRegister
 	}
 
 	if domain.Password == "" {
-		return Domain{}, errors.New("password is required")
+		return Domain{}, businesses.ErrPasswordRequired
 	}
 
 	if !helpers.IsDate(domain.Birthday) {
 		return Domain{}, businesses.ErrInvalidDate
 	}
 
-	domain.Password, _ = utilities.HashPassword(domain.Password)
+	domain.Password, _ = helpers.HashPassword(domain.Password)
 
-	user, err := uc.Repo.Create(ctx, domain)
+	user, err := uc.Repo.UsersCreate(ctx, domain)
 
+	if err != nil {
+		return Domain{}, err
+	}
+
+	err = uc.WalletUsecase.Create(ctx, user.ToWalletDomain())
 	if err != nil {
 		return Domain{}, err
 	}
@@ -77,13 +96,13 @@ func (uc *UserUsecase) Login(ctx context.Context, email string, password string)
 		return Domain{}, "", businesses.ErrUsernamePasswordNotFound
 	}
 
-	user, err := uc.Repo.GetByEmail(ctx, email)
+	user, err := uc.Repo.UsersGetByEmail(ctx, email)
 
 	if err != nil {
 		return Domain{}, "", err
 	}
 
-	if !utilities.CheckPassword(password, user.Password) {
+	if !helpers.CheckPassword(password, user.Password) {
 		return Domain{}, "", businesses.ErrInvalidAuthentication
 	}
 
@@ -106,15 +125,23 @@ func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Dom
 			return Domain{}, businesses.ErrInvalidDate
 		}
 	}
-	if domain.Email == "" {
-		return Domain{}, errors.New("email is required")
-	}
 	if !helpers.IsEmailValid(domain.Email) {
-		return Domain{}, errors.New("email is not valid")
+		return Domain{}, businesses.ErrEmailNotValid
 	}
-	domain.Password, _ = utilities.HashPassword(domain.Password)
+
+	if domain.Email != "" {
+		data, err := uc.Repo.UsersGetByEmail(ctx, domain.Email)
+		if err != nil {
+			return Domain{}, err
+		}
+		if data.ID > 0 && data.ID != id {
+			return Domain{}, businesses.ErrEmailHasBeenRegister
+		}
+	}
+
+	domain.Password, _ = helpers.HashPassword(domain.Password)
 	domain.ID = id
-	user, err := uc.Repo.Update(ctx, domain)
+	user, err := uc.Repo.UsersUpdate(ctx, domain)
 
 	if err != nil {
 		return Domain{}, err
@@ -124,7 +151,7 @@ func (uc *UserUsecase) Update(ctx context.Context, domain *Domain, id uint) (Dom
 }
 
 func (uc *UserUsecase) Delete(ctx context.Context, id uint) error {
-	err := uc.Repo.Delete(ctx, id)
+	err := uc.Repo.UsersDelete(ctx, id)
 	if err != nil {
 		return err
 	}

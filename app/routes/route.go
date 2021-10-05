@@ -4,7 +4,9 @@ import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/deliveries/activities"
 	"aprian1337/thukul-service/deliveries/coins"
+	"aprian1337/thukul-service/deliveries/cryptos"
 	"aprian1337/thukul-service/deliveries/favorites"
+	"aprian1337/thukul-service/deliveries/payments"
 	"aprian1337/thukul-service/deliveries/pockets"
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
@@ -23,6 +25,8 @@ type ControllerList struct {
 	CoinController     coins.Controller
 	WishlistController wishlists.Controller
 	FavoriteController favorites.Controller
+	CryptoController   cryptos.Controller
+	PaymentController  payments.Controller
 }
 
 func (cl *ControllerList) RouteUsers(e *echo.Echo) {
@@ -32,9 +36,10 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.POST("auth/login", cl.UserController.LoginUserController)
 
 	//USERS
+	//middleware.JWTWithConfig(cl.JWTMiddleware)
 	v1.GET("users", cl.UserController.GetUsersController)
 	v1.GET("users/:id", cl.UserController.GetDetailUserController)
-	v1.POST("users", cl.UserController.CreateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.POST("users", cl.UserController.CreateUserController)
 	v1.DELETE("users/:id", cl.UserController.DeleteUserController)
 	v1.PUT("users/:id", cl.UserController.UpdateUserController)
 
@@ -46,19 +51,19 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.DELETE("salaries/:id", cl.SalaryController.DestroySalaryController)
 
 	//POCKETS
-	v1.GET("pockets", cl.PocketController.Get)
-	v1.GET("pockets/:id", cl.PocketController.GetById)
-	v1.GET("pockets/:id/total", cl.PocketController.Total)
-	v1.POST("pockets", cl.PocketController.Create)
-	v1.PUT("pockets/:id", cl.PocketController.Update)
-	v1.DELETE("pockets/:id", cl.PocketController.Destroy)
+	v1.GET("users/:userId/pockets", cl.PocketController.Get)
+	v1.GET("users/:userId/pockets/:pocketId", cl.PocketController.GetById)
+	v1.GET("users/:userId/pockets/:pocketId/total", cl.PocketController.Total)
+	v1.POST("users/:userId/pockets", cl.PocketController.Create)
+	v1.PUT("users/:userId/pockets/:pocketId", cl.PocketController.Update)
+	v1.DELETE("users/:userId/pockets/:pocketId", cl.PocketController.Destroy)
 
 	//ACTIVITIES
-	v1.GET("pockets/:idPocket/activities", cl.ActivityController.Get)
-	v1.GET("pockets/:idPocket/activities/:id", cl.ActivityController.GetById)
-	v1.POST("pockets/:idPocket/activities", cl.ActivityController.Create)
-	v1.PUT("pockets/:idPocket/activities/:id", cl.ActivityController.Update)
-	v1.DELETE("pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
+	v1.GET("users/:userId/pockets/:idPocket/activities", cl.ActivityController.Get)
+	v1.GET("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.GetById)
+	v1.POST("users/:userId/pockets/:idPocket/activities", cl.ActivityController.Create)
+	v1.PUT("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.Update)
+	v1.DELETE("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
 
 	//WISHLISTS
 	v1.GET("users/:userId/wishlists", cl.WishlistController.Get)
@@ -72,6 +77,16 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.GET("users/:userId/favorites/:favId", cl.FavoriteController.GetById)
 	v1.POST("users/:userId/favorites", cl.FavoriteController.Create)
 	v1.DELETE("users/:userId/favorites/:favId", cl.FavoriteController.Destroy)
+
+	//PAYMENTS
+	v1.POST("payments/topup", cl.PaymentController.TopUp)
+	v1.POST("payments/buy", cl.PaymentController.Buy)
+	v1.POST("payments/sell", cl.PaymentController.Sell)
+	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm)
+
+	//CRYPTOS
+	v1.GET("users/:userId/cryptos", cl.CryptoController.GetByUser)
+	v1.GET("users/:userId/cryptos/:cryptoId", cl.CryptoController.GetDetail)
 
 	//COINS
 	v1.GET("coins", cl.CoinController.GetBySymbol)

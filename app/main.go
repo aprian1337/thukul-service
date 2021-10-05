@@ -3,36 +3,7 @@ package main
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
-	_usersUsecase "aprian1337/thukul-service/business/users"
-	_usersDelivery "aprian1337/thukul-service/deliveries/users"
-	_usersDb "aprian1337/thukul-service/repository/databases/users"
-
-	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
-
-	_salaryUsecase "aprian1337/thukul-service/business/salaries"
-	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
-	_salaryDb "aprian1337/thukul-service/repository/databases/salaries"
-
-	_pocketUsecase "aprian1337/thukul-service/business/pockets"
-	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
-	_pocketDb "aprian1337/thukul-service/repository/databases/pockets"
-
-	_activityUsecase "aprian1337/thukul-service/business/activities"
-	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
-	_activityDb "aprian1337/thukul-service/repository/databases/activities"
-
-	_coinUsecase "aprian1337/thukul-service/business/coins"
-	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
-	_coinDb "aprian1337/thukul-service/repository/databases/coins"
-
-	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
-	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
-	_wishlistDb "aprian1337/thukul-service/repository/databases/wishlists"
-
-	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
-	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
-	_favoriteDb "aprian1337/thukul-service/repository/databases/favorites"
-
+	"aprian1337/thukul-service/helpers/constants"
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
 	"fmt"
@@ -41,6 +12,37 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"time"
+
+	postgresRepo "aprian1337/thukul-service/repository/databases/postgres"
+
+	_smtpUsecase "aprian1337/thukul-service/business/smtp"
+	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
+
+	_usersUsecase "aprian1337/thukul-service/business/users"
+	_usersDelivery "aprian1337/thukul-service/deliveries/users"
+
+	_activityUsecase "aprian1337/thukul-service/business/activities"
+	_activityDb "aprian1337/thukul-service/repository/databases/records"
+
+	_coinUsecase "aprian1337/thukul-service/business/coins"
+	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
+	_paymentsUsecase "aprian1337/thukul-service/business/payments"
+	_pocketUsecase "aprian1337/thukul-service/business/pockets"
+	_salaryUsecase "aprian1337/thukul-service/business/salaries"
+	_walletHistoryUsecase "aprian1337/thukul-service/business/wallet_histories"
+	_walletUsecase "aprian1337/thukul-service/business/wallets"
+	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
+	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
+	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
+	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
+	_paymentDelivery "aprian1337/thukul-service/deliveries/payments"
+	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
+	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
+	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
+
+	_cryptosUsecase "aprian1337/thukul-service/business/cryptos"
+	_transactionUsecase "aprian1337/thukul-service/business/transactions"
+	_cryptosDelivery "aprian1337/thukul-service/deliveries/cryptos"
 )
 
 func init() {
@@ -56,12 +58,17 @@ func init() {
 
 func DbMigrate(db *gorm.DB) {
 	err := db.AutoMigrate(
-		&_salaryDb.Salaries{},
-		&_usersDb.Users{},
-		&_pocketDb.Pockets{},
+		&_activityDb.Salaries{},
+		&_activityDb.Users{},
+		&_activityDb.Pockets{},
 		&_activityDb.Activities{},
-		&_coinDb.Coins{},
-		&_favoriteDb.Favorites{},
+		&_activityDb.Coins{},
+		&_activityDb.Favorites{},
+		&_activityDb.Cryptos{},
+		&_activityDb.Wishlists{},
+		&_activityDb.Transactions{},
+		&_activityDb.Wallets{},
+		&_activityDb.WalletHistories{},
 	)
 	if err != nil {
 		panic(err)
@@ -80,8 +87,9 @@ func main() {
 	}
 
 	mongoConfig := mongodb.ConfigDb{
-		DbHost: viper.GetString(`databases.mongodb.host`),
-		DbPort: viper.GetString(`databases.mongodb.port`),
+		Cluster: viper.GetString(`databases.mongodb.cluster`),
+		Username: viper.GetString(`databases.mongodb.username`),
+		Password: viper.GetString(`databases.mongodb.password`),
 	}
 
 	configJWT := middlewares.ConfigJWT{
@@ -101,55 +109,83 @@ func main() {
 	})
 
 	initMongo := mongoConfig.InitDb()
-	loggerMiddleware := middlewares.InitConfig(initMongo, logCol)
+	loggerMiddleware := middlewares.InitConfig(initMongo, logCol, viper.GetDuration(`context.timeout`))
 
 	DbMigrate(connPostgres)
 	e := echo.New()
 	timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
 	configMarketRepo := _coinmarketRepo.MarketCapAPI{
-		BaseUrl:        viper.GetString("thirdparties.coinmarketcap.base_url"),
+		BaseUrl:        constants.BaseUrlApiMarketcap,
+		EndpointSymbol: constants.EndpointMarketcapSymbol,
+		EndpointPrice:  constants.EndpointMarketcapPrice,
 		ApiKey:         viper.GetString("thirdparties.coinmarketcap.api_key"),
-		EndpointSymbol: viper.GetString("thirdparties.coinmarketcap.endpoint_symbol"),
 	}
+
+	smtpUsecase := _smtpUsecase.NewSmtpUsecase(
+		viper.GetString(`smtp.host`),
+		viper.GetInt(`smtp.port`),
+		viper.GetString(`smtp.sender_name`),
+		viper.GetString(`smtp.email`),
+		viper.GetString(`smtp.password`),
+	)
+
 	coinMarketRepo := _coinmarketRepo.NewMarketCapAPI(configMarketRepo)
 
-	userRepository := _usersDb.NewPostgresUserRepository(connPostgres)
-	userUsecase := _usersUsecase.NewUserUsecase(userRepository, timeoutContext, &configJWT)
-	userDelivery := _usersDelivery.NewUserController(userUsecase)
+	cryptoRepository := postgresRepo.NewPostgresCryptosRepository(connPostgres)
+	cryptoUsecase := _cryptosUsecase.NewCryptoUsecase(cryptoRepository, timeoutContext)
+	cryptoDelivery := _cryptosDelivery.NewController(cryptoUsecase)
 
-	salaryRepository := _salaryDb.NewPostgresSalariesRepository(connPostgres)
-	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
-	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
-
-	activityRepository := _activityDb.NewPostgresPocketsRepository(connPostgres)
-	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
-	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
-
-	pocketRepository := _pocketDb.NewPostgresPocketsRepository(connPostgres)
-	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityRepository, timeoutContext)
-	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
-
-	coinRepository := _coinDb.NewPostgresCoinsRepository(connPostgres)
+	coinRepository := postgresRepo.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
 
-	wishlistRepository := _wishlistDb.NewPostgresWishlistRepository(connPostgres)
-	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, timeoutContext)
+	walletsHistoryRepository := postgresRepo.NewPostgresWalletHistoriesRepository(connPostgres)
+	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
+
+	walletsRepository := postgresRepo.NewPostgresWalletsRepository(connPostgres)
+	walletsUsecase := _walletUsecase.NewWalletsUsecase(walletsRepository, walletsHistoryUsecase, timeoutContext)
+
+	transactionsRepository := postgresRepo.NewPostgresTransactionRepository(connPostgres)
+	transactionsUsecase := _transactionUsecase.NewTransactionUsecase(transactionsRepository, timeoutContext)
+
+	userRepository := postgresRepo.NewPostgresUserRepository(connPostgres)
+	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
+	userDelivery := _usersDelivery.NewUserController(userUsecase)
+
+	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, viper.GetString(`encrypt.keystring`), viper.GetString(`encrypt.additional`), viper.GetString("server.address.host"), viper.GetString("server.address.port"), timeoutContext)
+	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
+
+	salaryRepository := postgresRepo.NewPostgresSalariesRepository(connPostgres)
+	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
+	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
+
+	activityRepository := postgresRepo.NewPostgresActivitiesRepository(connPostgres)
+	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
+	activityDelivery := _activityDelivery.NewActivityController(activityUsecase)
+
+	pocketRepository := postgresRepo.NewPostgresPocketsRepository(connPostgres)
+	pocketUsecase := _pocketUsecase.NewPocketUsecase(pocketRepository, activityUsecase, timeoutContext)
+	pocketDelivery := _pocketDelivery.NewSalariesController(pocketUsecase)
+
+	wishlistRepository := postgresRepo.NewPostgresWishlistRepository(connPostgres)
+	wishlistUsecase := _wishlistUsecase.NewWishlistUsecase(wishlistRepository, userUsecase, timeoutContext)
 	wishlistDelivery := _wishlistDelivery.NewSalariesController(wishlistUsecase)
 
-	favoriteRepository := _favoriteDb.NewPostgresFavoritesRepository(connPostgres)
+	favoriteRepository := postgresRepo.NewPostgresFavoritesRepository(connPostgres)
 	favoriteUsecase := _favoriteUsecase.NewFavoriteUsecase(favoriteRepository, userUsecase, coinUsecase, timeoutContext)
 	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
 
 	routesInit := routes.ControllerList{
 		UserController:     *userDelivery,
 		SalaryController:   *salaryDelivery,
+		CryptoController:   *cryptoDelivery,
 		PocketController:   *pocketDelivery,
 		ActivityController: *activityDelivery,
 		CoinController:     *coinDelivery,
 		WishlistController: *wishlistDelivery,
 		FavoriteController: *favoriteDelivery,
+		PaymentController:  *paymentDelivery,
 		LoggerMiddleware:   *loggerMiddleware,
 		JWTMiddleware:      configJWT.Init(),
 	}

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Response struct {
+type SymbolResponse struct {
 	Status struct {
 		Timestamp    time.Time   `json:"timestamp"`
 		ErrorCode    int         `json:"error_code"`
@@ -27,7 +27,7 @@ type Response struct {
 	} `json:"data"`
 }
 
-type Data struct {
+type SymbolData struct {
 	ID                  int         `json:"id"`
 	Name                string      `json:"name"`
 	Symbol              string      `json:"symbol"`
@@ -39,9 +39,33 @@ type Data struct {
 	Platform            interface{} `json:"platform"`
 }
 
-func (resp *Response) ToDomain() coinmarket.Domain {
+func (resp *SymbolResponse) ToDomain() coinmarket.Domain {
 	return coinmarket.Domain{
 		Symbol: resp.Data[0].Symbol,
 		Name:   resp.Data[0].Name,
 	}
+}
+
+type PriceResponse struct {
+	Status struct {
+		Timestamp    time.Time   `json:"timestamp"`
+		ErrorCode    int         `json:"error_code"`
+		ErrorMessage interface{} `json:"error_message"`
+		Elapsed      int         `json:"elapsed"`
+		CreditCount  int         `json:"credit_count"`
+		Notice       interface{} `json:"notice"`
+	} `json:"status"`
+	Data struct {
+		Id          int       `json:"id"`
+		Symbol      string    `json:"symbol"`
+		Name        string    `json:"name"`
+		Amount      float64   `json:"amount"`
+		LastUpdated time.Time `json:"last_updated"`
+		Quote       struct {
+			CurrencyIdr struct {
+				Price       float64   `json:"price"`
+				LastUpdated time.Time `json:"last_updated"`
+			} `json:"2794"`
+		} `json:"quote"`
+	} `json:"data"`
 }

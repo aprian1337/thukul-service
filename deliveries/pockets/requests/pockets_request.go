@@ -5,7 +5,7 @@ import (
 )
 
 type PocketsRequest struct {
-	UserId int    `json:"user_id"`
+	UserId int
 	Name   string `json:"name"`
 }
 

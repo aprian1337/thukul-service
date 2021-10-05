@@ -22,8 +22,8 @@ func NewSalariesController(uc wishlists.Usecase) *Controller {
 
 func (ctrl *Controller) Get(c echo.Context) error {
 	ctx := c.Request().Context()
-	id := c.QueryParam("id")
-	convId, err := strconv.Atoi(id)
+	userId := c.Param("userId")
+	convId, err := strconv.Atoi(userId)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
