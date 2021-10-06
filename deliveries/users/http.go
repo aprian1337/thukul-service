@@ -32,7 +32,7 @@ func (ctrl *Controller) GetUsersController(c echo.Context) error {
 
 func (ctrl *Controller) GetDetailUserController(c echo.Context) error {
 	ctxNative := c.Request().Context()
-	id := c.Param("id")
+	id := c.Param("userId")
 	convInt, errConvInt := strconv.Atoi(id)
 	if errConvInt != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, errConvInt)
@@ -81,7 +81,7 @@ func (ctrl *Controller) LoginUserController(c echo.Context) error {
 }
 
 func (cl *Controller) UpdateUserController(c echo.Context) error {
-	id := c.Param("id")
+	id := c.Param("userId")
 	convId, err := helpers.StringToUint(id)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
@@ -100,7 +100,7 @@ func (cl *Controller) UpdateUserController(c echo.Context) error {
 }
 
 func (cl *Controller) DeleteUserController(c echo.Context) error {
-	id := c.Param("id")
+	id := c.Param("userId")
 	convId, err := helpers.StringToUint(id)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)

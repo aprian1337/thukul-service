@@ -68,7 +68,7 @@ func (repo *PocketsRepository) PocketsUpdate(_ context.Context, domain pockets.D
 }
 func (repo *PocketsRepository) PocketsDelete(_ context.Context, userId int, pocketId int) (int64, error) {
 	data := records.Pockets{}
-	err := repo.ConnPostgres.Delete(&data, "user_id = ? AND pocket_id = ?", userId, pocketId)
+	err := repo.ConnPostgres.Delete(&data, "user_id = ? AND id = ?", userId, pocketId)
 	if err.Error != nil {
 		return 0, err.Error
 	}

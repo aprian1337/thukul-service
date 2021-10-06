@@ -37,6 +37,7 @@ func (repo *WishlistRepository) WishlistsGetById(ctx context.Context, userId int
 
 func (repo *WishlistRepository) WishlistsCreate(ctx context.Context, domain wishlists.Domain, userId int) (wishlists.Domain, error) {
 	pocket := records.WishlistsFromDomain(domain)
+	pocket.UserId = userId
 	err := repo.ConnPostgres.Create(&pocket)
 	if err.Error != nil {
 		return wishlists.Domain{}, err.Error

@@ -18,9 +18,17 @@ func (data *Coins) CoinsToDomain() coins.Domain {
 		Id:        data.ID,
 		Symbol:    data.Symbol,
 		Name:      data.Name,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
+		CreatedAt: data.CreatedAt,
+		UpdatedAt: data.UpdatedAt,
 	}
+}
+
+func CoinsToListDomain(list []Coins) []coins.Domain {
+	var data []coins.Domain
+	for _, v := range list {
+		data = append(data, v.CoinsToDomain())
+	}
+	return data
 }
 
 func CoinsFromDomain(domain coins.Domain) Coins {

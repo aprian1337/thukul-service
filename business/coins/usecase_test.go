@@ -74,3 +74,19 @@ func TestGetBySymbol(t *testing.T) {
 	})
 
 }
+
+func TestGetAllSymbol(t *testing.T){
+	t.Run("Test Case 1 | Success", func(t *testing.T) {
+		coinsRepository.On("GetAllSymbol", mock.Anything).Return(listCoinDomain, nil).Once()
+		data, err := coinService.GetAllSymbol(context.Background())
+		assert.Equal(t, data, listCoinDomain)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Test Case 1 | Error", func(t *testing.T) {
+		coinsRepository.On("GetAllSymbol", mock.Anything).Return([]coins.Domain{}, businesses.ErrForTest).Once()
+		data, err := coinService.GetAllSymbol(context.Background())
+		assert.Equal(t, data, []coins.Domain{})
+		assert.Error(t, err)
+	})
+}

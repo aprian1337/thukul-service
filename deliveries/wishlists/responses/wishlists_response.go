@@ -20,13 +20,24 @@ type WishlistsResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type WishlistsDestroyResponse struct {
+	Message string `json:"message"`
+}
+
 func FromDomain(domain wishlists.Domain) WishlistsResponse {
 	return WishlistsResponse{
-		ID:        domain.ID,
-		UserId:    domain.UserId,
-		Name:      domain.Name,
-		CreatedAt: domain.CreatedAt,
-		UpdatedAt: domain.UpdatedAt,
+		ID:          domain.ID,
+		Name:        domain.Name,
+		UserId:      domain.UserId,
+		Nominal:     domain.Nominal,
+		TargetDate:  domain.TargetDate,
+		Priority:    domain.Priority,
+		Note:        domain.Note,
+		IsDone:      domain.IsDone,
+		PicUrl:      domain.PicUrl,
+		WishlistUrl: domain.WishlistUrl,
+		CreatedAt:   domain.CreatedAt,
+		UpdatedAt:   domain.UpdatedAt,
 	}
 }
 

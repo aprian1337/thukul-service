@@ -5,6 +5,7 @@ import (
 	"aprian1337/thukul-service/deliveries"
 	"aprian1337/thukul-service/deliveries/wishlists/requests"
 	"aprian1337/thukul-service/deliveries/wishlists/responses"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -94,8 +95,8 @@ func (ctrl *Controller) Destroy(c echo.Context) error {
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return deliveries.NewSuccessResponse(c, responses.WishlistsResponse{
-		ID: convWishlistId,
+	return deliveries.NewSuccessResponse(c, responses.WishlistsDestroyResponse{
+		Message: "Data has been destroyed",
 	})
 }
 
@@ -111,6 +112,7 @@ func (ctrl *Controller) Create(c echo.Context) error {
 		return deliveries.NewErrorResponse(c, http.StatusBadRequest, err)
 	}
 	ctx := c.Request().Context()
+	fmt.Println(request)
 	data, err := ctrl.WishlistUsecase.Create(ctx, request.ToDomain(), convUserId)
 	if err != nil {
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)

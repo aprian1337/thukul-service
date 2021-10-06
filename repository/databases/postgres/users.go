@@ -43,6 +43,7 @@ func (repo *UserRepository) UsersCreate(ctx context.Context, register *users.Dom
 		Password: register.Password,
 		Email:    register.Email,
 		Phone:    register.Phone,
+		IsAdmin: register.IsAdmin,
 		Gender:   register.Gender,
 		Birthday: register.Birthday,
 		Address:  register.Address,

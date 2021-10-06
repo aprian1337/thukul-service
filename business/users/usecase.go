@@ -107,7 +107,7 @@ func (uc *UserUsecase) Login(ctx context.Context, email string, password string)
 	}
 
 	//JWT
-	token, errToken := uc.jwtAuth.GenerateTokenJWT(user.ID)
+	token, errToken := uc.jwtAuth.GenerateTokenJWT(user.ID, user.IsAdmin)
 	if errToken != nil {
 		log.Println(errToken)
 	}

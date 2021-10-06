@@ -20,7 +20,7 @@ func (data *Favorites) FavoritesToDomain() favorites.Domain {
 		ID:     data.ID,
 		UserId: data.UserId,
 		CoinId: data.CoinId,
-		//Coin:      data.Coin,
+		Coin:      data.Coin,
 		CreatedAt: data.CreatedAt,
 		UpdatedAt: data.UpdatedAt,
 	}

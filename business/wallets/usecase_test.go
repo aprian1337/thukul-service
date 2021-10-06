@@ -95,4 +95,15 @@ func TestUpdateByUserId(t *testing.T) {
 		assert.Equal(t, data, wallets.Domain{})
 	})
 
+	t.Run("Test Case 3 | Topup - Error", func(t *testing.T) {
+		setup()
+		walletRepository.On("UpdateByUserId", mock.Anything, mock.Anything).Return(walletDomain, nil).Once()
+		walletHistoryService.On("WalletHistoriesCreate", mock.Anything, mock.Anything).Return(businesses.ErrForTest)
+		walletDomain.Kind = "topup"
+		data, err := walletService.UpdateByUserId(context.Background(), walletDomain)
+
+		assert.Error(t, err)
+		assert.Equal(t, data, wallets.Domain{})
+	})
+
 }

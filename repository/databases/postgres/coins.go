@@ -31,3 +31,12 @@ func (repo *CoinsRepository) CoinsCreateSymbol(ctx context.Context, domain coins
 	}
 	return data.CoinsToDomain(), nil
 }
+
+func (repo *CoinsRepository) GetAllSymbol(ctx context.Context)([]coins.Domain, error){
+	var data []records.Coins
+	err := repo.conn.Find(&data)
+	if err.Error != nil{
+		return []coins.Domain{}, nil
+	}
+	return records.CoinsToListDomain(data), nil
+}

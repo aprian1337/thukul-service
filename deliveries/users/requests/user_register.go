@@ -10,6 +10,7 @@ type UserRegister struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
+	IsAdmin  int    `json:"is_admin"`
 	Gender   string `json:"gender"`
 	Birthday string `json:"birthday"`
 	Address  string `json:"address"`
@@ -24,6 +25,7 @@ func (ur *UserRegister) ToDomain() *users.Domain {
 		Email:    ur.Email,
 		Phone:    ur.Phone,
 		Gender:   ur.Gender,
+		IsAdmin:  ur.IsAdmin,
 		Birthday: ur.Birthday,
 		Address:  ur.Address,
 		Company:  ur.Company,

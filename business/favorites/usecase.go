@@ -25,6 +25,10 @@ func NewFavoriteUsecase(repo Repository, user users.Usecase, coin coins.Usecase,
 }
 
 func (uc *FavoriteUsecase) GetList(ctx context.Context, userId int) ([]Domain, error) {
+	_, err := uc.UserUsecase.GetById(ctx, userId)
+	if err != nil {
+		return []Domain{}, businesses.ErrUserIdNotFound
+	}
 	data, err := uc.Repo.FavoritesGetList(ctx, userId)
 	if err != nil {
 		return []Domain{}, err

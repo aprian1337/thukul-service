@@ -18,6 +18,7 @@ import (
 type ControllerList struct {
 	LoggerMiddleware   middlewares.MongoConfig
 	JWTMiddleware      middleware.JWTConfig
+	JWTMiddlewareAdmin middleware.JWTConfig
 	UserController     users.Controller
 	SalaryController   salaries.Controller
 	PocketController   pockets.Controller
@@ -37,57 +38,58 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 
 	//USERS
 	//middleware.JWTWithConfig(cl.JWTMiddleware)
-	v1.GET("users", cl.UserController.GetUsersController)
-	v1.GET("users/:id", cl.UserController.GetDetailUserController)
+	v1.GET("users", cl.UserController.GetUsersController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
+	v1.GET("users/:userId", cl.UserController.GetDetailUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
 	v1.POST("users", cl.UserController.CreateUserController)
-	v1.DELETE("users/:id", cl.UserController.DeleteUserController)
-	v1.PUT("users/:id", cl.UserController.UpdateUserController)
+	v1.DELETE("users/:userId", cl.UserController.DeleteUserController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
+	v1.PUT("users/:userId", cl.UserController.UpdateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
 
 	//SALARIES
 	v1.GET("salaries", cl.SalaryController.GetSalariesController)
 	v1.GET("salaries/:id", cl.SalaryController.GetSalaryByIdController)
 	v1.POST("salaries", cl.SalaryController.CreateSalaryController)
-	v1.PUT("salaries/:id", cl.SalaryController.UpdateSalaryController)
-	v1.DELETE("salaries/:id", cl.SalaryController.DestroySalaryController)
+	v1.PUT("salaries/:id", cl.SalaryController.UpdateSalaryController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
+	v1.DELETE("salaries/:id", cl.SalaryController.DestroySalaryController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
 
 	//POCKETS
-	v1.GET("users/:userId/pockets", cl.PocketController.Get)
-	v1.GET("users/:userId/pockets/:pocketId", cl.PocketController.GetById)
-	v1.GET("users/:userId/pockets/:pocketId/total", cl.PocketController.Total)
-	v1.POST("users/:userId/pockets", cl.PocketController.Create)
-	v1.PUT("users/:userId/pockets/:pocketId", cl.PocketController.Update)
-	v1.DELETE("users/:userId/pockets/:pocketId", cl.PocketController.Destroy)
+	v1.GET("users/:userId/pockets", cl.PocketController.Get, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.GET("users/:userId/pockets/:pocketId", cl.PocketController.GetById, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.GET("users/:userId/pockets/:pocketId/total", cl.PocketController.Total, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.POST("users/:userId/pockets", cl.PocketController.Create, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.PUT("users/:userId/pockets/:pocketId", cl.PocketController.Update, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.DELETE("users/:userId/pockets/:pocketId", cl.PocketController.Destroy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 
 	//ACTIVITIES
-	v1.GET("users/:userId/pockets/:idPocket/activities", cl.ActivityController.Get)
-	v1.GET("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.GetById)
-	v1.POST("users/:userId/pockets/:idPocket/activities", cl.ActivityController.Create)
-	v1.PUT("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.Update)
-	v1.DELETE("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.Destroy)
+	v1.GET("users/:userId/pockets/:idPocket/activities", cl.ActivityController.Get, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.GET("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.GetById, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.POST("users/:userId/pockets/:idPocket/activities", cl.ActivityController.Create, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.PUT("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.Update, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.DELETE("users/:userId/pockets/:idPocket/activities/:id", cl.ActivityController.Destroy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 
 	//WISHLISTS
-	v1.GET("users/:userId/wishlists", cl.WishlistController.Get)
-	v1.GET("users/:userId/wishlists/:wishlistId", cl.WishlistController.GetById)
-	v1.POST("users/:userId/wishlists", cl.WishlistController.Create)
-	v1.PUT("users/:userId/wishlists/:wishlistId", cl.WishlistController.Update)
-	v1.DELETE("users/:userId/wishlists/:wishlistId", cl.WishlistController.Destroy)
+	v1.GET("users/:userId/wishlists", cl.WishlistController.Get, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.GET("users/:userId/wishlists/:wishlistId", cl.WishlistController.GetById, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.POST("users/:userId/wishlists", cl.WishlistController.Create, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.PUT("users/:userId/wishlists/:wishlistId", cl.WishlistController.Update, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.DELETE("users/:userId/wishlists/:wishlistId", cl.WishlistController.Destroy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 
 	//FAVORITES
-	v1.GET("users/:userId/favorites", cl.FavoriteController.Get)
-	v1.GET("users/:userId/favorites/:favId", cl.FavoriteController.GetById)
-	v1.POST("users/:userId/favorites", cl.FavoriteController.Create)
-	v1.DELETE("users/:userId/favorites/:favId", cl.FavoriteController.Destroy)
+	v1.GET("users/:userId/favorites", cl.FavoriteController.Get, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.GET("users/:userId/favorites/:favId", cl.FavoriteController.GetById, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.POST("users/:userId/favorites", cl.FavoriteController.Create, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.DELETE("users/:userId/favorites/:favId", cl.FavoriteController.Destroy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 
 	//PAYMENTS
-	v1.POST("payments/topup", cl.PaymentController.TopUp)
-	v1.POST("payments/buy", cl.PaymentController.Buy)
-	v1.POST("payments/sell", cl.PaymentController.Sell)
-	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm)
+	v1.POST("payments/topup", cl.PaymentController.TopUp, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.POST("payments/buy", cl.PaymentController.Buy, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.POST("payments/sell", cl.PaymentController.Sell, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm, middleware.JWTWithConfig(cl.JWTMiddleware))
 
 	//CRYPTOS
-	v1.GET("users/:userId/cryptos", cl.CryptoController.GetByUser)
-	v1.GET("users/:userId/cryptos/:cryptoId", cl.CryptoController.GetDetail)
+	v1.GET("users/:userId/cryptos", cl.CryptoController.GetByUser, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.GET("users/:userId/cryptos/:cryptoId", cl.CryptoController.GetDetail, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 
 	//COINS
 	v1.GET("coins", cl.CoinController.GetBySymbol)
+	v1.GET("coins/all", cl.CoinController.GetAllSymbol)
 }

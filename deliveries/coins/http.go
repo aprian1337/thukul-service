@@ -26,3 +26,12 @@ func (ctrl *Controller) GetBySymbol(c echo.Context) error {
 	}
 	return deliveries.NewSuccessResponse(c, data)
 }
+
+func (ctrl *Controller) GetAllSymbol(c echo.Context) error {
+	ctx := c.Request().Context()
+	data, err := ctrl.CoinsUsecase.GetAllSymbol(ctx)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusForbidden, err)
+	}
+	return deliveries.NewSuccessResponse(c, data)
+}
