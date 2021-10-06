@@ -5,6 +5,7 @@ import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/business/users"
 	_usersMockRepository "aprian1337/thukul-service/business/users/mocks"
+	_walletMock "aprian1337/thukul-service/business/wallets/mocks"
 	"aprian1337/thukul-service/business/wallets"
 	"context"
 	"github.com/stretchr/testify/assert"
@@ -15,7 +16,7 @@ import (
 
 var userRepository _usersMockRepository.Repository
 var userService users.Usecase
-var walletService wallets.Usecase
+var walletService _walletMock.Usecase
 
 var userDomain users.Domain
 var listUserDomain []users.Domain
@@ -24,7 +25,7 @@ var listWalletDomain []wallets.Domain
 var token string
 
 func setup() {
-	userService = users.NewUserUsecase(&userRepository, walletService, time.Second*10, &middlewares.ConfigJWT{})
+	userService = users.NewUserUsecase(&userRepository, &walletService, time.Second*10, &middlewares.ConfigJWT{})
 	userDomain = users.Domain{
 		ID:       1,
 		SalaryId: 1,
@@ -123,7 +124,20 @@ func TestGetById(t *testing.T) {
 		userRepository.AssertExpectations(t)
 	})
 
-	t.Run("Test Case 2 | GetById - Error", func(t *testing.T) {
+	t.Run("Test Case 2 | GetById - Error - User Id 0", func(t *testing.T) {
+		setup()
+		userDomain.ID = 0
+		userRepository.On("UsersGetById",
+			mock.Anything, mock.AnythingOfType("int")).Return(userDomain, nil).Once()
+		data, err := userService.GetById(context.Background(), 7)
+
+		assert.Error(t, err)
+		assert.Equal(t, data, users.Domain{})
+
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("Test Case 3 | GetById - Error", func(t *testing.T) {
 		setup()
 		userRepository.On("UsersGetById",
 			mock.Anything, mock.AnythingOfType("int")).Return(users.Domain{}, nil).Once()
@@ -231,30 +245,127 @@ func TestDelete(t *testing.T) {
 
 }
 
-//func TestCreate(t *testing.T) {
-//	t.Run("Test Case 1 | Create - Success", func(t *testing.T) {
-//		setup()
-//		userRepository.On("UsersGetByEmail",
-//			mock.Anything, mock.AnythingOfType("string")).Return(users.Domain{}, nil).Once()
-//		userRepository.On("UsersCreate",
-//			mock.Anything, mock.Anything).Return(userDomain, nil).Once()
-//walletUsecase.On("Create", mock.Anything, "wallets.Domain").Return(nil)
+func TestCreate(t *testing.T) {
+	t.Run("Test Case 1 | Create - Success", func(t *testing.T) {
+		setup()
+		userRepository.On("UsersGetByEmail",
+			mock.Anything, mock.AnythingOfType("string")).Return(users.Domain{}, nil).Once()
+		userRepository.On("UsersCreate",
+			mock.Anything, mock.Anything).Return(userDomain, nil).Once()
+		walletService.On("Create", mock.Anything, mock.Anything).Return(nil)
 
-//_, err := userService.Create(context.Background(), &users.Domain{
-//		SalaryId: 1,
-//		Name:     "Nama",
-//		Password: "123",
-//		Email:    "user@aprian1337.io",
-//		Phone:    "0812",
-//		Gender:   "M",
-//		Birthday: "2021-01-01",
-//		Address:  "Indonesia",
-//		Company:  "UMM",
-//})
-//err = walletService.Create(context.Background(), user.ToWalletDomain())
+		data, err := userService.Create(context.Background(), &users.Domain{
+			SalaryId: 1,
+			Name:     "Nama",
+			Password: "123",
+			Email:    "user@aprian1337.io",
+			Phone:    "0812",
+			Gender:   "M",
+			Birthday: "2021-01-01",
+			Address:  "Indonesia",
+			Company:  "UMM",
+		})
 
-//assert.Nil(t, err)
-//assert.Equal(t, data, userDomain)
-//userRepository.AssertExpectations(t)
-//})
-//}
+		assert.Nil(t, err)
+		assert.Equal(t, data, userDomain)
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("Test Case 2 | Error - Email Required", func(t *testing.T) {
+		setup()
+		data, err := userService.Create(context.Background(), &users.Domain{
+			SalaryId: 1,
+			Name:     "Nama",
+			Password: "123",
+			Phone:    "0812",
+			Gender:   "M",
+			Birthday: "2021-01-01",
+			Address:  "Indonesia",
+			Company:  "UMM",
+		})
+
+		assert.Error(t, err)
+		assert.Equal(t, data, users.Domain{})
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("Test Case 3 | Error - Is Not Valid Email", func(t *testing.T) {
+		setup()
+		data, err := userService.Create(context.Background(), &users.Domain{
+			SalaryId: 1,
+			Name:     "Nama",
+			Password: "123",
+			Email:    "useraprian1337.io",
+			Phone:    "0812",
+			Gender:   "M",
+			Birthday: "2021-01-01",
+			Address:  "Indonesia",
+			Company:  "UMM",
+		})
+
+		assert.Error(t, err)
+		assert.Equal(t, data, users.Domain{})
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("Test Case 3 | Error - Email Has Been Used", func(t *testing.T) {
+		setup()
+		userRepository.On("UsersGetByEmail",
+			mock.Anything, mock.AnythingOfType("string")).Return(userDomain, nil).Once()
+		data, err := userService.Create(context.Background(), &users.Domain{
+			SalaryId: 1,
+			Name:     "Nama",
+			Email:    "user@aprian1337.io",
+			Phone:    "0812",
+			Gender:   "M",
+			Birthday: "2021-01-01",
+			Address:  "Indonesia",
+			Company:  "UMM",
+		})
+
+		assert.Error(t, err)
+		assert.Equal(t, data, users.Domain{})
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("Test Case 3 | Error - Password Required", func(t *testing.T) {
+		setup()
+		userRepository.On("UsersGetByEmail",
+			mock.Anything, mock.AnythingOfType("string")).Return(users.Domain{}, nil).Once()
+		data, err := userService.Create(context.Background(), &users.Domain{
+			SalaryId: 1,
+			Name:     "Nama",
+			Email:    "user@aprian1337.io",
+			Phone:    "0812",
+			Gender:   "M",
+			Birthday: "2021-01-01",
+			Address:  "Indonesia",
+			Company:  "UMM",
+		})
+
+		assert.Error(t, err)
+		assert.Equal(t, data, users.Domain{})
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("Test Case 3 | Error - Date Not Valid", func(t *testing.T) {
+		setup()
+		userRepository.On("UsersGetByEmail",
+			mock.Anything, mock.AnythingOfType("string")).Return(users.Domain{}, nil).Once()
+		data, err := userService.Create(context.Background(), &users.Domain{
+			SalaryId: 1,
+			Name:     "Nama",
+			Email:    "user@aprian1337.io",
+			Phone:    "0812",
+			Gender:   "M",
+			Password: "secret#1x",
+			Birthday: "2021-01-022zz1",
+			Address:  "Indonesia",
+			Company:  "UMM",
+		})
+
+		assert.Error(t, err)
+		assert.Equal(t, data, users.Domain{})
+		userRepository.AssertExpectations(t)
+	})
+}

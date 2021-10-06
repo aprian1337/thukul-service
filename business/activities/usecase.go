@@ -4,6 +4,7 @@ import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/helpers"
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -46,6 +47,7 @@ func (uc *ActivityUsecase) Create(ctx context.Context, domain Domain, pocketId i
 		return Domain{}, businesses.ErrInvalidDate
 	}
 
+	fmt.Println(pocketId)
 	pockets, err := uc.Repo.ActivitiesCreate(ctx, domain, pocketId)
 	if err != nil {
 		return Domain{}, err

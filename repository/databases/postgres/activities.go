@@ -51,6 +51,7 @@ func (repo *ActivitiesRepository) ActivitiesCreate(ctx context.Context, domain a
 	if err.Error != nil {
 		return activities.Domain{}, businesses.ErrUserIdNotFound
 	}
+	data.PocketId = pocketId
 	err = repo.ConnPostgres.Create(&data)
 	if err.Error != nil {
 		return activities.Domain{}, err.Error
@@ -65,7 +66,12 @@ func (repo *ActivitiesRepository) ActivitiesUpdate(ctx context.Context, domain a
 	if err.Error != nil {
 		return activities.Domain{}, err.Error
 	}
-	repo.ConnPostgres.Save(&dataTemp)
+	data.Type = dataTemp.Type
+	data.Name = dataTemp.Name
+	data.Date = dataTemp.Date
+	data.Note = dataTemp.Note
+	data.Nominal = dataTemp.Nominal
+	repo.ConnPostgres.Save(&data)
 	return data.ActivitiesToDomain(), nil
 }
 

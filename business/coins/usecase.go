@@ -44,3 +44,11 @@ func (uc *CoinUsecase) GetBySymbol(ctx context.Context, symbol string) (Domain, 
 
 	return data, nil
 }
+
+func (uc *CoinUsecase) GetAllSymbol(ctx context.Context) ([]Domain, error){
+	data, err := uc.Repo.GetAllSymbol(ctx)
+	if err != nil {
+		return []Domain{}, err
+	}
+	return data, nil
+}

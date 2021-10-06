@@ -55,6 +55,7 @@ func setup() {
 func TestGetList(t *testing.T) {
 	t.Run("Test Case 1 | GetList - Success", func(t *testing.T) {
 		setup()
+		userService.On("GetById", mock.Anything, mock.Anything).Return(userDomain, nil).Once()
 		favoritesRepository.On("FavoritesGetList", mock.Anything, mock.Anything).Return(listFavDomain, nil).Once()
 		crypto, err := favService.GetList(context.Background(), favDomain.UserId)
 
@@ -64,7 +65,17 @@ func TestGetList(t *testing.T) {
 
 	t.Run("Test Case 2 | GetList - Error", func(t *testing.T) {
 		setup()
+		userService.On("GetById", mock.Anything, mock.Anything).Return(userDomain, nil).Once()
 		favoritesRepository.On("FavoritesGetList", mock.Anything, mock.Anything).Return([]favorites.Domain{}, businesses.ErrForTest).Once()
+		crypto, err := favService.GetList(context.Background(), favDomain.UserId)
+
+		assert.Error(t, err)
+		assert.Equal(t, crypto, []favorites.Domain{})
+	})
+
+	t.Run("Test Case 2 | GetList - Error - UserId Not Found", func(t *testing.T) {
+		setup()
+		userService.On("GetById", mock.Anything, mock.Anything).Return(users.Domain{}, businesses.ErrForTest).Once()
 		crypto, err := favService.GetList(context.Background(), favDomain.UserId)
 
 		assert.Error(t, err)

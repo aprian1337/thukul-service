@@ -9,7 +9,7 @@ type FavoriteResponse struct {
 	ID        int `json:"id"`
 	UserId    int `json:"user_id"`
 	CoinId    int `json:"coin_id"`
-	Coins     interface{}
+	Coins     interface{} `json:"coins"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
