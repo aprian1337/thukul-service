@@ -19,8 +19,7 @@ func (config *ConfigDb) InitDb() *mongo.Client {
 	uri := fmt.Sprintf("mongodb+srv://%v:%v@%v",
 		config.Username,
 		config.Password,
-		config.Cluster,
-	)
+		config.Cluster)
 	//uri := "mongodb://localhost:27017"
 
 	clientOptions := options.Client().ApplyURI(uri)
