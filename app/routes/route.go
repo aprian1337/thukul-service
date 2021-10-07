@@ -18,7 +18,6 @@ import (
 type ControllerList struct {
 	LoggerMiddleware   middlewares.MongoConfig
 	JWTMiddleware      middleware.JWTConfig
-	JWTMiddlewareAdmin middleware.JWTConfig
 	UserController     users.Controller
 	SalaryController   salaries.Controller
 	PocketController   pockets.Controller

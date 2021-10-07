@@ -22,7 +22,7 @@ import (
 	_usersDelivery "aprian1337/thukul-service/deliveries/users"
 
 	_activityUsecase "aprian1337/thukul-service/business/activities"
-	_activityDb "aprian1337/thukul-service/repository/databases/records"
+	"aprian1337/thukul-service/repository/databases/records"
 
 	_coinUsecase "aprian1337/thukul-service/business/coins"
 	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
@@ -58,17 +58,17 @@ func init() {
 
 func DbMigrate(db *gorm.DB) {
 	err := db.AutoMigrate(
-		&_activityDb.Salaries{},
-		&_activityDb.Users{},
-		&_activityDb.Pockets{},
-		&_activityDb.Activities{},
-		&_activityDb.Coins{},
-		&_activityDb.Favorites{},
-		&_activityDb.Cryptos{},
-		&_activityDb.Wishlists{},
-		&_activityDb.Transactions{},
-		&_activityDb.Wallets{},
-		&_activityDb.WalletHistories{},
+		&records.Salaries{},
+		&records.Users{},
+		&records.Pockets{},
+		&records.Activities{},
+		&records.Coins{},
+		&records.Favorites{},
+		&records.Cryptos{},
+		&records.Wishlists{},
+		&records.Transactions{},
+		&records.Wallets{},
+		&records.WalletHistories{},
 	)
 	if err != nil {
 		panic(err)
