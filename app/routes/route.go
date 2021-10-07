@@ -80,10 +80,10 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 	v1.DELETE("users/:userId/favorites/:favId", cl.FavoriteController.Destroy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 
 	//PAYMENTS
-	v1.POST("payments/topup", cl.PaymentController.TopUp, middleware.JWTWithConfig(cl.JWTMiddleware))
-	v1.POST("payments/buy", cl.PaymentController.Buy, middleware.JWTWithConfig(cl.JWTMiddleware))
-	v1.POST("payments/sell", cl.PaymentController.Sell, middleware.JWTWithConfig(cl.JWTMiddleware))
-	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.POST("payments/topup", cl.PaymentController.TopUp, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
+	v1.POST("payments/buy", cl.PaymentController.Buy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.POST("payments/sell", cl.PaymentController.Sell, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm)
 
 	//CRYPTOS
 	v1.GET("users/:userId/cryptos", cl.CryptoController.GetByUser, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
