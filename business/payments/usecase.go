@@ -13,6 +13,7 @@ import (
 	"aprian1337/thukul-service/helpers"
 	"aprian1337/thukul-service/helpers/constants"
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -123,6 +124,7 @@ func (uc *PaymentUsecase) TopUp(ctx context.Context, domain Domain) (wallets.Dom
 }
 
 func (uc *PaymentUsecase) BuyCoin(ctx context.Context, domain Domain) error {
+	fmt.Println("BUY COIN UC!")
 	if domain.Coin == "" {
 		return businesses.ErrCoinRequired
 	}
