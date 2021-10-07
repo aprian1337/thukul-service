@@ -87,7 +87,7 @@ func main() {
 	}
 
 	mongoConfig := mongodb.ConfigDb{
-		Cluster: viper.GetString(`databases.mongodb.cluster`),
+		Cluster:  viper.GetString(`databases.mongodb.cluster`),
 		Username: viper.GetString(`databases.mongodb.username`),
 		Password: viper.GetString(`databases.mongodb.password`),
 	}
@@ -153,7 +153,7 @@ func main() {
 	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
 
-	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, viper.GetString(`encrypt.keystring`), viper.GetString(`encrypt.additional`), viper.GetString("server.address.host"), viper.GetString("server.address.port"), timeoutContext)
+	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, viper.GetString(`encrypt.keystring`), viper.GetString(`encrypt.additional`), viper.GetString("smtp.server"), viper.GetString("server.address.port"), timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
 
 	salaryRepository := postgresRepo.NewPostgresSalariesRepository(connPostgres)
