@@ -7,7 +7,6 @@ import (
 	"aprian1337/thukul-service/deliveries/payments/requests"
 	"aprian1337/thukul-service/deliveries/payments/responses"
 	"github.com/labstack/echo/v4"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -46,9 +45,7 @@ func (ctrl *Controller) TopUp(c echo.Context) error {
 
 func (ctrl *Controller) Buy(c echo.Context) error {
 	ctxNative := c.Request().Context()
-	log.Println("BUY COIN REQ!")
 	var data requests.PaymentRequest
-	log.Println("BUY COIN BIND!")
 	err := c.Bind(&data)
 	userId := c.Param("userId")
 	convId, err := strconv.Atoi(userId)
@@ -57,18 +54,12 @@ func (ctrl *Controller) Buy(c echo.Context) error {
 	}
 	data.UserId = convId
 	if err != nil {
-		log.Println("BUY COIN BIND ERR!")
-		log.Println(err.Error())
 		return err
 	}
-	log.Println("BUY BEFORE UC!")
 	err = ctrl.PaymentUsecase.BuyCoin(ctxNative, data.ToDomain())
-	log.Println("BUY COIN AFTER UC!")
 	if err != nil {
-		log.Println("BUY COIN ERROR!")
 		return deliveries.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	log.Println("BUY COIN SUCCESS!")
 	return deliveries.NewSuccessResponse(c, responses.BuySaleResponse{
 		Status:  "success",
 		Message: "check your email for confirm the purchase",
