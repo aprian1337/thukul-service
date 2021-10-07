@@ -20,8 +20,8 @@ type UsersResponse struct {
 }
 
 type LoginResponse struct {
-	SessionToken string
-	User         interface{}
+	SessionToken string      `json:"session_token"`
+	User         interface{} `json:"user"`
 }
 
 func FromUsersDomain(domain users.Domain) UsersResponse {
