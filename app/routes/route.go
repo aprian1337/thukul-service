@@ -38,15 +38,15 @@ func (cl *ControllerList) Route(e *echo.Echo) {
 	//USERS
 	//middleware.JWTWithConfig(cl.JWTMiddleware)
 	v1.GET("users", cl.UserController.GetUsersController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
-	v1.GET("users/:userId", cl.UserController.GetDetailUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.GET("users/:userId", cl.UserController.GetDetailUserController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 	v1.POST("users", cl.UserController.CreateUserController)
 	v1.DELETE("users/:userId", cl.UserController.DeleteUserController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
-	v1.PUT("users/:userId", cl.UserController.UpdateUserController, middleware.JWTWithConfig(cl.JWTMiddleware))
+	v1.PUT("users/:userId", cl.UserController.UpdateUserController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 
 	//SALARIES
 	v1.GET("salaries", cl.SalaryController.GetSalariesController)
 	v1.GET("salaries/:id", cl.SalaryController.GetSalaryByIdController)
-	v1.POST("salaries", cl.SalaryController.CreateSalaryController)
+	v1.POST("salaries", cl.SalaryController.CreateSalaryController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
 	v1.PUT("salaries/:id", cl.SalaryController.UpdateSalaryController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
 	v1.DELETE("salaries/:id", cl.SalaryController.DestroySalaryController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
 
