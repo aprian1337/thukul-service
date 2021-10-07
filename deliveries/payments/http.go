@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Controller struct {
@@ -49,6 +50,12 @@ func (ctrl *Controller) Buy(c echo.Context) error {
 	var data requests.PaymentRequest
 	log.Println("BUY COIN BIND!")
 	err := c.Bind(&data)
+	userId := c.Param("userId")
+	convId, err := strconv.Atoi(userId)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, businesses.ErrBadRequest)
+	}
+	data.UserId = convId
 	if err != nil {
 		log.Println("BUY COIN BIND ERR!")
 		log.Println(err.Error())
@@ -72,6 +79,12 @@ func (ctrl *Controller) Sell(c echo.Context) error {
 	ctxNative := c.Request().Context()
 	var data requests.PaymentRequest
 	err := c.Bind(&data)
+	userId := c.Param("userId")
+	convId, err := strconv.Atoi(userId)
+	if err != nil {
+		return deliveries.NewErrorResponse(c, http.StatusBadRequest, businesses.ErrBadRequest)
+	}
+	data.UserId = convId
 	if err != nil {
 		return err
 	}

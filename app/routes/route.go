@@ -81,8 +81,8 @@ func (cl *ControllerList) RouteUsers(e *echo.Echo) {
 
 	//PAYMENTS
 	v1.POST("payments/topup", cl.PaymentController.TopUp, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
-	v1.POST("payments/buy", cl.PaymentController.Buy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
-	v1.POST("payments/sell", cl.PaymentController.Sell, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.POST("users/:userId/payments/buy", cl.PaymentController.Buy, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
+	v1.POST("users/:userId/payments/sell", cl.PaymentController.Sell, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
 	v1.GET("payments/confirm/:uuid/:encrypt", cl.PaymentController.Confirm)
 
 	//CRYPTOS
