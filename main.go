@@ -190,7 +190,7 @@ func main() {
 		JWTMiddleware:      configJWT.Init(),
 	}
 
-	routesInit.RouteUsers(e)
+	routesInit.Route(e)
 	address := fmt.Sprintf("%v:%v",
 		viper.GetString("server.address.host"),
 		viper.GetString("server.address.port"),

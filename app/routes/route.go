@@ -29,7 +29,7 @@ type ControllerList struct {
 	PaymentController  payments.Controller
 }
 
-func (cl *ControllerList) RouteUsers(e *echo.Echo) {
+func (cl *ControllerList) Route(e *echo.Echo) {
 	v1 := e.Group("api/v1/")
 	cl.LoggerMiddleware.Start(e)
 	//AUTH
