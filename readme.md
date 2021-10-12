@@ -25,8 +25,9 @@
 - [System Environment](#system-environment)
 - [Technologies What I Used](#technologies-what-i-used)
 - [Deployment](#deployment)
-- [How to Run?](#how-to-run)
+- [How to Run?](#how-to-run-locally)
 - [Wanna Try?](#wanna-try)
+- [Thanks to](#thanks-to)
 
 # Entity Relationship Diagram (ERD)
 ---
@@ -50,6 +51,10 @@
 7. [Mockery v2](https://github.com/vektra/mockery)
 8. [SMTP](https://pkg.go.dev/net/smtp)
 
+# Other API What I Used
+1. [Coinmarketcap API](https://coinmarketcap.com/api)<br/>
+   To retrieve token detail data and also take the current price of each token which will be searched in Indonesian rupiah currency at this time
+
 # Deployment
 1. Amazon Elastic Compute Cloud (Amazon EC2) - For Main Server
 2. Amazon Relational Database Service (Amazon RDS) - For PostgreSQL Server
@@ -65,3 +70,6 @@
 
 # Wanna Try?
 Live Server On : [http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com:8080](http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com:8080)
+
+# Thanks to :
+<img src="ALTA.png" width="150px">
