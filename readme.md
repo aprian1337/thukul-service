@@ -27,7 +27,7 @@
 - [Deployment](#deployment)
 - [How to Run?](#how-to-run-locally)
 - [Wanna Try?](#wanna-try)
-- [Thanks to](#thanks-to)
+- [Thanks to](#thanks-to-)
 
 # Entity Relationship Diagram (ERD)
 ---
