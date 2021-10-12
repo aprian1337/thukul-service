@@ -57,11 +57,11 @@
 4. Docker - For Containerization
 5. Github Action - For Continous Integration/Continous Deployment
 
-# How to Run?
+# How to Run Locally?
 1. Clone this repository first
 2. Rename config.json.example to config.json on root folder
 3. Set up with your environment on config.json
-4. Run `go run main.go`
+4. Run `go run main.go` or `go run app/main.go`
 
 # Wanna Try?
-[Live Server On : ](http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com)
+Live Server On : [http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com](http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com)
