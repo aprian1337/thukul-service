@@ -64,4 +64,4 @@
 4. Run `go run main.go` or `go run app/main.go`
 
 # Wanna Try?
-Live Server On : [http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com](http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com)
+Live Server On : [http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com:8080](http://ec2-3-16-108-99.us-east-2.compute.amazonaws.com:8080)
