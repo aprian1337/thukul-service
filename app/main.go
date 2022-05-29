@@ -99,6 +99,7 @@ func main() {
 		Cluster:  viper.GetString(`databases.mongodb.cluster`),
 		Username: viper.GetString(`databases.mongodb.username`),
 		Password: viper.GetString(`databases.mongodb.password`),
+		IsLocal:  viper.GetBool(`databases.mongodb.is_local`),
 	}
 
 	configJWT := middlewares.ConfigJWT{
@@ -205,11 +206,11 @@ func main() {
 		SalarySchema:  salarySchema,
 		CoinsSchema:   coinsSchema,
 		PaymentSchema: paymentSchema,
-		UsersSchema: usersSchema,
+		UsersSchema:   usersSchema,
 	}
 	gqlSchema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query:        schema.Query(),
-		Mutation:     schema.Mutation(),
+		Query:    schema.Query(),
+		Mutation: schema.Mutation(),
 	})
 
 	gqlHandler := handler.New(&handler.Config{
@@ -217,7 +218,7 @@ func main() {
 		Pretty:     true,
 		GraphiQL:   true,
 		Playground: true,
-		RootObjectFn: func(ctx context.Context, r *http.Request) map[string]interface{}{
+		RootObjectFn: func(ctx context.Context, r *http.Request) map[string]interface{} {
 			return map[string]interface{}{
 				"token": r.Header.Get("token"),
 			}
@@ -236,7 +237,7 @@ func main() {
 		PaymentController:  *paymentDelivery,
 		LoggerMiddleware:   *loggerMiddleware,
 		JWTMiddleware:      configJWT.Init(),
-		GqlHandler: gqlHandler,
+		GqlHandler:         gqlHandler,
 	}
 
 	routesInit.Route(e)
