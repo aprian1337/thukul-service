@@ -4,9 +4,11 @@ import (
 	businesses "aprian1337/thukul-service/business"
 	"aprian1337/thukul-service/deliveries"
 	"aprian1337/thukul-service/helpers"
+	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/viper"
 	"net/http"
 	"time"
 )
@@ -77,4 +79,36 @@ func IsUserId(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		return next(c)
 	}
+}
+
+func JwtValidate(token string) (*jwt.Token, error){
+	return jwt.ParseWithClaims(token, &JWTCustomClaims{}, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("there's a problem with the signing method")
+		}
+		viper.SetConfigFile(`config.json`)
+		secret := viper.GetString(`jwt.secret`)
+		return []byte(secret), nil
+	})
+}
+
+func GetClaimsUserId(token string) (uint, error){
+	validate, err := JwtValidate(token)
+	if err != nil {
+		return 0, err
+	}
+	jwtClaims := validate.Claims.(*JWTCustomClaims).ID
+	return jwtClaims, nil
+}
+
+func GetClaimsAdminId(token string) (uint, error){
+	validate, err := JwtValidate(token)
+	if err != nil {
+		return 0, err
+	}
+	if validate.Claims.(*JWTCustomClaims).IsAdmin == 0 {
+		return 0, fmt.Errorf("you're not have authorized for this action")
+	}
+	jwtClaims := validate.Claims.(*JWTCustomClaims).ID
+	return jwtClaims, nil
 }

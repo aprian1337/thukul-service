@@ -1,0 +1,1262 @@
+{
+	"info": {
+		"_postman_id": "b82cf052-a2e0-4d11-b59f-4ded20bea6fa",
+		"name": "Thukul Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"zypheriousx@gmail.com\",\n    \"password\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/auth/login",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Salaries",
+			"item": [
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minimal\": 1000,\n    \"maximal\":2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/salaries",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"salaries"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minimal\": 10000,\n    \"maximal\": 100000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/salaries",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"salaries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maximal\": 1,\n    \"minimal\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/salaries/1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"salaries",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/salaries/1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"salaries",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/salaries/1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"salaries",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2MzI2Njk2MjV9.k17Y3jvEUbYXKjup7XrMejLEcZatqsZkML7QrJNLjc8",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"salary_id\":1,\n    \"name\": \"Dwiky Aprian Ashari\",\n    \"password\": \"123\",\n    \"is_admin\": 0,\n    \"email\": \"dwiky.dev2@gmail.com\",\n    \"phone\": \"081213111\",\n    \"gender\": \"Male\",\n    \"birthday\": \"1992-1-07\",\n    \"address\": \"Banyuwangi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/3",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"salary_id\": 1,\n    \"name\": \"Aprian\",\n    \"birthday\": \"2000-1-1\",\n    \"is_valid\": 1,\n    \"email\": \"dwiky.dev1@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2"
+							],
+							"query": [
+								{
+									"key": "sdada",
+									"value": "a",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pockets",
+			"item": [
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minimal\": 1000,\n    \"maximal\":2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/34/pockets/",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"34",
+								"pockets",
+								""
+							],
+							"query": [
+								{
+									"key": "wew",
+									"value": "12312",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 33,\n    \"name\": \"ZOZkdasda\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/34/pockets/",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"34",
+								"pockets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Kantong 6\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "total",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1/total?type=expense",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1",
+								"total"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "expense"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activities",
+			"item": [
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minimal\": 1000,\n    \"maximal\":2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1/activities",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "wew",
+									"value": "12312",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"ZOZkdasda\",\n    \"nominal\": 220200,\n    \"type\": \"income\",\n    \"date\": \"2020-01-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1/activities",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"zzzzz\",\n    \"type\": \"expense\",\n    \"nominal\": 200,\n    \"date\": \"2020-01-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1/activities/4",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1",
+								"activities",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1/activities/4",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1",
+								"activities",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/pockets/1/activities/4",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"pockets",
+								"1",
+								"activities",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wishlists",
+			"item": [
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minimal\": 1000,\n    \"maximal\":2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/33/wishlists",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"33",
+								"wishlists"
+							],
+							"query": [
+								{
+									"key": "wew",
+									"value": "12312",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"zzz\",\n    \"nominal\": 2202020,\n    \"target_date\": \"2020-02-02\",\n    \"priority\": \"m\",\n    \"note\": \"zzz\",\n    \"is_done\": 0,\n    \"pic_url\": \"zzz\",\n    \"wishlist_url\": \"zzz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/wishlists",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"wishlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"zzz\",\n    \"nominal\": 2202020,\n    \"target_date\": \"2020-02-02\",\n    \"priority\": \"m\",\n    \"note\": \"z22zz\",\n    \"is_done\": 0,\n    \"pic_url\": \"zzz\",\n    \"wishlist_url\": \"zzz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/wishlists/2",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"wishlists",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/wishlists/2",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"wishlists",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/wishlists/2",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"wishlists",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Favorites",
+			"item": [
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minimal\": 1000,\n    \"maximal\":2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/favorites",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"favorites"
+							],
+							"query": [
+								{
+									"key": "wew",
+									"value": "12312",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"coin_symbol\": \"SHIB\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/favorites",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/favorites/1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"favorites",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/35/favorites/9",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"35",
+								"favorites",
+								"9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Coins",
+			"item": [
+				{
+					"name": "get by symbol",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/coins?symbol=BNB",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"coins"
+							],
+							"query": [
+								{
+									"key": "symbol",
+									"value": "BNB"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all symbol",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/coins/all",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"coins",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "top up",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\" : 8,\n    \"nominal\": 500000000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/payments/topup",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"payments",
+								"topup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "buy coin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symbol\": \"BNB\",\n    \"qty\": 5.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/payments/buy",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"payments",
+								"buy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sell coin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\" : 2,\n    \"symbol\": \"BTC\",\n    \"qty\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/payments/sell",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"payments",
+								"sell"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/payments/confirm/NDczMjZkN2QtZjhlMi00MGJmLTkyMjItZjhmYzNmODNiYWE1/40f9ff4fe783eaf5168c076c5f325cac424db771e61726e6701b39297d383fbddf64565f97a8e713166927a997f7890245d18a09e8ebd855886bac586dcfd01da10182357692e7b3b9070284c41ffca8c11db04a2dc2b95c5cbca2481846c71239be08e1",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"payments",
+								"confirm",
+								"NDczMjZkN2QtZjhlMi00MGJmLTkyMjItZjhmYzNmODNiYWE1",
+								"40f9ff4fe783eaf5168c076c5f325cac424db771e61726e6701b39297d383fbddf64565f97a8e713166927a997f7890245d18a09e8ebd855886bac586dcfd01da10182357692e7b3b9070284c41ffca8c11db04a2dc2b95c5cbca2481846c71239be08e1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cryptos",
+			"item": [
+				{
+					"name": "get by user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/cryptos",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"cryptos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get detail crypto",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host_thukul}}{{port_thukul}}{{api_v1}}/users/2/cryptos/12",
+							"host": [
+								"{{host_thukul}}{{port_thukul}}{{api_v1}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"cryptos",
+								"12"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

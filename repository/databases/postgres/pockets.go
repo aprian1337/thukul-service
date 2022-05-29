@@ -36,10 +36,10 @@ func (repo *PocketsRepository) PocketsGetList(_ context.Context, id int) ([]pock
 }
 func (repo *PocketsRepository) PocketsGetById(_ context.Context, userId int, pocketId int) (pockets.Domain, error) {
 	var data records.Pockets
-	err := repo.ConnPostgres.First(&data, "user_id = ? AND id = ?", userId, pocketId)
-	if err.Error != nil {
-		return pockets.Domain{}, err.Error
-	}
+	repo.ConnPostgres.First(&data, "user_id = ? AND id = ?", userId, pocketId)
+	//if err.Error != nil {
+	//	return pockets.Domain{}, err.Error
+	//}
 	return data.PocketsToDomain(), nil
 }
 func (repo *PocketsRepository) PocketsCreate(_ context.Context, domain pockets.Domain) (pockets.Domain, error) {

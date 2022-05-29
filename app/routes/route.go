@@ -11,6 +11,7 @@ import (
 	"aprian1337/thukul-service/deliveries/salaries"
 	"aprian1337/thukul-service/deliveries/users"
 	"aprian1337/thukul-service/deliveries/wishlists"
+	"github.com/graphql-go/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -27,9 +28,12 @@ type ControllerList struct {
 	FavoriteController favorites.Controller
 	CryptoController   cryptos.Controller
 	PaymentController  payments.Controller
+	GqlHandler         *handler.Handler
 }
 
 func (cl *ControllerList) Route(e *echo.Echo) {
+	e.POST("/graphql", echo.WrapHandler(cl.GqlHandler))
+	e.GET("/graphql", echo.WrapHandler(cl.GqlHandler))
 	v1 := e.Group("api/v1/")
 	cl.LoggerMiddleware.Start(e)
 	//AUTH
@@ -42,7 +46,7 @@ func (cl *ControllerList) Route(e *echo.Echo) {
 	v1.POST("users", cl.UserController.CreateUserController)
 	v1.DELETE("users/:userId", cl.UserController.DeleteUserController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsAdmin)
 	v1.PUT("users/:userId", cl.UserController.UpdateUserController, middleware.JWTWithConfig(cl.JWTMiddleware), middlewares.IsUserId)
-
+	//v1.GET("/zckopzxka", blabla)
 	//SALARIES
 	v1.GET("salaries", cl.SalaryController.GetSalariesController)
 	v1.GET("salaries/:id", cl.SalaryController.GetSalaryByIdController)
