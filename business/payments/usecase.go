@@ -13,6 +13,7 @@ import (
 	"aprian1337/thukul-service/helpers"
 	"aprian1337/thukul-service/helpers/constants"
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -66,6 +67,9 @@ func (uc *PaymentUsecase) SellCoin(ctx context.Context, domain Domain) error {
 
 	crypto, err := uc.CryptoUsecase.CryptosGetDetail(ctx, domain.UserId, coin.Id)
 	if err != nil {
+		if err.Error() == "record not found" {
+			return fmt.Errorf("you don't have this coin")
+		}
 		return err
 	}
 

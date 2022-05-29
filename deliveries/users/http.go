@@ -46,8 +46,6 @@ func (ctrl *Controller) GetDetailUserController(c echo.Context) error {
 
 func (ctrl *Controller) CreateUserController(c echo.Context) error {
 	request := requests.UserRegister{}
-	//u := middlewares.GetClaimUser(c)
-	//fmt.Println(u)
 	var err error
 	err = c.Bind(&request)
 	if err != nil {

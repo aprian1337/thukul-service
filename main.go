@@ -3,10 +3,13 @@ package main
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
+	"aprian1337/thukul-service/gql"
 	"aprian1337/thukul-service/helpers/constants"
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
 	"fmt"
+	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -34,10 +37,12 @@ import (
 	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
 	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
 	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
+	_coinsDeliveryGql "aprian1337/thukul-service/deliveries/coins/graphql"
 	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
 	_paymentDelivery "aprian1337/thukul-service/deliveries/payments"
 	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
 	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
+	_salaryDeliveryGql "aprian1337/thukul-service/deliveries/salaries/graphql"
 	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
 
 	_cryptosUsecase "aprian1337/thukul-service/business/cryptos"
@@ -136,9 +141,13 @@ func main() {
 	cryptoUsecase := _cryptosUsecase.NewCryptoUsecase(cryptoRepository, timeoutContext)
 	cryptoDelivery := _cryptosDelivery.NewController(cryptoUsecase)
 
+	//HTTP
 	coinRepository := postgresRepo.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
+	//GQL
+	coinsResolver := _coinsDeliveryGql.NewCoinsResolver(*coinUsecase)
+	coinsSchema := _coinsDeliveryGql.NewSchema(*coinsResolver)
 
 	walletsHistoryRepository := postgresRepo.NewPostgresWalletHistoriesRepository(connPostgres)
 	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
@@ -156,9 +165,13 @@ func main() {
 	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, viper.GetString(`encrypt.keystring`), viper.GetString(`encrypt.additional`), viper.GetString("smtp.server"), viper.GetString("server.address.port"), timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
 
+	//HTTP
 	salaryRepository := postgresRepo.NewPostgresSalariesRepository(connPostgres)
 	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
 	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
+	//GQL
+	salaryResolver := _salaryDeliveryGql.NewSalaryResolver(*salaryUsecase)
+	salarySchema := _salaryDeliveryGql.NewSchema(*salaryResolver)
 
 	activityRepository := postgresRepo.NewPostgresActivitiesRepository(connPostgres)
 	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
@@ -176,6 +189,19 @@ func main() {
 	favoriteUsecase := _favoriteUsecase.NewFavoriteUsecase(favoriteRepository, userUsecase, coinUsecase, timeoutContext)
 	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
 
+	schema := gql.NewSchemaGql(salarySchema, coinsSchema)
+	gqlSchema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query:        schema.Query(),
+		Mutation:     nil,
+	})
+
+	gqlHandler := handler.New(&handler.Config{
+		Schema:     &gqlSchema,
+		Pretty:     true,
+		GraphiQL:   true,
+		Playground: true,
+	})
+
 	routesInit := routes.ControllerList{
 		UserController:     *userDelivery,
 		SalaryController:   *salaryDelivery,
@@ -188,6 +214,7 @@ func main() {
 		PaymentController:  *paymentDelivery,
 		LoggerMiddleware:   *loggerMiddleware,
 		JWTMiddleware:      configJWT.Init(),
+		GqlHandler: gqlHandler,
 	}
 
 	routesInit.Route(e)
@@ -195,7 +222,7 @@ func main() {
 		viper.GetString("server.address.host"),
 		viper.GetString("server.address.port"),
 	)
-	err := e.Start(address)
+	err = e.Start(address)
 	if err != nil {
 		panic(err)
 	}

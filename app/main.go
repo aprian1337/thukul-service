@@ -3,14 +3,23 @@ package main
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
+	_coinsDeliveryGql "aprian1337/thukul-service/deliveries/coins/graphql"
+	_paymentsDeliveryGql "aprian1337/thukul-service/deliveries/payments/graphql"
+	_salaryDeliveryGql "aprian1337/thukul-service/deliveries/salaries/graphql"
+	_usersDeliveryGql "aprian1337/thukul-service/deliveries/users/graphql"
+	"aprian1337/thukul-service/gql"
 	"aprian1337/thukul-service/helpers/constants"
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
+	"context"
 	"fmt"
+	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
+	"net/http"
 	"time"
 
 	postgresRepo "aprian1337/thukul-service/repository/databases/postgres"
@@ -46,7 +55,7 @@ import (
 )
 
 func init() {
-	viper.SetConfigFile(`app/config.json`)
+	viper.SetConfigFile(`config.json`)
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(err)
@@ -136,9 +145,13 @@ func main() {
 	cryptoUsecase := _cryptosUsecase.NewCryptoUsecase(cryptoRepository, timeoutContext)
 	cryptoDelivery := _cryptosDelivery.NewController(cryptoUsecase)
 
+	//HTTP
 	coinRepository := postgresRepo.NewPostgresCoinsRepository(connPostgres)
 	coinUsecase := _coinUsecase.NewCoinUsecase(coinRepository, coinMarketRepo, timeoutContext)
 	coinDelivery := _coinDelivery.NewCoinsController(coinUsecase)
+	//GQL
+	coinsResolver := _coinsDeliveryGql.NewCoinsResolver(*coinUsecase)
+	coinsSchema := _coinsDeliveryGql.NewSchema(*coinsResolver)
 
 	walletsHistoryRepository := postgresRepo.NewPostgresWalletHistoriesRepository(connPostgres)
 	walletsHistoryUsecase := _walletHistoryUsecase.NewWalletsUsecase(walletsHistoryRepository, timeoutContext)
@@ -149,16 +162,28 @@ func main() {
 	transactionsRepository := postgresRepo.NewPostgresTransactionRepository(connPostgres)
 	transactionsUsecase := _transactionUsecase.NewTransactionUsecase(transactionsRepository, timeoutContext)
 
+	//HTTP
 	userRepository := postgresRepo.NewPostgresUserRepository(connPostgres)
 	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
+	//GQL
+	usersResolver := _usersDeliveryGql.NewUsersResolver(*userUsecase)
+	usersSchema := _usersDeliveryGql.NewSchema(*usersResolver)
 
+	//HTTP
 	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, viper.GetString(`encrypt.keystring`), viper.GetString(`encrypt.additional`), viper.GetString("smtp.server"), viper.GetString("server.address.port"), timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
+	//GQL
+	paymentResolver := _paymentsDeliveryGql.NewPaymentsResolver(*paymentUsecase)
+	paymentSchema := _paymentsDeliveryGql.NewSchema(*paymentResolver)
 
+	//HTTP
 	salaryRepository := postgresRepo.NewPostgresSalariesRepository(connPostgres)
 	salaryUsecase := _salaryUsecase.NewSalaryUsecase(salaryRepository, timeoutContext)
 	salaryDelivery := _salaryDelivery.NewSalariesController(salaryUsecase)
+	//GQL
+	salaryResolver := _salaryDeliveryGql.NewSalaryResolver(*salaryUsecase)
+	salarySchema := _salaryDeliveryGql.NewSchema(*salaryResolver)
 
 	activityRepository := postgresRepo.NewPostgresActivitiesRepository(connPostgres)
 	activityUsecase := _activityUsecase.NewActivityUsecase(activityRepository, timeoutContext)
@@ -176,6 +201,29 @@ func main() {
 	favoriteUsecase := _favoriteUsecase.NewFavoriteUsecase(favoriteRepository, userUsecase, coinUsecase, timeoutContext)
 	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
 
+	schema := gql.Schema{
+		SalarySchema:  salarySchema,
+		CoinsSchema:   coinsSchema,
+		PaymentSchema: paymentSchema,
+		UsersSchema: usersSchema,
+	}
+	gqlSchema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query:        schema.Query(),
+		Mutation:     schema.Mutation(),
+	})
+
+	gqlHandler := handler.New(&handler.Config{
+		Schema:     &gqlSchema,
+		Pretty:     true,
+		GraphiQL:   true,
+		Playground: true,
+		RootObjectFn: func(ctx context.Context, r *http.Request) map[string]interface{}{
+			return map[string]interface{}{
+				"token": r.Header.Get("token"),
+			}
+		},
+	})
+
 	routesInit := routes.ControllerList{
 		UserController:     *userDelivery,
 		SalaryController:   *salaryDelivery,
@@ -188,6 +236,7 @@ func main() {
 		PaymentController:  *paymentDelivery,
 		LoggerMiddleware:   *loggerMiddleware,
 		JWTMiddleware:      configJWT.Init(),
+		GqlHandler: gqlHandler,
 	}
 
 	routesInit.Route(e)
@@ -195,7 +244,7 @@ func main() {
 		viper.GetString("server.address.host"),
 		viper.GetString("server.address.port"),
 	)
-	err := e.Start(address)
+	err = e.Start(address)
 	if err != nil {
 		panic(err)
 	}

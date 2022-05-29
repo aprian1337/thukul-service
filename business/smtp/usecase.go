@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/smtp"
 	"strings"
+	"time"
 )
 
 type ConfigSmtpUsecase struct {
@@ -38,11 +39,14 @@ func (c *ConfigSmtpUsecase) SendMailSMTP(ctx context.Context, domain Domain) err
 	auth := smtp.PlainAuth("", c.SmtpAuthEMail, c.SmtpAuthPassword, c.SmtpHost)
 	smtpAddr := fmt.Sprintf("%s:%d", c.SmtpHost, c.SmtpPort)
 
-	err := smtp.SendMail(smtpAddr, auth, c.SmtpAuthEMail, append(domain.MailTo, bcc...), []byte(body))
-	if err != nil {
-		return err
-	}
-	log.Println("Mail sent!")
-
+	go func() {
+		time.Sleep(10 * time.Second)
+		err := smtp.SendMail(smtpAddr, auth, c.SmtpAuthEMail, append(domain.MailTo, bcc...), []byte(body))
+		if err != nil {
+			log.Println(err)
+		}else{
+			log.Println("Mail sent!")
+		}
+	}()
 	return nil
 }
