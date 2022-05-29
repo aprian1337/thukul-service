@@ -3,10 +3,40 @@ package main
 import (
 	"aprian1337/thukul-service/app/middlewares"
 	"aprian1337/thukul-service/app/routes"
+	_activityUsecase "aprian1337/thukul-service/business/activities"
+	_coinUsecase "aprian1337/thukul-service/business/coins"
+	_cryptosUsecase "aprian1337/thukul-service/business/cryptos"
+	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
+	_paymentsUsecase "aprian1337/thukul-service/business/payments"
+	_pocketUsecase "aprian1337/thukul-service/business/pockets"
+	_salaryUsecase "aprian1337/thukul-service/business/salaries"
+	_smtpUsecase "aprian1337/thukul-service/business/smtp"
+	_transactionUsecase "aprian1337/thukul-service/business/transactions"
+	_usersUsecase "aprian1337/thukul-service/business/users"
+	_walletHistoryUsecase "aprian1337/thukul-service/business/wallet_histories"
+	_walletUsecase "aprian1337/thukul-service/business/wallets"
+	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
+	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
+	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
+	_coinsDeliveryGql "aprian1337/thukul-service/deliveries/coins/graphql"
+	_cryptosDelivery "aprian1337/thukul-service/deliveries/cryptos"
+	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
+	_paymentDelivery "aprian1337/thukul-service/deliveries/payments"
+	_paymentsDeliveryGql "aprian1337/thukul-service/deliveries/payments/graphql"
+	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
+	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
+	_salaryDeliveryGql "aprian1337/thukul-service/deliveries/salaries/graphql"
+	_usersDelivery "aprian1337/thukul-service/deliveries/users"
+	_usersDeliveryGql "aprian1337/thukul-service/deliveries/users/graphql"
+	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
 	"aprian1337/thukul-service/gql"
 	"aprian1337/thukul-service/helpers/constants"
+	postgresRepo "aprian1337/thukul-service/repository/databases/postgres"
+	_activityDb "aprian1337/thukul-service/repository/databases/records"
 	"aprian1337/thukul-service/repository/drivers/mongodb"
 	"aprian1337/thukul-service/repository/drivers/postgres"
+	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
+	"context"
 	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
@@ -14,40 +44,8 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
+	"net/http"
 	"time"
-
-	postgresRepo "aprian1337/thukul-service/repository/databases/postgres"
-
-	_smtpUsecase "aprian1337/thukul-service/business/smtp"
-	_coinmarketRepo "aprian1337/thukul-service/repository/thirdparties/coinmarket"
-
-	_usersUsecase "aprian1337/thukul-service/business/users"
-	_usersDelivery "aprian1337/thukul-service/deliveries/users"
-
-	_activityUsecase "aprian1337/thukul-service/business/activities"
-	"aprian1337/thukul-service/repository/databases/records"
-
-	_coinUsecase "aprian1337/thukul-service/business/coins"
-	_favoriteUsecase "aprian1337/thukul-service/business/favorites"
-	_paymentsUsecase "aprian1337/thukul-service/business/payments"
-	_pocketUsecase "aprian1337/thukul-service/business/pockets"
-	_salaryUsecase "aprian1337/thukul-service/business/salaries"
-	_walletHistoryUsecase "aprian1337/thukul-service/business/wallet_histories"
-	_walletUsecase "aprian1337/thukul-service/business/wallets"
-	_wishlistUsecase "aprian1337/thukul-service/business/wishlists"
-	_activityDelivery "aprian1337/thukul-service/deliveries/activities"
-	_coinDelivery "aprian1337/thukul-service/deliveries/coins"
-	_coinsDeliveryGql "aprian1337/thukul-service/deliveries/coins/graphql"
-	_favoriteDelivery "aprian1337/thukul-service/deliveries/favorites"
-	_paymentDelivery "aprian1337/thukul-service/deliveries/payments"
-	_pocketDelivery "aprian1337/thukul-service/deliveries/pockets"
-	_salaryDelivery "aprian1337/thukul-service/deliveries/salaries"
-	_salaryDeliveryGql "aprian1337/thukul-service/deliveries/salaries/graphql"
-	_wishlistDelivery "aprian1337/thukul-service/deliveries/wishlists"
-
-	_cryptosUsecase "aprian1337/thukul-service/business/cryptos"
-	_transactionUsecase "aprian1337/thukul-service/business/transactions"
-	_cryptosDelivery "aprian1337/thukul-service/deliveries/cryptos"
 )
 
 func init() {
@@ -63,17 +61,17 @@ func init() {
 
 func DbMigrate(db *gorm.DB) {
 	err := db.AutoMigrate(
-		&records.Salaries{},
-		&records.Users{},
-		&records.Pockets{},
-		&records.Activities{},
-		&records.Coins{},
-		&records.Favorites{},
-		&records.Cryptos{},
-		&records.Wishlists{},
-		&records.Transactions{},
-		&records.Wallets{},
-		&records.WalletHistories{},
+		&_activityDb.Salaries{},
+		&_activityDb.Users{},
+		&_activityDb.Pockets{},
+		&_activityDb.Activities{},
+		&_activityDb.Coins{},
+		&_activityDb.Favorites{},
+		&_activityDb.Cryptos{},
+		&_activityDb.Wishlists{},
+		&_activityDb.Transactions{},
+		&_activityDb.Wallets{},
+		&_activityDb.WalletHistories{},
 	)
 	if err != nil {
 		panic(err)
@@ -158,12 +156,20 @@ func main() {
 	transactionsRepository := postgresRepo.NewPostgresTransactionRepository(connPostgres)
 	transactionsUsecase := _transactionUsecase.NewTransactionUsecase(transactionsRepository, timeoutContext)
 
+	//HTTP
 	userRepository := postgresRepo.NewPostgresUserRepository(connPostgres)
 	userUsecase := _usersUsecase.NewUserUsecase(userRepository, walletsUsecase, timeoutContext, &configJWT)
 	userDelivery := _usersDelivery.NewUserController(userUsecase)
+	//GQL
+	usersResolver := _usersDeliveryGql.NewUsersResolver(*userUsecase)
+	usersSchema := _usersDeliveryGql.NewSchema(*usersResolver)
 
+	//HTTP
 	paymentUsecase := _paymentsUsecase.NewPaymentUsecase(userUsecase, smtpUsecase, cryptoUsecase, coinUsecase, coinMarketRepo, walletsUsecase, walletsHistoryUsecase, transactionsUsecase, viper.GetString(`encrypt.keystring`), viper.GetString(`encrypt.additional`), viper.GetString("smtp.server"), viper.GetString("server.address.port"), timeoutContext)
 	paymentDelivery := _paymentDelivery.NewFavoriteController(paymentUsecase)
+	//GQL
+	paymentResolver := _paymentsDeliveryGql.NewPaymentsResolver(*paymentUsecase)
+	paymentSchema := _paymentsDeliveryGql.NewSchema(*paymentResolver)
 
 	//HTTP
 	salaryRepository := postgresRepo.NewPostgresSalariesRepository(connPostgres)
@@ -189,10 +195,15 @@ func main() {
 	favoriteUsecase := _favoriteUsecase.NewFavoriteUsecase(favoriteRepository, userUsecase, coinUsecase, timeoutContext)
 	favoriteDelivery := _favoriteDelivery.NewFavoriteController(favoriteUsecase)
 
-	schema := gql.NewSchemaGql(salarySchema, coinsSchema)
+	schema := gql.Schema{
+		SalarySchema:  salarySchema,
+		CoinsSchema:   coinsSchema,
+		PaymentSchema: paymentSchema,
+		UsersSchema:   usersSchema,
+	}
 	gqlSchema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query:        schema.Query(),
-		Mutation:     nil,
+		Query:    schema.Query(),
+		Mutation: schema.Mutation(),
 	})
 
 	gqlHandler := handler.New(&handler.Config{
@@ -200,6 +211,11 @@ func main() {
 		Pretty:     true,
 		GraphiQL:   true,
 		Playground: true,
+		RootObjectFn: func(ctx context.Context, r *http.Request) map[string]interface{} {
+			return map[string]interface{}{
+				"token": r.Header.Get("token"),
+			}
+		},
 	})
 
 	routesInit := routes.ControllerList{
@@ -214,7 +230,7 @@ func main() {
 		PaymentController:  *paymentDelivery,
 		LoggerMiddleware:   *loggerMiddleware,
 		JWTMiddleware:      configJWT.Init(),
-		GqlHandler: gqlHandler,
+		GqlHandler:         gqlHandler,
 	}
 
 	routesInit.Route(e)
