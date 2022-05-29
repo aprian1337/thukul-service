@@ -32,14 +32,14 @@ jobs:
           CONFIG_JSON: ${{secrets.CONFIG_JSON}}
         run: echo "$CONFIG_JSON" > config.json
       - name: build docker
-        run: docker build -t aprian1337/thukul:1.0.0 .
+        run: docker build -t aprian1337/thukul .
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: push image to registry docker hub
-        run: docker push aprian1337/thukul:1.0.0
+        run: docker push aprian1337/thukul
 
   deploy-to-ec2:
     name: "Deploy to ec2 from registry docker hub"
@@ -64,5 +64,5 @@ jobs:
             StrictHostKeyChecking=no
           END
       - name: Connect EC2 & Remove All Container & Pull from Registry & Start
-        run: ssh development 'docker rm -f $(docker ps -a -q) && docker pull aprian1337/thukul:1.0.0 && docker run -d -p 8080:8080 --name thukul_container aprian1337/thukul:1.0.0'
+        run: ssh development 'docker rm -f $(docker ps -a -q) && docker pull aprian1337/thukul && docker run -d -p 8080:8080 --name thukulservice-container aprian1337/thukul'
 
