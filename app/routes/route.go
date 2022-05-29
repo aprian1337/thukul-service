@@ -28,12 +28,12 @@ type ControllerList struct {
 	FavoriteController favorites.Controller
 	CryptoController   cryptos.Controller
 	PaymentController  payments.Controller
-	GqlHandler          *handler.Handler
+	GqlHandler         *handler.Handler
 }
 
 func (cl *ControllerList) Route(e *echo.Echo) {
-	e.POST("/graphql", echo.WrapHandler(cl.GqlHandler), middlewares.HttpHeaderMiddleware)
-	e.GET("/graphql", echo.WrapHandler(cl.GqlHandler), middlewares.HttpHeaderMiddleware)
+	e.POST("/graphql", echo.WrapHandler(cl.GqlHandler))
+	e.GET("/graphql", echo.WrapHandler(cl.GqlHandler))
 	v1 := e.Group("api/v1/")
 	cl.LoggerMiddleware.Start(e)
 	//AUTH
