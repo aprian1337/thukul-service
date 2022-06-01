@@ -65,4 +65,3 @@ jobs:
           END
       - name: Connect EC2 & Remove All Container & Pull from Registry & Start
         run: ssh development 'docker rm -f $(docker ps -a -q) && docker pull aprian1337/thukul && docker run -d -p 8080:8080 --name thukulservice-container aprian1337/thukul'
-
