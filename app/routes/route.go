@@ -14,6 +14,7 @@ import (
 	"github.com/graphql-go/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"net/http"
 )
 
 type ControllerList struct {
@@ -32,6 +33,9 @@ type ControllerList struct {
 }
 
 func (cl *ControllerList) Route(e *echo.Echo) {
+	e.GET("/", func(context echo.Context) error {
+		return context.JSON(http.StatusOK, "BISMILLAH, JULI 2022 SIDANG!!! - THUKUL SERVICE API - INTIALIZED BY DWIKY, ANDRE, FIKRI, AGIL")
+	})
 	e.POST("/graphql", echo.WrapHandler(cl.GqlHandler))
 	e.GET("/graphql", echo.WrapHandler(cl.GqlHandler))
 	v1 := e.Group("api/v1/")
