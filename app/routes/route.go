@@ -34,7 +34,7 @@ type ControllerList struct {
 
 func (cl *ControllerList) Route(e *echo.Echo) {
 	e.GET("/", func(context echo.Context) error {
-		return context.JSON(http.StatusOK, "BISMILLAH, JULI 2022 SIDANG!!! - THUKUL SERVICE API - INTIALIZED BY DWIKY, ANDRE, FIKRI, AGIL")
+		return context.JSON(http.StatusOK, "BISMILLAH, JULI 2022 SIDANG!!! - THUKUL SERVICE API - INTIALIZED BY DWIKY, ANDRE, FIKRY, AGIL")
 	})
 	e.POST("/graphql", echo.WrapHandler(cl.GqlHandler))
 	e.GET("/graphql", echo.WrapHandler(cl.GqlHandler))
